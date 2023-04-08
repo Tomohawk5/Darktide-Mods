@@ -36,7 +36,7 @@ return {
     en = "Height",
   },
   text_options = {
-    en = "Text",
+    en = "Timer",
   },
   text_enabled = {
     en = "Enabled",
@@ -72,7 +72,7 @@ return {
     en = "Notification"
   },
   stack_alert_description = {
-    en = "Displays a notification when volley fire ends of how many times it was refreshed."
+    en = "Displays a notification when volley fire ends of how many times it was refreshed and how long it lasted."
   },
   stack_font_size = {
     en = "Size"
@@ -105,7 +105,7 @@ return {
     en = "Opacity",
   },
   text_color = {
-    en = "Text Color",
+    en = "Timer Color",
   },
   text_color_r = {
     en = "Red",

@@ -45,7 +45,7 @@ return {
             setting_id = "bar_height",
             type = "numeric",
             range = { 1, 500 },
-            default_value = 6,
+            default_value = 8,
             decimals_number = 0,
             step_size_value = 1
           }
@@ -71,15 +71,15 @@ return {
           {
             setting_id = "text_horizontal_offset",
             type = "numeric",
-            range = { -100, 100 },
-            default_value = 0,
+            range = { -250, 250 },
+            default_value = 130,
             decimals_number = 0,
             step_size_value = 1
           },
           {
             setting_id = "text_vertical_offset",
             type = "numeric",
-            range = { -100, 100 },
+            range = { -250, 250 },
             default_value = 0,
             decimals_number = 0,
             step_size_value = 1
@@ -104,7 +104,7 @@ return {
             setting_id = "stack_font_size",
             type = "numeric",
             range = { 12, 48 },
-            default_value = 16,
+            default_value = 22,
             decimals_number = 0,
             step_size_value = 1
           },
@@ -120,7 +120,7 @@ return {
             setting_id = "stack_vertical_offset",
             type = "numeric",
             range = { -100, 100 },
-            default_value = 0,
+            default_value = 16,
             decimals_number = 0,
             step_size_value = 1
           }
@@ -134,7 +134,7 @@ return {
             setting_id = "bar_color_r",
             type = "numeric",
             range = { 0, 255 },
-            default_value = 251,
+            default_value = 216,
             decimals_number = 0,
             step_size_value = 1
           },
@@ -142,7 +142,7 @@ return {
             setting_id = "bar_color_g",
             type = "numeric",
             range = { 0, 255 },
-            default_value = 193,
+            default_value = 229,
             decimals_number = 0,
             step_size_value = 1
           },
@@ -150,7 +150,7 @@ return {
             setting_id = "bar_color_b",
             type = "numeric",
             range = { 0, 255 },
-            default_value = 87,
+            default_value = 207,
             decimals_number = 0,
             step_size_value = 1
           },
@@ -210,7 +210,7 @@ return {
             setting_id = "stack_color_r",
             type = "numeric",
             range = { 0, 255 },
-            default_value = 251,
+            default_value = 108,
             decimals_number = 0,
             step_size_value = 1
           },
@@ -218,7 +218,7 @@ return {
             setting_id = "stack_color_g",
             type = "numeric",
             range = { 0, 255 },
-            default_value = 193,
+            default_value = 187,
             decimals_number = 0,
             step_size_value = 1
           },
@@ -226,7 +226,7 @@ return {
             setting_id = "stack_color_b",
             type = "numeric",
             range = { 0, 255 },
-            default_value = 87,
+            default_value = 196,
             decimals_number = 0,
             step_size_value = 1
           },

@@ -13,7 +13,7 @@ local scenegraph_definition = {
       50,
       20
     },
-    position = { 250, 250, 55 }
+    position = { 0, 180, 55 }
   },
 }
 
@@ -69,7 +69,7 @@ local widget_definitions = {
     },
     {
       pass_type = "text",
-      value = "0.00",
+      value = "0.0",
       value_id = "timer_text",
       style_id = "timer_text",
       style = {
