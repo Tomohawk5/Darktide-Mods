@@ -55,7 +55,7 @@ local widget_definitions = {
         vertical_alignment = "center",
         horizontal_alignment = "center",
         color = {
-          255 * mod:get("timer_opacity"),
+          255 * mod:get("bar_opacity"),
           0,
           0,
           0
