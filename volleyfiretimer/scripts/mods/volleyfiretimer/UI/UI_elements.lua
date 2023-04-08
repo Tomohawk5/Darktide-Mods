@@ -76,7 +76,7 @@ function HudElementVolleyFire:update(dt, t, ui_renderer, render_settings, input_
             local bar_orientation = mod:get("bar_orientation")
             local bar_border_enabled = mod:get("bar_border_enabled")
 
-            local width = mod.orientation_options.horizontal
+            local width = bar_orientation == mod.orientation_options.horizontal
                 and mod.lerp(0, bar_width, duration_percent) or bar_width
             local height = bar_orientation == mod.orientation_options.vertical
                 and mod.lerp(0, bar_height, duration_percent) or bar_height
