@@ -1,0 +1,9 @@
+{
+    "Lua.diagnostics.globals": [
+        "Managers",
+        "get_mod",
+        "class",
+        "ScriptUnit"
+    ],
+    "editor.tabSize": 2
+}
