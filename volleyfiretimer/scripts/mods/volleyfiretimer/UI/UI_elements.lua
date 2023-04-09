@@ -21,6 +21,9 @@ function HudElementVolleyFire:init(parent, draw_layer, start_scale)
   HudElementVolleyFire.super.init(self, parent, draw_layer, start_scale, _definitions)
 
   self._player_unit = Managers.player:local_player(1).player_unit
+  self.archetype = Managers.player:local_player(1):archetype_name()
+
+  self._widgets_by_name.volley_fire_duration.content.visible = mod:get("always_visible")
 end
 
 local function _is_volley_fire_buff(s)
@@ -41,6 +44,11 @@ function HudElementVolleyFire:update(dt, t, ui_renderer, render_settings, input_
 
   local widget = self._widgets_by_name.volley_fire_duration
   if not widget then
+    return
+  end
+
+  if self.archetype ~= "veteran" then
+    widget.content.visible = false
     return
   end
 
@@ -65,6 +73,9 @@ function HudElementVolleyFire:update(dt, t, ui_renderer, render_settings, input_
           local duration_percent = buff:duration_progress() or 0
 
           buff_info.active = not (conditional_exit or duration_percent <= 0.002)
+          if not buff_info.active then
+            duration_percent = 1
+          end
 
           local timer_style = widget.style
           local bar_width = mod:get("bar_width")
@@ -96,14 +107,22 @@ function HudElementVolleyFire:update(dt, t, ui_renderer, render_settings, input_
 
           if stack_enabled then
             buff_info.stacks = buff:stack_count()
-            widget.content.stack_text = (buff_info.stacks .. "x") or ""
+            if buff_info.active then
+              widget.content.stack_text = (buff_info.stacks .. "x") or ""
+            else
+              widget.content.stack_text = "00x"
+            end
           end
         end
       end
     end
+
+    -- BUFF START
     if buff_info.active and not buff_info.was_active then
       buff_info.start = Managers.time:time("gameplay")
       widget.content.visible = true
+
+    -- BUFF END
     elseif buff_info.was_active and not buff_info.active then
       if mod:get("stack_alert") then
         local text = string.format(
@@ -113,9 +132,10 @@ function HudElementVolleyFire:update(dt, t, ui_renderer, render_settings, input_
         )
         mod:notify(text)
       end
-      widget.content.visible = false
+      widget.content.visible = mod:get("always_visible")
     end
   end
+  --mod:echo((buff_info.active and "true" or "false") .. " , " .. (buff_info.was_active and "true" or "false"))
   buff_info.was_active = buff_info.active
 end
 

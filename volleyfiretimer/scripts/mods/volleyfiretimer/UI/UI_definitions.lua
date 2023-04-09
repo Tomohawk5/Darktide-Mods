@@ -107,7 +107,7 @@ local widget_definitions = {
           1 * mod:get("stack_font_size")
         },
         text_vertical_alignment = "center",
-        text_horizontal_alignment = "center",
+        text_horizontal_alignment = "right",
         text_color = {
           255 * mod:get("stack_opacity"),
           mod:get("stack_color_r"),

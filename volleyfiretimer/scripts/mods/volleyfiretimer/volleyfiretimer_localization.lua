@@ -133,5 +133,14 @@ return {
   },
   stack_opacity = {
     en = "Opacity",
+  },
+  mod_options = {
+    en = "Miscellaneous"
+  },
+  always_visible = {
+    en = "Always visible"
+  },
+  always_visible_description = {
+    en = "Show the hud elements at all times, not just during volley fire."
   }
 }

@@ -239,6 +239,17 @@ return {
             step_size_value = 0.01
           }
         }
+      },
+      {
+        setting_id = "mod_options",
+        type = "group",
+        sub_widgets = {
+          {
+            setting_id = "always_visible",
+            type = "checkbox",
+            default_value = false
+          }
+        }
       }
     }
   }
