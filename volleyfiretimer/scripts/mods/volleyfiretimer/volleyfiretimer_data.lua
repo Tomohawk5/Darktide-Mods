@@ -4,7 +4,7 @@ local orientation_options = table.enum("horizontal", "vertical")
 mod.orientation_options = orientation_options
 
 return {
-  name = "Volley Fire Timer",
+  name = mod:localize("mod_name"),
   description = mod:localize("mod_description"),
   is_togglable = false,
   options = {
