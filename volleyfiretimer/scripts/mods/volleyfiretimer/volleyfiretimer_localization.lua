@@ -1,4 +1,5 @@
 return {
+  mod_name = {
     en = "Volley Fire Timer",
     ru = "Таймер Залпового огня",
   },
