@@ -8,10 +8,13 @@ return {
 	ability_slot = {
 		en = "Ability",
 	},
-	weapons_slots = {
+	ability_slot_description = {
+		en = "HUD element showing your combat ability."
+	},
+	weapon_slots = {
 		en = "Weapons",
 	},
-	weapons_slots_description = {
+	weapon_slots_description = {
 		en = "HUD element that shows your weapons, grenades and collectables."
 	}
 }
