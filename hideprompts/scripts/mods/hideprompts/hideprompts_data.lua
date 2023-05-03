@@ -9,12 +9,12 @@ return {
 			{
 				setting_id = "ability_slot",
 				type = "checkbox",
-				default = true
+				default_value = true
 			},
 			{
 				setting_id = "weapon_slots",
 				type = "checkbox",
-				default = true
+				default_value = true
 			}
 		}
 	}
