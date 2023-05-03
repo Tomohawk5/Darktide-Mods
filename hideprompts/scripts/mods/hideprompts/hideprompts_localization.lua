@@ -15,6 +15,6 @@ return {
 		en = "Weapons",
 	},
 	weapon_slots_description = {
-		en = "HUD element that shows your weapons, grenades and collectables."
+		en = "HUD element that shows your weapons, grenades and pocketables."
 	}
 }
