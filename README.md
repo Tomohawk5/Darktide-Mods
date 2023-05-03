@@ -10,4 +10,10 @@ See a timer showing how long you have to get your next kill to chain the Veteran
 
 Source [/volleyfiretimer](volleyfiretimer)
 
-Download from [Nexus](https://www.nexusmods.com/warhammer40kdarktide/mods/124).
+## Hide Prompts
+![](https://staticdelivery.nexusmods.com/mods/4943/images/headers/124_1680963632.jpg)
+Hide the input prompts that appear next to HUD elements.
+
+Source [/hideprompts](hideprompts)
+
+Download from [Nexus](https://www.nexusmods.com/warhammer40kdarktide/mods/xxx).
