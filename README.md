@@ -11,9 +11,9 @@ See a timer showing how long you have to get your next kill to chain the Veteran
 Source [/volleyfiretimer](volleyfiretimer)
 
 ## Hide Prompts
-![](https://staticdelivery.nexusmods.com/mods/4943/images/headers/124_1680963632.jpg)
-Hide the input prompts that appear next to HUD elements.
+![](https://staticdelivery.nexusmods.com/mods/4943/images/headers/150_1683172700.jpg)
+Choose which input prompts you want to see on your HUD.
 
 Source [/hideprompts](hideprompts)
 
-Download from [Nexus](https://www.nexusmods.com/warhammer40kdarktide/mods/xxx).
+Download from [Nexus](https://www.nexusmods.com/warhammer40kdarktide/mods/150).
