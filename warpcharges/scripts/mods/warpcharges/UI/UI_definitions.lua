@@ -1,6 +1,6 @@
 local mod = get_mod("warpcharges")
 
-local HudElementWarpCharges =mod:io_dofile("warpcharges/scripts/mods/warpcharges/UI/UI_settings")
+local HudElementWarpCharges = mod:io_dofile("warpcharges/scripts/mods/warpcharges/UI/UI_settings")
 local UIWorkspaceSettings = mod:original_require("scripts/settings/ui/ui_workspace_settings")
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local UIHudSettings = mod:original_require("scripts/settings/ui/ui_hud_settings")
@@ -60,8 +60,8 @@ value_text_style.size = {
 }
 value_text_style.vertical_alignment = "top"
 value_text_style.horizontal_alignment = "right"
-value_text_style.text_horizontal_alignment = "right"
 value_text_style.text_vertical_alignment = "top"
+value_text_style.text_horizontal_alignment = "right"
 value_text_style.text_color = UIHudSettings.color_tint_main_1
 local name_text_style = table.clone(value_text_style)
 name_text_style.offset = {
@@ -86,14 +86,13 @@ local widget_definitions = {
 			value_id = "name_text",
 			style_id = "name_text",
 			pass_type = "text",
-			--value = Utf8.upper(Localize("loc_hud_display_name_stamina")),
-			value = Utf8.upper("warp charges"),
+			value = Utf8.upper(mod:localize(mod:get("gauge_text"))),
 			style = name_text_style
 		},
 		{
 			value = "content/ui/materials/hud/stamina_gauge",
 			style_id = "warning",
-			pass_type = "texture",
+			pass_type = "rotated_texture",
 			style = {
 				vertical_alignment = "center",
 				horizontal_alignment = "center",
@@ -102,6 +101,15 @@ local widget_definitions = {
 					0,
 					1
 				},
+				size = {
+					212,
+					10
+				},
+				piviot = {
+					0,
+					0
+				},
+				angle = mod.widget_angle,
 				color = UIHudSettings.color_tint_main_2
 			}
 		}
