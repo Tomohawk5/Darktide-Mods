@@ -1,12 +1,14 @@
 local mod = get_mod("warpcharges")
 
 mod.text_options = table.enum(
+	"none",
 	"text_option_charges",
 	"text_option_souls",
 	"text_option_warp",
 	"text_option_warpcharges"
 )
 mod.value_options = table.enum(
+	"none",
 	"value_option_damage",
 	"value_option_stacks",
 	"value_option_time_percent",
@@ -42,6 +44,7 @@ return {
 				type = "dropdown",
 				default_value = mod.text_options["text_option_warpcharges"],
 				options = {
+					{ text = "none",					value = mod.text_options["none"]					},
 					{ text = "text_option_charges",		value = mod.text_options["text_option_charges"]		},
 					{ text = "text_option_souls",		value = mod.text_options["text_option_souls"]		},
 					{ text = "text_option_warp",		value = mod.text_options["text_option_warp"]		},
@@ -53,6 +56,7 @@ return {
 				type = "dropdown",
 				default_value = mod.value_options["value_option_stacks"],
 				options = {
+					{ text = "none",						value = mod.value_options["none"]						},
 					{ text = "value_option_damage",			value = mod.value_options["value_option_damage"]		},
 					{ text = "value_option_stacks",			value = mod.value_options["value_option_stacks"]		},
 					{ text = "value_option_time_percent",	value = mod.value_options["value_option_time_percent"]	},
