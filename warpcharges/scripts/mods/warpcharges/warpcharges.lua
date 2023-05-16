@@ -53,3 +53,15 @@ mod:hook_safe(UIViewHandler, "close_view", function(self, view_name, force_close
     recreate_hud()
   end
 end)
+
+mod:command("debug_scenegraph", "", function()
+  mod.debugging = not mod.debugging
+end)
+
+local UIRenderer = mod:original_require("scripts/managers/ui/ui_renderer")
+
+mod:hook_safe(UIRenderer, "begin_pass", function(self, ui_scenegraph, input_service, dt, render_settings)
+  if mod.debugging then
+      UIRenderer.debug_render_scenegraph(self, ui_scenegraph)
+  end
+end)
