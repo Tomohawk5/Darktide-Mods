@@ -104,8 +104,6 @@ HudElementWarpCharges.update = function (self, dt, t, ui_renderer, render_settin
 		warning_style.angle = 4.71239
 	end
 
-	mod.widget_angle = mod.widget_angle + 0.01
-
     self:_update_shield_amount()
 	
 	if mod:get("show_gauge") then
