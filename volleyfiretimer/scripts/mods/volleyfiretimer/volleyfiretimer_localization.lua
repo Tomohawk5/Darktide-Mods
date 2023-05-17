@@ -71,12 +71,12 @@ return {
   },
   text_enabled = {
     en = "Enabled",
-    ru = "Включени",
+    ru = "Включение",
     ["zh-cn"] = "启用",
   },
   text_enabled_description = {
     en = "Numeric countdown showing remaining time in seconds.",
-    ru = "Числовой обратный отсчёт, показывающий оставшееся время в секундах.",
+    ru = "Цифры обратного отсчёта, показывающие оставшееся время в секундах.",
     ["zh-cn"] = "以秒数显示剩余时间倒计时。",
   },
   text_font_size = {
