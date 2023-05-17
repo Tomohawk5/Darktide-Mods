@@ -123,8 +123,12 @@ HudElementWarpCharges._update_shield_amount = function (self)
 		local total_segment_spacing = segment_spacing * math.max(shield_amount - 1, 0)
 		local total_bar_length = bar_size[1] - total_segment_spacing
 		self._shield_width = math.round(shield_amount > 0 and total_bar_length / shield_amount or total_bar_length)
+		local shield_height = 9
 
-		self:_set_scenegraph_size("shield", self._shield_width)
+		local width  = (mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal"]) and self._shield_width or shield_height
+		local height = (mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal"]) and shield_height or self._shield_width
+
+		self:_set_scenegraph_size("shield", width, height)
 
 		local add_shields = amount_difference < 0
 
@@ -286,7 +290,7 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 
 	local step_fraction = 1 / num_shields
 	local spacing = HudElementWarpChargesSettings.spacing
-	local x_offset = (shield_width + spacing) * (num_shields - 1) * 0.5
+	local shield_offset = (shield_width + spacing) * (num_shields - 1) * 0.5
 	local shields = self._shields
 
     local souls_progress = ( souls_info.current_soul_progress + ( souls_info.current_stacks - 1 ) ) / souls_info.max_stacks
@@ -321,11 +325,23 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 		widget_color[2] = active_color[2]
 		widget_color[3] = active_color[3]
 		widget_color[4] = active_color[4]
-		widget_offset[1] = x_offset
+
+		-- offset in x for horizontal and y for vertical
+		--widget_offset[(mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal"]) and 1 or 2] = shield_offset
+
+		if (mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal"]) then
+			widget_offset[1] = 0
+			widget_offset[1] = shield_offset
+		else
+			local scenegraph_size = self:scenegraph_size("shield")
+			local height = scenegraph_size.y
+			widget_offset[1] = 4
+			widget_offset[2] = height - shield_offset - 34
+		end
 
 		UIWidget.draw(widget, ui_renderer)
 
-		x_offset = x_offset - shield_width - spacing
+		shield_offset = shield_offset - shield_width - spacing
 	end
 end
 
