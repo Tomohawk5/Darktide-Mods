@@ -15,9 +15,13 @@ local souls_info = {
 	current_soul_progress = 0,
 	damage_per_soul = nil
 }
-
 local function _is_warp_charge_buff(s)
     return s == "psyker_biomancer_souls" or s == "psyker_biomancer_souls_increased_max_stacks"
+end
+
+local function _set_orientation()
+	local horizontal = (mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal"])
+
 end
 
 HudElementWarpCharges.init = function (self, parent, draw_layer, start_scale)
@@ -40,6 +44,8 @@ HudElementWarpCharges.init = function (self, parent, draw_layer, start_scale)
 								  and extra_souls.max_souls_talent or souls_passive.base_max_souls
 	souls_info.damage_per_soul	= souls_passive.damage / souls_info.max_stacks
 	souls_info.max_duration		= souls_passive.soul_duration
+
+	mod:notify("Initialised!")
 end
 
 HudElementWarpCharges.destroy = function (self)
@@ -113,22 +119,32 @@ HudElementWarpCharges.update = function (self, dt, t, ui_renderer, render_settin
 	end
 end
 
+HudElementWarpCharges._resize_shield = function (self)
+	local shield_amount = souls_info.max_stacks or 0
+	local bar_size = HudElementWarpChargesSettings.bar_size
+	local segment_spacing = HudElementWarpChargesSettings.spacing
+	local total_segment_spacing = segment_spacing * math.max(shield_amount - 1, 0)
+	local total_bar_length = bar_size[1] - total_segment_spacing
+
+	self._shield_width = math.round(shield_amount > 0 and total_bar_length / shield_amount or total_bar_length)
+	local shield_height = 9
+
+	local horizontal = mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal"]
+	self._horizontal = horizontal
+
+	local width  = horizontal and self._shield_width or shield_height
+	local height = horizontal and shield_height or self._shield_width
+
+	self:_set_scenegraph_size("shield", width, height)
+end
+
 HudElementWarpCharges._update_shield_amount = function (self)
 	local shield_amount = souls_info.max_stacks or 0
 	if shield_amount ~= self._shield_amount then
 		local amount_difference = (self._shield_amount or 0) - shield_amount
 		self._shield_amount = shield_amount
-		local bar_size = HudElementWarpChargesSettings.bar_size
-		local segment_spacing = HudElementWarpChargesSettings.spacing
-		local total_segment_spacing = segment_spacing * math.max(shield_amount - 1, 0)
-		local total_bar_length = bar_size[1] - total_segment_spacing
-		self._shield_width = math.round(shield_amount > 0 and total_bar_length / shield_amount or total_bar_length)
-		local shield_height = 9
 
-		local width  = (mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal"]) and self._shield_width or shield_height
-		local height = (mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal"]) and shield_height or self._shield_width
-
-		self:_set_scenegraph_size("shield", width, height)
+		self:_resize_shield()
 
 		local add_shields = amount_difference < 0
 
@@ -180,28 +196,6 @@ HudElementWarpCharges._draw_widgets = function (self, dt, t, input_service, ui_r
 		render_settings.alpha_multiplier = previous_alpha_multiplier
 	end
 end
-
--- triangle 				\content\ui\textures\hud\icons\player_assistance_background
--- triangle 				\content\ui\textures\hud\icons\player_assistance_frame
--- triangle 				\content\ui\textures\hud\icons\player_assistance_glow
-
--- warning					\content\ui\textures\icons\circumstances\placeholder
--- warning					\content\ui\textures\symbols\warning
--- exclamation_mark 		\content\ui\textures\icons\player_states\incapacitated
-
--- Skull					\content\ui\textures\hud\communication_wheel\icons\enemy
--- Skull					\content\ui\textures\icons\generic\danger
--- Skull + Bones			\content\ui\textures\icons\player_states\dead
--- Peril Skull 		
-
--- Psyker					\content\ui\textures\icons\classes\psyker
-
--- Fade Mask Left			\content\ui\textures\dividers\faded_line_left_01
--- Fade Mask Middle			\content\ui\textures\dividers\faded_line_01
-
--- Terminal Background		content/ui/materials/backgrounds/terminal_basic
-
--- Difficulties Dividers	\content\ui\textures\icons\mission_difficulty_complete\difficulty_completed_[n]
 
 local STAMINA_STATE_COLORS = {
 	-- empty = {
@@ -326,10 +320,7 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 		widget_color[3] = active_color[3]
 		widget_color[4] = active_color[4]
 
-		-- offset in x for horizontal and y for vertical
-		--widget_offset[(mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal"]) and 1 or 2] = shield_offset
-
-		if (mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal"]) then
+		if  self._horizontal then
 			widget_offset[1] = 0
 			widget_offset[1] = shield_offset
 		else
