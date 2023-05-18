@@ -13,15 +13,14 @@ local resource_info = {
 	max_duration = nil,
 	stacks = 0,
 	progress = 0,
-	damage_per_soul = nil
+	damage_per_soul = nil,
+	soul_damage_boost = function (self)
+		return math.clamp(self.stacks, 0, self.max_stacks) * self.damage_per_soul
+	end
 }
+
 local function _is_warp_charge_buff(s)
     return s == "psyker_biomancer_souls" or s == "psyker_biomancer_souls_increased_max_stacks"
-end
-
-local function _set_orientation()
-	local horizontal = (mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal"])
-
 end
 
 HudElementWarpCharges.init = function (self, parent, draw_layer, start_scale)
@@ -37,10 +36,10 @@ HudElementWarpCharges.init = function (self, parent, draw_layer, start_scale)
 
 	if self._archetype_name == "psyker" then
 		local souls_passive = TalentSettings.psyker_2.passive_1
-		local extra_souls	= TalentSettings.psyker_2.offensive_2_1
+		local extra_souls	= TalentSettings.psyker_2.offensive_2_1.max_souls_talent
 		
-		resource_info.max_stacks		= profile.talents.psyker_2_tier_5_name_1 and extra_souls.max_souls_talent or souls_passive.base_max_souls
-		resource_info.damage_per_soul	= souls_passive.damage / resource_info.max_stacks
+		resource_info.max_stacks		= profile.talents.psyker_2_tier_5_name_1 and extra_souls or souls_passive.base_max_souls
+		resource_info.damage_per_soul	= souls_passive.damage / extra_souls
 		resource_info.max_duration		= souls_passive.soul_duration
 	else
 		resource_info.max_stacks = TalentSettings[self._archetype_name .. "_2"].grenade.max_charges
@@ -77,44 +76,42 @@ HudElementWarpCharges.update = function (self, dt, t, ui_renderer, render_settin
         return
     end
 
-	-- local gauge_style		= widget.style
-	-- local value_text_style	= gauge_style.value_text
-	-- local name_text_style	= gauge_style.name_text
-	-- local warning_style		= gauge_style.warning
+	local parent = self._parent
+	local player_extensions = parent:player_extensions()
 
-	-- if mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal"] then
-	-- 	value_text_style.offset = {
-	-- 		0,
-	-- 		10,
-	-- 		3
-	-- 	}
+	if player_extensions then
 
-	-- 	name_text_style.horizontal_alignment		= "left"
-	-- 	name_text_style.text_horizontal_alignment	= "left"
-	-- 	name_text_style.offset = {
-	-- 		0,
-	-- 		10,
-	-- 		3
-	-- 	}
-
-	-- 	warning_style.angle = 0
-	-- else
-	-- 	value_text_style.offset = {
-	-- 		-118,
-	-- 		-86,
-	-- 		3
-	-- 	}
-
-	-- 	name_text_style.horizontal_alignment		= "right"
-	-- 	name_text_style.text_horizontal_alignment	= "right"
-	-- 	name_text_style.offset = {
-	-- 		-118,
-	-- 		-104,
-	-- 		3
-	-- 	}
-
-	-- 	warning_style.angle = 4.71239
-	-- end
+		resource_info.stacks = 0
+		if self._archetype_name == "psyker" then
+			local unit_data_extension = player_extensions.unit_data
+			local specialization_resource_component = unit_data_extension:read_component("specialization_resource")
+			resource_info.stacks = specialization_resource_component.current_resource
+			
+		else
+			local ability_extension = player_extensions.ability
+			if ability_extension and ability_extension:ability_is_equipped("grenade_ability") then
+				resource_info.stacks = ability_extension:remaining_ability_charges("grenade_ability")
+			end
+		end
+		if self._archetype_name == "psyker" or self._veteran_replenish then
+			local buff_extension = player_extensions.buff
+			if buff_extension then
+				local buffs = buff_extension:buffs()
+				for i = 1, #buffs do
+					local buff = buffs[i]
+					local buff_name = buff:template_name()
+					if _is_warp_charge_buff(buff_name) or buff_name == "veteran_ranger_grenade_replenishment" then
+						if self._archetype_name == "psyker" then
+							resource_info.stacks = math.clamp(buff:stack_count(), 0, resource_info.max_stacks)
+						end
+						resource_info.progress = buff:duration_progress()
+					end
+				end
+			end
+		else
+			resource_info.progress = nil
+		end
+	end
 
     self:_update_shield_amount()
 
@@ -183,7 +180,8 @@ HudElementWarpCharges._resize_shield = function (self)
 			3
 		}
 
-		warning_style.angle = 4.71239
+		--warning_style.angle = 4.71239
+		warning_style.angle = (math.pi * 3) / 2
 	end
 end
 
@@ -285,22 +283,29 @@ local STAMINA_STATE_COLORS = {
 }
 
 HudElementWarpCharges._get_value_text = function (self)
-	local value_text = ""
+	--local value_text = ""
+	local format = ""
+	local value = nil
 	local value_option = mod:get("gauge_value")
 	local description = mod:get("gauge_value_text")
 
 	if self._archetype_name == "psyker" and value_option == mod.value_options["value_option_damage"] then
-		local value = math.clamp(resource_info.stacks, 0, resource_info.max_stacks) * resource_info.damage_per_soul
-		value_text = string.format("%.0f%%", math.clamp(value, 0, 1) * 100)
+		format = "%.0f%%"
+		value = math.clamp(resource_info.stacks, 0, resource_info.max_stacks) * resource_info.damage_per_soul
+		value = math.clamp(value, 0, 1) * 100
+		value = resource_info:soul_damage_boost() * 100
 	elseif value_option == mod.value_options["value_option_stacks"] then
-		value_text = string.format("%.0fx", resource_info.stacks)
+		format = "%.0fx"
+		value = resource_info.stacks
 	elseif (self._archetype_name == "psyker" or self._veteran_replenish) and value_option == mod.value_options["value_option_time_percent"] then
-		local value = resource_info.progress
-		value_text = string.format("%.0f%%", math.clamp(value, 0, 1) * 100)
+		format = "%.0f%%"
+		value = resource_info.progress * 100
 	elseif (self._archetype_name == "psyker" or self._veteran_replenish) and value_option == mod.value_options["value_option_time_seconds"] then
-		local value = resource_info.progress * resource_info.max_duration
-		value_text = string.format("%.0fs", value)
+		format = "%.0fs"
+		value = resource_info.progress * resource_info.max_duration
 	end
+
+	local value_text = string.format(format, value)
 
 	if description and (self._archetype_name == "psyker" or self._archetype_name == "veteran") then
 		value_text = mod:localize(value_option .. "_display") .. " " .. value_text
@@ -322,8 +327,7 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 	-- local bar_size = HudElementWarpChargesSettings.bar_size
 	-- local max_glow_alpha = HudElementWarpChargesSettings.max_glow_alpha
 	-- local half_distance = HudElementWarpChargesSettings.half_distance
-	local parent = self._parent
-	local player_extensions = parent:player_extensions()
+
 
 	-- TODO: use grenade for non psykers	
 	-- [FROM CROSSHAIR HUD - GRENADE]
@@ -343,22 +347,6 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 	--   content.visible = false
 	--   return
 	-- end
-
-	if player_extensions then
-        local buff_extension = player_extensions.buff
-
-        if buff_extension then
-            local buffs = buff_extension:buffs()
-            for i = 1, #buffs do
-                local buff = buffs[i]
-                local buff_name = buff:template_name()
-                if _is_warp_charge_buff(buff_name) or buff_name == "veteran_ranger_grenade_replenishment" then
-                    resource_info.stacks = buff:stack_count()
-                    resource_info.progress = self._veteran_replenish and 1 - buff:duration_progress() or buff:duration_progress()
-                end
-            end
-        end
-	end
 
 	-- local value_text = ""
 	-- local value_option = mod:get("gauge_value")
@@ -389,7 +377,9 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 	local shield_offset = (shield_width + spacing) * (num_shields - 1) * 0.5
 	local shields = self._shields
 
-    local souls_progress = ( resource_info.progress + ( resource_info.stacks - 1 ) ) / resource_info.max_stacks
+	local progress = resource_info.progress or 1
+	local stacks = resource_info.stacks - (self._veteran_replenish and 0 or 1)
+    local souls_progress = ( progress + ( stacks ) ) / resource_info.max_stacks
 
 	for i = num_shields, 1, -1 do
 		local shield = shields[i]
