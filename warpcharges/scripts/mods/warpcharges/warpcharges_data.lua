@@ -67,6 +67,11 @@ return {
 				setting_id = "gauge_value_text",
 				type = "checkbox",
 				default_value = true
+			},
+			{
+				setting_id = "psyker_only",
+				type = "checkbox",
+				default_value = true
 			}
 		}
 	}
