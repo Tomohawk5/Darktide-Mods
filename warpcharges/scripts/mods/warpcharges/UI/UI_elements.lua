@@ -149,7 +149,7 @@ HudElementWarpCharges._resize_shield = function (self)
 	local name_text_style	= gauge_style.name_text
 	local warning_style		= gauge_style.warning
 
-	if mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal"] then
+	if horizontal then
 		value_text_style.offset = {
 			0,
 			10,
@@ -179,6 +179,7 @@ HudElementWarpCharges._resize_shield = function (self)
 			-104,
 			3
 		}
+
 
 		--warning_style.angle = 4.71239
 		warning_style.angle = (math.pi * 3) / 2
@@ -282,6 +283,12 @@ local STAMINA_STATE_COLORS = {
 	}
 }
 
+local Y_OFFSETS = {}
+Y_OFFSETS[6] = 34
+Y_OFFSETS[4] = 59
+Y_OFFSETS[3] = 85
+Y_OFFSETS[2] = 136
+
 HudElementWarpCharges._get_value_text = function (self)
 	--local value_text = ""
 	local format = ""
@@ -328,53 +335,15 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 	-- local max_glow_alpha = HudElementWarpChargesSettings.max_glow_alpha
 	-- local half_distance = HudElementWarpChargesSettings.half_distance
 
-
-	-- TODO: use grenade for non psykers	
-	-- [FROM CROSSHAIR HUD - GRENADE]
-	-- local player_extensions = parent._parent:player_extensions()
-	-- local ability_extension = player_extensions.ability
-  
-	-- if not (ability_extension and ability_extension:ability_is_equipped("grenade_ability")) then
-	--   return
-	-- end
-  
-	-- local remaining_ability_charges = ability_extension:remaining_ability_charges("grenade_ability")
-	-- local max_ability_charges = ability_extension:max_ability_charges("grenade_ability")
-
-	-- local unit_data_extension = player_extensions.unit_data
-	-- local warp_charge_component = unit_data_extension and unit_data_extension:read_component("warp_charge")
-	-- if warp_charge_component and max_ability_charges == 1 then
-	--   content.visible = false
-	--   return
-	-- end
-
-	-- local value_text = ""
-	-- local value_option = mod:get("gauge_value")
-	-- local description = mod:get("gauge_value_text")
-
-	-- if self._archetype_name == "psyker" and value_option == mod.value_options["value_option_damage"] then
-	-- 	local value = math.clamp(resource_info.stacks, 0, resource_info.max_stacks) * resource_info.damage_per_soul
-	-- 	value_text = string.format("%.0f%%", math.clamp(value, 0, 1) * 100)
-	-- elseif value_option == mod.value_options["value_option_stacks"] then
-	-- 	value_text = string.format("%.0fx", resource_info.stacks)
-	-- elseif value_option == mod.value_options["value_option_time_percent"] then
-	-- 	local value = resource_info.progress
-	-- 	value_text = string.format("%.0f%%", math.clamp(value, 0, 1) * 100)
-	-- elseif value_option == mod.value_options["value_option_time_seconds"] then
-	-- 	local value = resource_info.progress * resource_info.max_duration
-	-- 	value_text = string.format("%.0fs", value)
-	-- end
-
-	-- if description then
-	-- 	value_text = mod:localize(value_option .. "_display") .. " " .. value_text
-	-- end
-
 	local gauge_widget = self._widgets_by_name.gauge
 	gauge_widget.content.value_text = self:_get_value_text()
 
 	local step_fraction = 1 / num_shields
 	local spacing = HudElementWarpChargesSettings.spacing
 	local shield_offset = (shield_width + spacing) * (num_shields - 1) * 0.5
+	if not self._horizontal then
+		shield_offset = shield_offset + Y_OFFSETS[resource_info.max_stacks]
+	end
 	local shields = self._shields
 
 	local progress = resource_info.progress or 1
@@ -418,8 +387,9 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 		else
 			local scenegraph_size = self:scenegraph_size("shield")
 			local height = scenegraph_size.y
+
 			widget_offset[1] = 4
-			widget_offset[2] = height - shield_offset - 34
+			widget_offset[2] = height - shield_offset-- - Y_OFFSETS[resource_info.max_stacks]
 		end
 
 		UIWidget.draw(widget, ui_renderer)
