@@ -49,8 +49,6 @@ HudElementWarpCharges.init = function (self, parent, draw_layer, start_scale)
 			resource_info.max_duration = grenade_cooldown
 		end
 	end
-
-	mod:notify("Initialised!")
 end
 
 HudElementWarpCharges.destroy = function (self)
@@ -207,19 +205,21 @@ HudElementWarpCharges._update_shield_amount = function (self)
 end
 
 HudElementWarpCharges._update_visibility = function (self, dt)
-	local draw = false
-	local parent = self._parent
-	local player_extensions = parent:player_extensions()
+	-- local draw = false
+	-- local parent = self._parent
+	-- local player_extensions = parent:player_extensions()
 
-	if player_extensions then
-		local player_unit_data = player_extensions.unit_data
-		if player_unit_data then
-            local specialization_resource_component = player_unit_data:read_component("specialization_resource")
-			if  specialization_resource_component and specialization_resource_component.current_resource > 0 then
-                draw = true
-			end
-		end
-	end
+	-- if player_extensions then
+	-- 	local player_unit_data = player_extensions.unit_data
+	-- 	if player_unit_data then
+    --         local specialization_resource_component = player_unit_data:read_component("specialization_resource")
+	-- 		if  specialization_resource_component and specialization_resource_component.current_resource > 0 then
+    --             draw = true
+	-- 		end
+	-- 	end
+	-- end
+
+	local draw = resource_info.stacks > 0 or self._veteran_replenish
 
 	local alpha_speed = 3
 	local alpha_multiplier = self._alpha_multiplier or 0
@@ -359,19 +359,55 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 		local start_value = end_value - step_fraction
 		local is_full, is_half, is_empty = nil
 
-		if souls_progress >= start_value + step_fraction * 0.5 then	is_full	= true
-		elseif start_value < souls_progress then					is_half = true
-		else														is_empty = true
-		end
+		-- if souls_progress >= start_value + step_fraction * 0.5 then	is_full	= true
+		-- elseif start_value < souls_progress then					is_half = true
+		-- else														is_empty = true
+		-- end
 
 		local active_color = nil
 
-		if is_empty then
-			active_color = STAMINA_STATE_COLORS.empty
-		elseif is_full then
-			active_color = STAMINA_STATE_COLORS.full
-		elseif is_half then
-			active_color = STAMINA_STATE_COLORS.half
+		local color_archetype = mod:get("color_" .. self._archetype_name) and self._archetype_name or "default"
+
+		local color_full_name	= mod:get("color_" .. color_archetype .. "_full")
+		local color_empty_name	= mod:get("color_" .. color_archetype .. "_empty")
+
+		if Color[color_full_name] and Color[color_empty_name] then
+			local value = 1
+			if souls_progress >= end_value then
+				value = 0
+				is_full = true
+			elseif start_value < souls_progress then
+				value = 1 - resource_info.progress
+				is_half = true
+			else
+				value = 1
+				is_empty = true
+			end
+
+			local color_full	= Color[color_full_name](255, true)
+			local color_empty	= Color[color_empty_name](is_empty and 100 or 255, true)
+
+			mod:echo(string.format("i=%d [%.2f,%.2f]\tt=%.4f\t[%s %s %s]",
+				i, start_value, end_value, value,
+				is_full		and "#" or "-",
+				is_half		and "#" or "-",
+				is_empty	and "#" or "-"
+			))
+
+			--active_color = Color.lerp(color_full, color_empty, step_fraction)
+			active_color = {}
+			for e = 1, 4 do
+				active_color[e] = math.lerp(color_full[e], color_empty[e], value)
+			end
+
+		else
+			if is_empty then
+				active_color = STAMINA_STATE_COLORS.empty
+			elseif is_full then
+				active_color = STAMINA_STATE_COLORS.full
+			elseif is_half then
+				active_color = STAMINA_STATE_COLORS.half
+			end
 		end
 
 		local widget_style = widget.style
