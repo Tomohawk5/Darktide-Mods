@@ -1,4 +1,5 @@
 local mod = get_mod("warpcharges")
+local UIHudSettings = mod:original_require("scripts/settings/ui/ui_hud_settings")
 
 mod.text_options = table.enum(
 	"none",
@@ -34,7 +35,7 @@ local function get_colors()
 end
 
 local function color_archetype(archetype)
-	local widget = {
+	return {
 		setting_id = "color_" .. archetype,
 		type = "checkbox",
 		default_value = true,
@@ -43,21 +44,20 @@ local function color_archetype(archetype)
 				setting_id = "color_" .. archetype .. "_full",
 				type = "dropdown",
 				default_value = "ui_" .. archetype,
-				options = get_colors() --color_dropdown()
+				options = get_colors()
 			},
 			{
 				setting_id = "color_" .. archetype .. "_empty",
 				type = "dropdown",
 				default_value = "ui_" .. archetype .. "_text",
-				options = get_colors() --color_dropdown()
+				options = get_colors()
 			}
 		}
 	}
-	return widget
 end
 
 local function color_options()
-	local archetypes = { "psyker", "veteran", "zealot", "ogryn" }
+	local archetypes = { "psyker", "veteran", "zealot", "ogryn" } --"default", 
 	local sub_widgets = {}
 	for _, archetype in pairs(archetypes) do
 		table.insert(sub_widgets, color_archetype(archetype))
@@ -71,6 +71,22 @@ return {
 	is_togglable = true,
 	options = {
 		widgets = {
+			{
+				setting_id = "miscellaneous",
+				type = "group",
+				sub_widgets = {
+					{
+						setting_id = "martyrdom",
+						type = "checkbox",
+						default_value = false
+					},
+					{
+						setting_id = "psyker_only",
+						type = "checkbox",
+						default_value = false
+					}
+				}
+			},
 			{
 				setting_id = "gauge",
 				type = "group",
@@ -121,40 +137,28 @@ return {
 				}
 			},
 			{
-				setting_id = "psyker_only",
-				type = "checkbox",
-				default_value = false
+				setting_id = "color_default",
+				type = "group",
+				sub_widgets = {
+					{
+						setting_id = "color_default_full",
+						type = "dropdown",
+						default_value = "ui_hud_yellow_super_light",
+						options = get_colors()
+					},
+					{
+						setting_id = "color_default_empty",
+						type = "dropdown",
+						default_value = "ui_hud_yellow_medium",
+						options = get_colors()
+					}
+				}
 			},
 			{
 				setting_id = "color_options",
 				type = "group",
 				sub_widgets = color_options()
 			}
-			-- {
-			-- 	setting_id = "color_options",
-			-- 	type = "group",
-			-- 	sub_widgets = {
-			-- 		{
-			-- 			setting_id = "color_psyker",
-			-- 			type = "checkbox",
-			-- 			default_value = false,
-			-- 			sub_widgets = {
-			-- 				{
-			-- 					setting_id = "color_psyker_full",
-			-- 					type = "dropdown",
-			-- 					default_value = "red",
-			-- 					options = color_dropdown()
-			-- 				},
-			-- 				{
-			-- 					setting_id = "color_psyker_empty",
-			-- 					type = "dropdown",
-			-- 					default_value = "red",
-			-- 					options = color_dropdown()
-			-- 				}
-			-- 			}
-			-- 		}
-			-- 	}
-			-- }
 		}
 	}
 }
