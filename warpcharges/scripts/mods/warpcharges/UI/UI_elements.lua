@@ -13,8 +13,8 @@ local resource_info = {
 	max_duration = nil,
 	stacks = 0,
 	progress = 0,
-	damage_per_soul = nil,
-	soul_damage_boost = function (self)
+	damage_per_stack = nil,
+	damage_boost = function (self)
 		return math.clamp(self.stacks, 0, self.max_stacks) * self.damage_per_soul
 	end
 }
@@ -32,21 +32,31 @@ HudElementWarpCharges.init = function (self, parent, draw_layer, start_scale)
 
 	self._player = Managers.player:local_player(1)
     self._archetype_name = self._player:archetype_name()
-    local profile		= self._player:profile()
+    local profile		 = self._player:profile()
 
 	if self._archetype_name == "psyker" then
 		local souls_passive = TalentSettings.psyker_2.passive_1
 		local extra_souls	= TalentSettings.psyker_2.offensive_2_1.max_souls_talent
 		
 		resource_info.max_stacks		= profile.talents.psyker_2_tier_5_name_1 and extra_souls or souls_passive.base_max_souls
-		resource_info.damage_per_soul	= souls_passive.damage / extra_souls
+		resource_info.damage_per_stack	= souls_passive.damage / extra_souls
 		resource_info.max_duration		= souls_passive.soul_duration
+		
+	elseif self._archetype_name == "zealot" and mod:get("martyrdom") then
+		local martyrdom_passive = TalentSettings.zealot_2.passive_1
+		local extra_stacks = TalentSettings.zealot_2.offensive_2_3.max_stacks
+
+		resource_info.max_stacks		= profile.talents.zealot_2_tier_5_name_3 and extra_stacks or martyrdom_passive.max_stacks
+		resource_info.damage_per_stack	= martyrdom_passive.damage_per_step
+		resource_info.max_duration		= nil
 	else
 		resource_info.max_stacks = TalentSettings[self._archetype_name .. "_2"].grenade.max_charges
 		if self._archetype_name == "veteran" then
 			self._veteran_replenish = profile.talents.veteran_2_tier_2_name_3
 			local grenade_cooldown = TalentSettings.veteran_2.offensive_1_3.grenade_replenishment_cooldown
 			resource_info.max_duration = grenade_cooldown
+		else
+			resource_info.max_duration		= nil
 		end
 	end
 end
@@ -61,6 +71,19 @@ end
 
 HudElementWarpCharges._remove_shield = function (self)
 	self._shields[#self._shields] = nil
+end
+
+
+HudElementWarpCharges._is_resource_buff = function (self, buff)
+	if self.archetype_name == "psyker"	then
+		return buff == "psyker_biomancer_souls" or buff == "psyker_biomancer_souls_increased_max_stacks"
+	elseif self.archetype_name == "veteran" then
+		return self._veteran_replenish and buff == "veteran_ranger_grenade_replenishment"
+	elseif self.archetype_name == "zealot" then
+		return mod:get("martyrdom") and buff == "zealot_maniac_martyrdom_base"
+	else
+		return false
+	end
 end
 
 HudElementWarpCharges.update = function (self, dt, t, ui_renderer, render_settings, input_service)
@@ -78,8 +101,8 @@ HudElementWarpCharges.update = function (self, dt, t, ui_renderer, render_settin
 	local player_extensions = parent:player_extensions()
 
 	if player_extensions then
-
 		resource_info.stacks = 0
+
 		if self._archetype_name == "psyker" then
 			local unit_data_extension = player_extensions.unit_data
 			local specialization_resource_component = unit_data_extension:read_component("specialization_resource")
@@ -91,6 +114,7 @@ HudElementWarpCharges.update = function (self, dt, t, ui_renderer, render_settin
 				resource_info.stacks = ability_extension:remaining_ability_charges("grenade_ability")
 			end
 		end
+
 		if self._archetype_name == "psyker" or self._veteran_replenish then
 			local buff_extension = player_extensions.buff
 			if buff_extension then
@@ -153,7 +177,6 @@ HudElementWarpCharges._resize_shield = function (self)
 			10,
 			3
 		}
-
 		name_text_style.horizontal_alignment		= "left"
 		name_text_style.text_horizontal_alignment	= "left"
 		name_text_style.offset = {
@@ -161,7 +184,6 @@ HudElementWarpCharges._resize_shield = function (self)
 			10,
 			3
 		}
-
 		warning_style.angle = 0
 	else
 		value_text_style.offset = {
@@ -169,7 +191,6 @@ HudElementWarpCharges._resize_shield = function (self)
 			-86,
 			3
 		}
-
 		name_text_style.horizontal_alignment		= "right"
 		name_text_style.text_horizontal_alignment	= "right"
 		name_text_style.offset = {
@@ -177,9 +198,6 @@ HudElementWarpCharges._resize_shield = function (self)
 			-104,
 			3
 		}
-
-
-		--warning_style.angle = 4.71239
 		warning_style.angle = (math.pi * 3) / 2
 	end
 end
@@ -205,20 +223,6 @@ HudElementWarpCharges._update_shield_amount = function (self)
 end
 
 HudElementWarpCharges._update_visibility = function (self, dt)
-	-- local draw = false
-	-- local parent = self._parent
-	-- local player_extensions = parent:player_extensions()
-
-	-- if player_extensions then
-	-- 	local player_unit_data = player_extensions.unit_data
-	-- 	if player_unit_data then
-    --         local specialization_resource_component = player_unit_data:read_component("specialization_resource")
-	-- 		if  specialization_resource_component and specialization_resource_component.current_resource > 0 then
-    --             draw = true
-	-- 		end
-	-- 	end
-	-- end
-
 	local draw = resource_info.stacks > 0 or self._veteran_replenish
 
 	local alpha_speed = 3
@@ -233,16 +237,9 @@ HudElementWarpCharges._update_visibility = function (self, dt)
 	self._alpha_multiplier = alpha_multiplier
 end
 
--- TODO: implement _is_in_hub() from volleyfiretimer utils file
--- function HudElementVolleyFire:_draw_widgets(dt, t, input_service, ui_renderer, render_settings)
--- 	if mod._is_in_hub() then
--- 	  return
--- 	end
-
--- 	HudElementVolleyFire.super._draw_widgets(self, dt, t, input_service, ui_renderer, render_settings)
---   end
-
 HudElementWarpCharges._draw_widgets = function (self, dt, t, input_service, ui_renderer, render_settings)
+	if mod._is_in_hub() then return end
+
 	if self._alpha_multiplier ~= 0 then
 		local previous_alpha_multiplier = render_settings.alpha_multiplier
 		render_settings.alpha_multiplier = self._alpha_multiplier
@@ -254,35 +251,6 @@ HudElementWarpCharges._draw_widgets = function (self, dt, t, input_service, ui_r
 	end
 end
 
-local STAMINA_STATE_COLORS = {
-	-- empty = {
-	-- 	100,
-	-- 	UIHudSettings.color_tint_secondary_3[2],
-	-- 	UIHudSettings.color_tint_secondary_3[3],
-	-- 	UIHudSettings.color_tint_secondary_3[4]
-	-- },
-	-- half = UIHudSettings.color_tint_main_3,
-	-- full = UIHudSettings.color_tint_main_1
-	full = { -- Color.ui_interatction_critical
-		255,
-		246,
-		99,
-		99
-	},
-	half = {
-		255,
-		158,
-		64,
-		64
-	},
-	empty = {
-		100,
-		76,
-		31,
-		31
-	}
-}
-
 local Y_OFFSETS = {}
 Y_OFFSETS[6] = 34
 Y_OFFSETS[4] = 59
@@ -290,7 +258,6 @@ Y_OFFSETS[3] = 85
 Y_OFFSETS[2] = 136
 
 HudElementWarpCharges._get_value_text = function (self)
-	--local value_text = ""
 	local format = ""
 	local value = nil
 	local value_option = mod:get("gauge_value")
@@ -298,9 +265,7 @@ HudElementWarpCharges._get_value_text = function (self)
 
 	if self._archetype_name == "psyker" and value_option == mod.value_options["value_option_damage"] then
 		format = "%.0f%%"
-		value = math.clamp(resource_info.stacks, 0, resource_info.max_stacks) * resource_info.damage_per_soul
-		value = math.clamp(value, 0, 1) * 100
-		value = resource_info:soul_damage_boost() * 100
+		value = resource_info:damage_boost() * 100
 	elseif value_option == mod.value_options["value_option_stacks"] then
 		format = "%.0fx"
 		value = resource_info.stacks
@@ -331,9 +296,6 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 	local widget = self._shield_widget
 	local widget_offset = widget.offset
 	local shield_width = self._shield_width
-	-- local bar_size = HudElementWarpChargesSettings.bar_size
-	-- local max_glow_alpha = HudElementWarpChargesSettings.max_glow_alpha
-	-- local half_distance = HudElementWarpChargesSettings.half_distance
 
 	local gauge_widget = self._widgets_by_name.gauge
 	gauge_widget.content.value_text = self:_get_value_text()
@@ -357,65 +319,30 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 
 		local end_value = i * step_fraction
 		local start_value = end_value - step_fraction
-		local is_full, is_half, is_empty = nil
-
-		-- if souls_progress >= start_value + step_fraction * 0.5 then	is_full	= true
-		-- elseif start_value < souls_progress then					is_half = true
-		-- else														is_empty = true
-		-- end
-
-		local active_color = nil
 
 		local color_archetype = mod:get("color_" .. self._archetype_name) and self._archetype_name or "default"
 
 		local color_full_name	= mod:get("color_" .. color_archetype .. "_full")
 		local color_empty_name	= mod:get("color_" .. color_archetype .. "_empty")
 
-		if Color[color_full_name] and Color[color_empty_name] then
-			local value = 1
-			if souls_progress >= end_value then
-				value = 0
-				is_full = true
-			elseif start_value < souls_progress then
-				value = 1 - resource_info.progress
-				is_half = true
-			else
-				value = 1
-				is_empty = true
-			end
-
-			local color_full	= Color[color_full_name](255, true)
-			local color_empty	= Color[color_empty_name](is_empty and 100 or 255, true)
-
-			mod:echo(string.format("i=%d [%.2f,%.2f]\tt=%.4f\t[%s %s %s]",
-				i, start_value, end_value, value,
-				is_full		and "#" or "-",
-				is_half		and "#" or "-",
-				is_empty	and "#" or "-"
-			))
-
-			--active_color = Color.lerp(color_full, color_empty, step_fraction)
-			active_color = {}
-			for e = 1, 4 do
-				active_color[e] = math.lerp(color_full[e], color_empty[e], value)
-			end
-
+		local value = 1
+		if souls_progress >= end_value then
+			value = 0
+		elseif start_value < souls_progress then
+			value = 1 - resource_info.progress
 		else
-			if is_empty then
-				active_color = STAMINA_STATE_COLORS.empty
-			elseif is_full then
-				active_color = STAMINA_STATE_COLORS.full
-			elseif is_half then
-				active_color = STAMINA_STATE_COLORS.half
-			end
+			value = 1
 		end
 
+		local color_full	= Color[color_full_name](255, true)
+		local color_empty	= Color[color_empty_name](value == 1 and 100 or 255, true)
+		
 		local widget_style = widget.style
 		local widget_color = widget_style.full.color
-		widget_color[1] = active_color[1]
-		widget_color[2] = active_color[2]
-		widget_color[3] = active_color[3]
-		widget_color[4] = active_color[4]
+		
+		for e = 1, 4 do
+			widget_color[e] = math.lerp(color_full[e], color_empty[e], value)
+		end
 
 		if  self._horizontal then
 			widget_offset[1] = 0
@@ -425,7 +352,7 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 			local height = scenegraph_size.y
 
 			widget_offset[1] = 4
-			widget_offset[2] = height - shield_offset-- - Y_OFFSETS[resource_info.max_stacks]
+			widget_offset[2] = height - shield_offset
 		end
 
 		UIWidget.draw(widget, ui_renderer)
