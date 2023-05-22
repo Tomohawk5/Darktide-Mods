@@ -345,7 +345,7 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 		end
 
 		if  self._horizontal then
-			widget_offset[1] = 0
+			widget_offset[2] = 0
 			widget_offset[1] = shield_offset
 		else
 			local scenegraph_size = self:scenegraph_size("shield")
