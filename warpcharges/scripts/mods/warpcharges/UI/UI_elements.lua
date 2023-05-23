@@ -37,12 +37,14 @@ HudElementWarpCharges.init = function (self, parent, draw_layer, start_scale)
 	if self._archetype_name == "psyker" then
 		local souls_passive = TalentSettings.psyker_2.passive_1
 		local extra_souls	= TalentSettings.psyker_2.offensive_2_1.max_souls_talent
-		
+
 		resource_info.max_stacks		= profile.talents.psyker_2_tier_5_name_1 and extra_souls or souls_passive.base_max_souls
 		resource_info.damage_per_stack	= souls_passive.damage / extra_souls
 		resource_info.max_duration		= souls_passive.soul_duration
-		
+
 	elseif self._archetype_name == "zealot" and mod:get("martyrdom") then
+		self._zealot_martyrdom = true
+
 		local martyrdom_passive = TalentSettings.zealot_2.passive_1
 		local extra_stacks = TalentSettings.zealot_2.offensive_2_3.max_stacks
 
@@ -53,10 +55,9 @@ HudElementWarpCharges.init = function (self, parent, draw_layer, start_scale)
 		resource_info.max_stacks = TalentSettings[self._archetype_name .. "_2"].grenade.max_charges
 		if self._archetype_name == "veteran" then
 			self._veteran_replenish = profile.talents.veteran_2_tier_2_name_3
-			local grenade_cooldown = TalentSettings.veteran_2.offensive_1_3.grenade_replenishment_cooldown
-			resource_info.max_duration = grenade_cooldown
+			resource_info.max_duration = TalentSettings.veteran_2.offensive_1_3.grenade_replenishment_cooldown
 		else
-			resource_info.max_duration		= nil
+			resource_info.max_duration = nil
 		end
 	end
 end
@@ -75,15 +76,19 @@ end
 
 
 HudElementWarpCharges._is_resource_buff = function (self, buff)
-	if self.archetype_name == "psyker"	then
+	if self._archetype_name == "psyker"	then
 		return buff == "psyker_biomancer_souls" or buff == "psyker_biomancer_souls_increased_max_stacks"
-	elseif self.archetype_name == "veteran" then
+	elseif self._archetype_name == "veteran" then
 		return self._veteran_replenish and buff == "veteran_ranger_grenade_replenishment"
-	elseif self.archetype_name == "zealot" then
+	elseif self._archetype_name == "zealot" then
 		return mod:get("martyrdom") and buff == "zealot_maniac_martyrdom_base"
 	else
 		return false
 	end
+
+	return	self._archetype_name == "psyker" and (buff == "psyker_biomancer_souls" or buff == "psyker_biomancer_souls_increased_max_stacks") or
+			self._veteran_replenish and (buff == "veteran_ranger_grenade_replenishment") or
+			self._zealot_martyrdom and (buff == "zealot_maniac_martyrdom_base")
 end
 
 HudElementWarpCharges.update = function (self, dt, t, ui_renderer, render_settings, input_service)
@@ -101,44 +106,42 @@ HudElementWarpCharges.update = function (self, dt, t, ui_renderer, render_settin
 	local player_extensions = parent:player_extensions()
 
 	if player_extensions then
-		resource_info.stacks = 0
 
-		if self._archetype_name == "psyker" or (mod:get("martyrdom") and self._archetype_name == "zealot") then
-			local unit_data_extension = player_extensions.unit_data
-			local specialization_resource_component = unit_data_extension:read_component("specialization_resource")
-			resource_info.stacks = specialization_resource_component.current_resource
-		else
-			local ability_extension = player_extensions.ability
-			if ability_extension and ability_extension:ability_is_equipped("grenade_ability") then
-				resource_info.stacks = ability_extension:remaining_ability_charges("grenade_ability")
-			end
-		end
+		-- if self._archetype_name == "psyker" or self._zealot_martyrdom then
+		-- 	local unit_data_extension = player_extensions.unit_data
+		-- 	local specialization_resource_component = unit_data_extension:read_component("specialization_resource")
+		-- 	resource_info.stacks = specialization_resource_component.current_resource
+		-- 	--mod:echo("specialization_resource = " .. resource_info.stacks)
+		-- else
 
-		if self._archetype_name == "psyker" or (mod:get("martyrdom") and self._archetype_name == "zealot") or self._veteran_replenish then
+		-- end
+
+		if self._archetype_name == "psyker" or self._zealot_martyrdom or self._veteran_replenish then
+			resource_info.stacks = 0
 			local buff_extension = player_extensions.buff
 			if buff_extension then
 				local buffs = buff_extension:buffs()
 				for i = 1, #buffs do
 					local buff = buffs[i]
 					local buff_name = buff:template_name()
-					--if _is_warp_charge_buff(buff_name) or buff_name == "veteran_ranger_grenade_replenishment" then
 					if self:_is_resource_buff(buff_name) then
-						if self._archetype_name == "psyker" then
-							resource_info.stacks = math.clamp(buff:stack_count(), 0, resource_info.max_stacks)
-						end
-						-- if not (mod:get("martyrdom") and self._archetype_name == "zealot") then
-						-- 	resource_info.progress = buff:duration_progress()
-						-- end
-						if mod:get("martyrdom") and self._archetype_name == "zealot" then
+						if self._zealot_martyrdom then
+							resource_info.stacks = math.clamp(buff:visual_stack_count(), 0, resource_info.max_stacks)
 							resource_info.progress = nil
-							mod:echo("progress = nil")
 						else
+							if self._archetype_name == "psyker" then
+								resource_info.stacks = math.clamp(buff:stack_count(), 0, resource_info.max_stacks)
+							end
 							resource_info.progress = buff:duration_progress()
 						end
 					end
 				end
 			end
 		else
+			local ability_extension = player_extensions.ability
+			if ability_extension and ability_extension:ability_is_equipped("grenade_ability") then
+				resource_info.stacks = ability_extension:remaining_ability_charges("grenade_ability")
+			end
 			resource_info.progress = nil
 		end
 	end
@@ -271,16 +274,16 @@ HudElementWarpCharges._get_value_text = function (self)
 	local value_option = mod:get("gauge_value")
 	local description = mod:get("gauge_value_text")
 
-	if (self._archetype_name == "psyker" or self._archetype_name == "zealot") and value_option == mod.value_options["value_option_damage"] then
+	if value_option == mod.value_options["value_option_damage"] and (self._archetype_name == "psyker" or self._zealot_martyrdom) then
 		format = "%.0f%%"
 		value = resource_info:damage_boost() * 100
 	elseif value_option == mod.value_options["value_option_stacks"] then
 		format = "%.0fx"
 		value = resource_info.stacks
-	elseif (self._archetype_name == "psyker" or self._veteran_replenish) and value_option == mod.value_options["value_option_time_percent"] then
+	elseif value_option == mod.value_options["value_option_time_percent"] and (self._archetype_name == "psyker" or self._veteran_replenish) then
 		format = "%.0f%%"
 		value = resource_info.progress * 100
-	elseif (self._archetype_name == "psyker" or self._veteran_replenish) and value_option == mod.value_options["value_option_time_seconds"] then
+	elseif value_option == mod.value_options["value_option_time_seconds"] and (self._archetype_name == "psyker" or self._veteran_replenish) then
 		format = "%.0fs"
 		value = resource_info.progress * resource_info.max_duration
 	end
@@ -344,10 +347,10 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 
 		local color_full	= Color[color_full_name](255, true)
 		local color_empty	= Color[color_empty_name](value == 1 and 100 or 255, true)
-		
+
 		local widget_style = widget.style
 		local widget_color = widget_style.full.color
-		
+
 		for e = 1, 4 do
 			widget_color[e] = math.lerp(color_full[e], color_empty[e], value)
 		end
