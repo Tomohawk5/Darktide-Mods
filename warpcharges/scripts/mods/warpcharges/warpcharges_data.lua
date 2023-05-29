@@ -6,7 +6,9 @@ mod.text_options = table.enum(
 	"text_option_charges",
 	"text_option_souls",
 	"text_option_warp",
-	"text_option_warpcharges"
+	"text_option_warpcharges",
+	"text_option_grenades",
+	"text_option_blitz"
 )
 mod.value_options = table.enum(
 	"none",
@@ -19,6 +21,14 @@ mod.orientation_options = table.enum(
 	"orientation_option_horizontal",
 	"orientation_option_vertical"
 )
+
+local function list_options(enum)
+	local options = {}
+	for k, v in pairs(enum) do
+		table.insert(options, { text = k, value = v })
+	end
+	return options
+end
 
 local colors = {}
 
@@ -63,7 +73,7 @@ local function color_options()
 		table.insert(sub_widgets, color_archetype(archetype))
 	end
 	return sub_widgets
-end 
+end
 
 return {
 	name = mod:localize("mod_name"),
@@ -100,34 +110,19 @@ return {
 						setting_id = "gauge_orientation",
 						type = "dropdown",
 						default_value = mod.orientation_options["orientation_option_horizontal"],
-						options = {
-							{ text = "orientation_option_horizontal", value = mod.orientation_options["orientation_option_horizontal"]	},
-							{ text = "orientation_option_vertical",	  value = mod.orientation_options["orientation_option_vertical"]	},
-						}
+						options = list_options(mod.orientation_options)
 					},
 					{
 						setting_id = "gauge_text",
 						type = "dropdown",
 						default_value = mod.text_options["text_option_warpcharges"],
-						options = {
-							{ text = "none",					value = mod.text_options["none"]					},
-							{ text = "text_option_charges",		value = mod.text_options["text_option_charges"]		},
-							{ text = "text_option_souls",		value = mod.text_options["text_option_souls"]		},
-							{ text = "text_option_warp",		value = mod.text_options["text_option_warp"]		},
-							{ text = "text_option_warpcharges",	value = mod.text_options["text_option_warpcharges"]	},
-						}
+						options = list_options(mod.text_options)
 					},
 					{
 						setting_id = "gauge_value",
 						type = "dropdown",
 						default_value = mod.value_options["value_option_stacks"],
-						options = {
-							{ text = "none",						value = mod.value_options["none"]						},
-							{ text = "value_option_damage",			value = mod.value_options["value_option_damage"]		},
-							{ text = "value_option_stacks",			value = mod.value_options["value_option_stacks"]		},
-							{ text = "value_option_time_percent",	value = mod.value_options["value_option_time_percent"]	},
-							{ text = "value_option_time_seconds",	value = mod.value_options["value_option_time_seconds"]	},
-						}
+						options = list_options(mod.value_options)
 					},
 					{
 						setting_id = "gauge_value_text",

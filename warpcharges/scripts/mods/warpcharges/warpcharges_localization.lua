@@ -47,6 +47,12 @@ local localizations = {
 	text_option_warpcharges = {
 		en = "warp charges",
 	},
+	text_option_grenades = {
+		en = "grenades"
+	},
+	text_option_blitz = {
+		en = "blitz"
+	},
 	gauge_value = {
 		en = "Value"
 	},
