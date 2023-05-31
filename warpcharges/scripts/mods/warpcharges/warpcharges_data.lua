@@ -105,8 +105,20 @@ local function archetype_options()
 					type = "checkbox",
 					default_value = true
 				},
+				{
+					setting_id = "color_" .. archetype .. "_full",
+					type = "dropdown",
+					default_value = "ui_" .. archetype,
+					options = get_colors()
+				},
+				{
+					setting_id = "color_" .. archetype .. "_empty",
+					type = "dropdown",
+					default_value = "ui_" .. archetype .. "_text",
+					options = get_colors()
+				}
 				-- TODO: remove checkbox for using colours
-				color_archetype(archetype)
+				--color_archetype(archetype)
 			}
 		}
 		table.insert(archetype_widgets, widget)
@@ -131,13 +143,13 @@ return {
 						options = list_options(mod.orientation_options)
 					},
 					{
-						setting_id = "color_default_full",
+						setting_id = "gauge_color_1",
 						type = "dropdown",
 						default_value = "ui_hud_yellow_super_light",
 						options = get_colors()
 					},
 					{
-						setting_id = "color_default_empty",
+						setting_id = "gauge_color_2",
 						type = "dropdown",
 						default_value = "ui_hud_yellow_medium",
 						options = get_colors()
