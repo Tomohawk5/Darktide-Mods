@@ -62,7 +62,7 @@ value_text_style.vertical_alignment = "top"
 value_text_style.horizontal_alignment = "right"
 value_text_style.text_vertical_alignment = "top"
 value_text_style.text_horizontal_alignment = "right"
-value_text_style.text_color = UIHudSettings.color_tint_main_1
+value_text_style.text_color = Color[mod:get("gauge_color_1")](255, true) or UIHudSettings.color_tint_main_1
 local name_text_style = table.clone(value_text_style)
 name_text_style.offset = {
 	0,
@@ -71,7 +71,7 @@ name_text_style.offset = {
 }
 name_text_style.horizontal_alignment = "left"
 name_text_style.text_horizontal_alignment = "left"
-name_text_style.text_color = UIHudSettings.color_tint_main_2
+name_text_style.text_color = Color[mod:get("gauge_color_2")](255, true) or UIHudSettings.color_tint_main_2
 name_text_style.drop_shadow = false
 local widget_definitions = {
 	gauge = UIWidget.create_definition({
@@ -106,7 +106,7 @@ local widget_definitions = {
 					10
 				},
 				angle = mod.widget_angle,
-				color = UIHudSettings.color_tint_main_2
+				color = Color[mod:get("gauge_color_2")](255, true) or UIHudSettings.color_tint_main_2
 			}
 		}
 	}, "gauge")
@@ -122,7 +122,7 @@ local shield = UIWidget.create_definition({
 				0,
 				3
 			},
-			color = UIHudSettings.color_tint_main_1
+			color = Color[mod:get("gauge_color_1")](255, true) or UIHudSettings.color_tint_main_1
 		}
 	}
 }, "shield")
