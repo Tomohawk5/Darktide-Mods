@@ -256,17 +256,23 @@ HudElementWarpCharges._draw_widgets = function (self, dt, t, input_service, ui_r
 		render_settings.alpha_multiplier = self._alpha_multiplier
 
 		HudElementWarpCharges.super._draw_widgets(self, dt, t, input_service, ui_renderer, render_settings)
+
+		local gauge_widget = self._widgets_by_name.gauge
+		gauge_widget.content.value_text = self:_get_value_text()
+
 		self:_draw_shields(dt, t, ui_renderer)
 
 		render_settings.alpha_multiplier = previous_alpha_multiplier
 	end
 end
-
-local Y_OFFSETS = {}
-Y_OFFSETS[6] = 34
-Y_OFFSETS[4] = 59
-Y_OFFSETS[3] = 85
-Y_OFFSETS[2] = 136
+local function y_offset()
+	local Y_OFFSETS = {}
+	Y_OFFSETS[6] = 34
+	Y_OFFSETS[4] = 59
+	Y_OFFSETS[3] = 85
+	Y_OFFSETS[2] = 136
+	return Y_OFFSETS[resource_info.max_stacks]
+end
 
 HudElementWarpCharges._get_value_text = function (self)
 	local format = ""
@@ -308,14 +314,11 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 	local widget_offset = widget.offset
 	local shield_width = self._shield_width
 
-	local gauge_widget = self._widgets_by_name.gauge
-	gauge_widget.content.value_text = self:_get_value_text()
-
 	local step_fraction = 1 / num_shields
 	local spacing = HudElementWarpChargesSettings.spacing
 	local shield_offset = (shield_width + spacing) * (num_shields - 1) * 0.5
 	if not self._horizontal then
-		shield_offset = shield_offset + Y_OFFSETS[resource_info.max_stacks]
+		shield_offset = shield_offset + y_offset() --Y_OFFSETS[resource_info.max_stacks]
 	end
 	local shields = self._shields
 
@@ -331,12 +334,12 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 		local end_value = i * step_fraction
 		local start_value = end_value - step_fraction
 
-		local color_archetype = mod:get("color_" .. self._archetype_name) and self._archetype_name or "default"
+		local color_archetype = mod:get("color_" .. self._archetype_name) and self._archetype_name
 
-		local color_full_name	= mod:get("color_" .. color_archetype .. "_full")
-		local color_empty_name	= mod:get("color_" .. color_archetype .. "_empty")
+		local color_full_name	= color_archetype and mod:get("color_" .. color_archetype .. "_full")	or "ui_hud_yellow_super_light"
+		local color_empty_name	= color_archetype and mod:get("color_" .. color_archetype .. "_empty")	or "ui_hud_yellow_medium"
 
-		local value = 1
+		local value
 		if souls_progress >= end_value then
 			value = 0
 		elseif start_value < souls_progress then
