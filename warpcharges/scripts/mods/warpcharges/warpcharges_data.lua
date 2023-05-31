@@ -117,8 +117,6 @@ local function archetype_options()
 					default_value = "ui_" .. archetype .. "_text",
 					options = get_colors()
 				}
-				-- TODO: remove checkbox for using colours
-				--color_archetype(archetype)
 			}
 		}
 		table.insert(archetype_widgets, widget)
@@ -171,34 +169,6 @@ return {
 					}
 				}
 			},
-			-- {
-			-- 	setting_id = "gauge",
-			-- 	type = "group",
-			-- 	sub_widgets = {
-			-- 		{
-			-- 			setting_id = "gauge_text",
-			-- 			type = "dropdown",
-			-- 			default_value = mod.text_options["text_option_warpcharges"],
-			-- 			options = list_options(mod.text_options)
-			-- 		},
-			-- 		{
-			-- 			setting_id = "gauge_value",
-			-- 			type = "dropdown",
-			-- 			default_value = mod.value_options["value_option_stacks"],
-			-- 			options = list_options(mod.value_options)
-			-- 		},
-			-- 		{
-			-- 			setting_id = "gauge_value_text",
-			-- 			type = "checkbox",
-			-- 			default_value = true
-			-- 		}
-			-- 	}
-			-- },
-			-- {
-			-- 	setting_id = "color_options",
-			-- 	type = "group",
-			-- 	sub_widgets = color_options()
-			-- },
 			{
 				setting_id = "archetype_options",
 				type = "group",
