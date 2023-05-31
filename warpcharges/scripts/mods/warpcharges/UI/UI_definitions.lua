@@ -105,10 +105,6 @@ local widget_definitions = {
 					212,
 					10
 				},
-				piviot = {
-					0,
-					0
-				},
 				angle = mod.widget_angle,
 				color = UIHudSettings.color_tint_main_2
 			}
