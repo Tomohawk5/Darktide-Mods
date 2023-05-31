@@ -75,6 +75,45 @@ local function color_options()
 	return sub_widgets
 end
 
+local function archetype_options()
+	local archetypes = { "psyker", "veteran", "zealot", "ogryn" }
+	local archetype_widgets = {}
+	for _, archetype in pairs(archetypes) do
+		local widget = {
+			setting_id = archetype,
+			type = "group",
+			sub_widgets = {
+				{
+					setting_id = archetype .. "_show_gauge",
+					type = "checkbox",
+					default_value = true
+				},
+				{
+					setting_id = archetype .. "_gauge_text",
+					type = "dropdown",
+					default_value = mod.text_options["text_option_warpcharges"],
+					options = list_options(mod.text_options)
+				},
+				{
+					setting_id = archetype .. "_gauge_value",
+					type = "dropdown",
+					default_value = mod.value_options["value_option_stacks"],
+					options = list_options(mod.value_options)
+				},
+				{
+					setting_id = archetype .. "_gauge_value_text",
+					type = "checkbox",
+					default_value = true
+				},
+				-- TODO: remove checkbox for using colours
+				color_archetype(archetype)
+			}
+		}
+		table.insert(archetype_widgets, widget)
+	end
+	return archetype_widgets
+end
+
 return {
 	name = mod:localize("mod_name"),
 	description = mod:localize("mod_description"),
@@ -85,6 +124,29 @@ return {
 				setting_id = "miscellaneous",
 				type = "group",
 				sub_widgets = {
+					{
+						setting_id = "gauge_orientation",
+						type = "dropdown",
+						default_value = mod.orientation_options["orientation_option_horizontal"],
+						options = list_options(mod.orientation_options)
+					},
+					{
+						setting_id = "color_default_full",
+						type = "dropdown",
+						default_value = "ui_hud_yellow_super_light",
+						options = get_colors()
+					},
+					{
+						setting_id = "color_default_empty",
+						type = "dropdown",
+						default_value = "ui_hud_yellow_medium",
+						options = get_colors()
+					},
+					{
+						setting_id = "show_gauge",
+						type = "checkbox",
+						default_value = true
+					},
 					{
 						setting_id = "martyrdom",
 						type = "checkbox",
@@ -97,62 +159,38 @@ return {
 					}
 				}
 			},
+			-- {
+			-- 	setting_id = "gauge",
+			-- 	type = "group",
+			-- 	sub_widgets = {
+			-- 		{
+			-- 			setting_id = "gauge_text",
+			-- 			type = "dropdown",
+			-- 			default_value = mod.text_options["text_option_warpcharges"],
+			-- 			options = list_options(mod.text_options)
+			-- 		},
+			-- 		{
+			-- 			setting_id = "gauge_value",
+			-- 			type = "dropdown",
+			-- 			default_value = mod.value_options["value_option_stacks"],
+			-- 			options = list_options(mod.value_options)
+			-- 		},
+			-- 		{
+			-- 			setting_id = "gauge_value_text",
+			-- 			type = "checkbox",
+			-- 			default_value = true
+			-- 		}
+			-- 	}
+			-- },
+			-- {
+			-- 	setting_id = "color_options",
+			-- 	type = "group",
+			-- 	sub_widgets = color_options()
+			-- },
 			{
-				setting_id = "gauge",
+				setting_id = "archetype_options",
 				type = "group",
-				sub_widgets = {
-					{
-						setting_id = "show_gauge",
-						type = "checkbox",
-						default_value = true
-					},
-					{
-						setting_id = "gauge_orientation",
-						type = "dropdown",
-						default_value = mod.orientation_options["orientation_option_horizontal"],
-						options = list_options(mod.orientation_options)
-					},
-					{
-						setting_id = "gauge_text",
-						type = "dropdown",
-						default_value = mod.text_options["text_option_warpcharges"],
-						options = list_options(mod.text_options)
-					},
-					{
-						setting_id = "gauge_value",
-						type = "dropdown",
-						default_value = mod.value_options["value_option_stacks"],
-						options = list_options(mod.value_options)
-					},
-					{
-						setting_id = "gauge_value_text",
-						type = "checkbox",
-						default_value = true
-					}
-				}
-			},
-			{
-				setting_id = "color_default",
-				type = "group",
-				sub_widgets = {
-					{
-						setting_id = "color_default_full",
-						type = "dropdown",
-						default_value = "ui_hud_yellow_super_light",
-						options = get_colors()
-					},
-					{
-						setting_id = "color_default_empty",
-						type = "dropdown",
-						default_value = "ui_hud_yellow_medium",
-						options = get_colors()
-					}
-				}
-			},
-			{
-				setting_id = "color_options",
-				type = "group",
-				sub_widgets = color_options()
+				sub_widgets = archetype_options()
 			}
 		}
 	}
