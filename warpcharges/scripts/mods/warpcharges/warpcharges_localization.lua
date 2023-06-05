@@ -3,16 +3,16 @@ local InputUtils = mod:original_require("scripts/managers/input/input_utils")
 
 local localizations = {
 	mod_name = {
-		en = "Warp Charges",
+		en = "Blitz Bar",
 	},
 	mod_description = {
-		en = "Warp Charges description",
+		en = "Blitz Bar description",
 	},
 	show_gauge = {
 		en = "Always show",
 	},
 	show_gauge_description = {
-		en = "Show at all times, not just when you have warp charges.",
+		en = "Show even when empty.",
 	},
 	gauge_orientation = {
 		en = "Orientation",
@@ -53,6 +53,9 @@ local localizations = {
 	text_option_blitz = {
 		en = "blitz"
 	},
+	text_option_martyrdom = {
+		en = "martyrdom"
+	},
 	gauge_value = {
 		en = "Value"
 	},
@@ -75,11 +78,32 @@ local localizations = {
 		en = "T:",
 	},
 	value_option_time_seconds = {
-		en = "Time",
+		en = "Time (s)",
 	},
 	value_option_time_seconds_display = {
 		en = "T:",
 	},
+	gauge_color_1 = {
+		en = "Value text color"
+	},
+	gauge_color_2 = {
+		en = "Gauge color"
+	},
+	martyrdom = {
+		en = "Zealot martyrdom"
+	},
+	martyrdom_description = {
+		en = "Use bar to display stacks of Zealot passive."
+	},
+	veteran_override_replenish_text = {
+		en = "Veteran replenish value"
+	},
+	veteran_override_replenish_text_description = {
+		en = "Change Veteran value to 'Time (s)' if 'Demolition stockpile' is selected."
+	},
+	archetype_options = {
+		en = "Archetypes"
+	}
 }
 
 local function readable(text)
@@ -98,6 +122,28 @@ for i, color_name in ipairs(color_names) do
 	local color_values = Color[color_name](255, true)
 	local text = InputUtils.apply_color_to_input_text(readable(color_name), color_values)
 	localizations[color_name] = { en = text }
+end
+
+local archetypes = { "psyker", "veteran", "zealot", "ogryn" }
+for _, archetype in pairs(archetypes) do
+	localizations[archetype .. "_show_gauge"] = {
+		en = archetype
+	}
+	localizations[archetype .. "_gauge_text"] = {
+		en = "Gauge Text"
+	}
+	localizations[archetype .. "_gauge_value"] = {
+		en = "Value"
+	}
+	localizations[archetype .. "_gauge_value_text"] = {
+		en = "Value text"
+	}
+	localizations[archetype .. "_color_full"] = {
+		en = "Full color"
+	}
+	localizations[archetype .. "_color_empty"] = {
+		en = "Empty color"
+	}
 end
 
 return localizations
