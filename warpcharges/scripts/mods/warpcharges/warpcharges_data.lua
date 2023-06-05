@@ -132,6 +132,11 @@ return {
 				default_value = true
 			},
 			{
+				setting_id = "value_time_full_empty",
+				type = "checkbox",
+				default_value = true
+			},
+			{
 				setting_id = "martyrdom",
 				type = "checkbox",
 				default_value = true
