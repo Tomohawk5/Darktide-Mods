@@ -76,7 +76,6 @@ HudElementWarpCharges._remove_shield = function (self)
 	self._shields[#self._shields] = nil
 end
 
-
 HudElementWarpCharges._is_resource_buff = function (self, buff)
 	return	self._archetype_name == "psyker" and (buff == "psyker_biomancer_souls" or buff == "psyker_biomancer_souls_increased_max_stacks")	or
 			self._veteran_replenish and (buff == "veteran_ranger_grenade_replenishment")														or
@@ -88,6 +87,8 @@ HudElementWarpCharges.update = function (self, dt, t, ui_renderer, render_settin
 
     local widget = self._widgets_by_name.gauge
     if not widget then return end
+
+	--widget.style.warning.angle = widget.style.warning.angle + 0.1
 
 	local parent = self._parent
 	local player_extensions = parent:player_extensions()
@@ -147,8 +148,13 @@ HudElementWarpCharges._resize_shield = function (self)
 	self._shield_width = math.round(shield_amount > 0 and total_bar_length / shield_amount or total_bar_length)
 	local shield_height = 9
 
-	local horizontal = mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal"]
+	local horizontal =	mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal"] or
+						mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal_flipped"]
 	self._horizontal = horizontal
+
+	local flipped = mod:get("gauge_orientation") == mod.orientation_options["orientation_option_horizontal_flipped"] or
+					mod:get("gauge_orientation") == mod.orientation_options["orientation_option_vertical_flipped"]
+	self._flipped = flipped
 
 	local width  = horizontal and self._shield_width or shield_height
 	local height = horizontal and shield_height or self._shield_width
@@ -163,35 +169,88 @@ HudElementWarpCharges._resize_shield = function (self)
 	local name_text_style	= gauge_style.name_text
 	local warning_style		= gauge_style.warning
 
-	if horizontal then
-		value_text_style.offset = {
-			0,
-			10,
-			3
+	local styles = {
+		orientation_option_horizontal = {
+			value_horizontal_alignment		= "right",
+			value_text_horizontal_alignment = "right",
+			value_offset = {
+				0,
+				10,
+				3
+			},
+			name_horizontal_alignment		= "left",
+			name_text_horizontal_alignment	= "left",
+			name_offset = {
+				0,
+				10,
+				3
+			},
+			angle = 0
+		},
+		orientation_option_horizontal_flipped = {
+			value_horizontal_alignment		= "right",
+			value_text_horizontal_alignment = "right",
+			value_offset = {
+				0,
+				-30,
+				3
+			},
+			name_horizontal_alignment		= "left",
+			name_text_horizontal_alignment	= "left",
+			name_offset = {
+				0,
+				-30,
+				3
+			},
+			angle = math.pi
+		},
+		orientation_option_vertical = {
+			value_horizontal_alignment = "right",
+			value_text_horizontal_alignment = "right",
+			value_offset = {
+				-118,
+				-86,
+				3
+			},
+			name_horizontal_alignment =	"right",
+			name_text_horizontal_alignment = "right",
+			name_offset = {
+				-118,
+				-104,
+				3
+			},
+			angle = (math.pi * 3) / 2
+		},
+		orientation_option_vertical_flipped = {
+			value_horizontal_alignment = "left",
+			value_text_horizontal_alignment = "left",
+			value_offset = {
+				118,
+				-86,
+				3
+			},
+			name_horizontal_alignment =	"left",
+			name_text_horizontal_alignment = "left",
+			name_offset = {
+				118,
+				-104,
+				3
+			},
+			angle = math.pi / 2
 		}
-		name_text_style.horizontal_alignment		= "left"
-		name_text_style.text_horizontal_alignment	= "left"
-		name_text_style.offset = {
-			0,
-			10,
-			3
-		}
-		warning_style.angle = 0
-	else
-		value_text_style.offset = {
-			-118,
-			-86,
-			3
-		}
-		name_text_style.horizontal_alignment		= "right"
-		name_text_style.text_horizontal_alignment	= "right"
-		name_text_style.offset = {
-			-118,
-			-104,
-			3
-		}
-		warning_style.angle = (math.pi * 3) / 2
-	end
+	}
+
+	local orientation = mod:get("gauge_orientation")
+
+	value_text_style.horizontal_alignment = styles[orientation].value_horizontal_alignment
+	value_text_style.text_horizontal_alignment = styles[orientation].value_text_horizontal_alignment
+	value_text_style.offset = styles[orientation].value_offset
+
+	name_text_style.horizontal_alignment = styles[orientation].name_horizontal_alignment
+	name_text_style.text_horizontal_alignment = styles[orientation].name_text_horizontal_alignment
+	name_text_style.offset = styles[orientation].name_offset
+
+	warning_style.angle = styles[orientation].angle
 end
 
 HudElementWarpCharges._update_shield_amount = function (self)
@@ -248,7 +307,7 @@ HudElementWarpCharges._draw_widgets = function (self, dt, t, input_service, ui_r
 end
 local function y_offset()
 	local Y_OFFSETS = {}
-	Y_OFFSETS[6] = 34
+	Y_OFFSETS[6] = 39 --34
 	Y_OFFSETS[4] = 59
 	Y_OFFSETS[3] = 85
 	Y_OFFSETS[2] = 136
@@ -364,13 +423,13 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 		end
 
 		if  self._horizontal then
-			widget_offset[2] = 0
+			widget_offset[2] = self._flipped and 2 or 1
 			widget_offset[1] = shield_offset
 		else
 			local scenegraph_size = self:scenegraph_size("shield")
 			local height = scenegraph_size.y
 
-			widget_offset[1] = 4
+			widget_offset[1] = 0
 			widget_offset[2] = height - shield_offset
 		end
 

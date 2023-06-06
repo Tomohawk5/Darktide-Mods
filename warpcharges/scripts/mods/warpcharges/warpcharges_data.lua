@@ -20,7 +20,9 @@ mod.value_options = table.enum(
 )
 mod.orientation_options = table.enum(
 	"orientation_option_horizontal",
-	"orientation_option_vertical"
+	"orientation_option_horizontal_flipped",
+	"orientation_option_vertical",
+	"orientation_option_vertical_flipped"
 )
 
 local function list_options(enum)

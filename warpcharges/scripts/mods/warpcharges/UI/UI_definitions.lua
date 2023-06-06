@@ -105,6 +105,10 @@ local widget_definitions = {
 					212,
 					10
 				},
+				pivot = {
+					212 / 2,
+					0
+				},
 				angle = mod.widget_angle,
 				color = Color[mod:get("gauge_color_2")](255, true) or UIHudSettings.color_tint_main_2
 			}

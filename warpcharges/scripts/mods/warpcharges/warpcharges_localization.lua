@@ -18,10 +18,16 @@ local localizations = {
 		en = "Orientation",
 	},
 	orientation_option_horizontal = {
-		en = "Horizontal",
+		en = "Horizontal (Bottom)",
+	},
+	orientation_option_horizontal_flipped = {
+		en = "Horizontal (Top)",
 	},
 	orientation_option_vertical = {
-		en = "Vertical",
+		en = "Vertical (Left)",
+	},
+	orientation_option_vertical_flipped = {
+		en = "Vertical (Right)",
 	},
 	gauge_text = {
 		en = "Label"
