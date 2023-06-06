@@ -36,25 +36,25 @@ local localizations = {
 		en = ""
 	},
 	text_option_charges = {
-		en = "charges",
+		en = "Charges",
 	},
 	text_option_souls = {
-		en = "souls",
+		en = "Souls",
 	},
 	text_option_warp = {
-		en = "warp",
+		en = "Warp",
 	},
 	text_option_warpcharges = {
-		en = "warp charges",
+		en = "Warp charges",
 	},
 	text_option_grenades = {
-		en = "grenades"
+		en = "Grenades"
 	},
 	text_option_blitz = {
-		en = "blitz"
+		en = "Blitz"
 	},
 	text_option_martyrdom = {
-		en = "martyrdom"
+		en = "Martyrdom"
 	},
 	gauge_value = {
 		en = "Value"
