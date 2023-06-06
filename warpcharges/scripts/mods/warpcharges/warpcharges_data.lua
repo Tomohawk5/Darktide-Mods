@@ -47,20 +47,70 @@ end
 
 local function archetype_options()
 	local archetypes = { "psyker", "veteran", "zealot", "ogryn" }
-	local default_text = {
-		psyker = mod.text_options["text_option_warpcharges"],
-		veteran = mod.text_options["text_option_grenades"],
-		zealot = mod.text_options["text_option_martyrdom"],
-		ogryn = mod.text_options["text_option_grenades"]
-	}
-	local default_value = {
-		psyker = mod.value_options["value_option_time_seconds"],
-		veteran = mod.value_options["value_option_stacks"],
-		zealot = mod.value_options["value_option_damage"],
-		ogryn = mod.value_options["value_option_stacks"]
+	local defaults = {
+		psyker = {
+			text = mod.text_options["text_option_warpcharges"],
+			text_options = table.enum(
+				mod.text_options["none"],
+				mod.text_options["text_option_warp"],
+				mod.text_options["text_option_warpcharges"],
+				mod.text_options["text_option_souls"],
+				mod.text_options["text_option_charges"],
+				mod.text_options["text_option_blitz"]
+			),
+			value = mod.value_options["value_option_time_percent"],
+			value_options = mod.value_options
+		},
+		veteran = {
+			text = mod.text_options["text_option_grenades"],
+			text_options = table.enum(
+				mod.text_options["none"],
+				mod.text_options["text_option_grenades"],
+				mod.text_options["text_option_charges"],
+				mod.text_options["text_option_blitz"]
+			),
+			value = mod.value_options["value_option_stacks"],
+			value_options = table.enum(
+				mod.value_options["none"],
+				mod.value_options["value_option_stacks"],
+				mod.value_options["value_option_time_seconds"],
+				mod.value_options["value_option_time_percent"]
+			)
+		},
+		zealot = {
+			text = mod.text_options["text_option_martyrdom"],
+			text_options = table.enum(
+				mod.text_options["none"],
+				mod.text_options["text_option_martyrdom"],
+				mod.text_options["text_option_charges"],
+				mod.text_options["text_option_blitz"]
+			),
+			value = mod.value_options["value_option_damage"],
+			value_options = table.enum(
+				mod.value_options["none"],
+				mod.value_options["value_option_damage"],
+				mod.value_options["value_option_stacks"]
+			)
+		},
+		ogryn = {
+			text = mod.text_options["text_option_grenades"],
+			text_options = table.enum(
+				mod.text_options["none"],
+				mod.text_options["text_option_grenades"],
+				mod.text_options["text_option_charges"],
+				mod.text_options["text_option_blitz"]
+			),
+			value = mod.value_options["value_option_stacks"],
+			value_options = table.enum(
+				mod.value_options["none"],
+				mod.value_options["value_option_stacks"]
+			)
+		}
 	}
 	local archetype_widgets = {}
 	for _, archetype in pairs(archetypes) do
+		local default = defaults[archetype]
+		mod:dump(default, ("default:" .. archetype), 4)
 		local widget = {
 			setting_id = archetype .. "_show_gauge",
 			type = "checkbox",
@@ -69,19 +119,19 @@ local function archetype_options()
 				{
 					setting_id = archetype .. "_gauge_text",
 					type = "dropdown",
-					default_value = default_text[archetype], --mod.text_options["text_option_warpcharges"],
-					options = list_options(mod.text_options)
+					default_value = default.text, --default_text[archetype], --mod.text_options["text_option_warpcharges"],
+					options = list_options(default.text_options) --list_options(mod.text_options)
 				},
 				{
 					setting_id = archetype .. "_gauge_value",
 					type = "dropdown",
-					default_value = default_value[archetype], --mod.value_options["value_option_stacks"],
-					options = list_options(mod.value_options)
+					default_value = default.value, --default_value[archetype], --mod.value_options["value_option_stacks"],
+					options = list_options(default.value_options) --list_options(mod.value_options)
 				},
 				{
 					setting_id = archetype .. "_gauge_value_text",
 					type = "checkbox",
-					default_value = true
+					default_value = false
 				},
 				{
 					setting_id = archetype .. "_color_full",
@@ -134,7 +184,7 @@ return {
 			{
 				setting_id = "value_time_full_empty",
 				type = "checkbox",
-				default_value = true
+				default_value = false
 			},
 			{
 				setting_id = "martyrdom",
@@ -144,7 +194,7 @@ return {
 			{
 				setting_id = "veteran_override_replenish_text",
 				type = "checkbox",
-				default_value = true
+				default_value = false
 			},
 			{
 				setting_id = "archetype_options",
