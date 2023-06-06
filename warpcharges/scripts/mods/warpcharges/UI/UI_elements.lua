@@ -60,6 +60,8 @@ HudElementWarpCharges.init = function (self, parent, draw_layer, start_scale)
 			resource_info.max_duration = nil
 		end
 	end
+
+	mod:set("gauge_text", self._archetype_name .. "_gauge_text")
 end
 
 HudElementWarpCharges.destroy = function (self)
@@ -266,6 +268,11 @@ HudElementWarpCharges._get_value_text = function (self)
 		value_option = mod.value_options["value_option_time_seconds"]
 	end
 
+	local progress = resource_info.progress
+	local max_duration = resource_info.max_duration
+	local stacks = resource_info.stacks
+	local max_stacks = resource_info.max_stacks
+
 	if value_option == mod.value_options["value_option_damage"] and (self._archetype_name == "psyker" or self._zealot_martyrdom) then
 		format = "%.0f%%"
 		value = resource_info:damage_boost() * 100
@@ -274,22 +281,23 @@ HudElementWarpCharges._get_value_text = function (self)
 		value = resource_info.stacks
 	elseif value_option == mod.value_options["value_option_time_percent"] and (self._archetype_name == "psyker" or self._veteran_replenish) then
 		format = "%.0f%%"
-		value = resource_info.progress * 100
+		value = progress * 100
 	elseif value_option == mod.value_options["value_option_time_seconds"] and (self._archetype_name == "psyker" or self._veteran_replenish) then
 		format = "%.0fs"
-		value = resource_info.progress * resource_info.max_duration
-		if self._veteran_replenish then
-			value = resource_info.max_duration - value
+		value = progress * max_duration
+		if self._veteran_replenish then --count down for veteran demostockpile
+			value = max_duration - value
 		end
 	end
 
 	if mod:get("value_time_full_empty") then
-		if (resource_info.progress == nil and resource_info.stacks == 0) or (resource_info.progress == 0 and resource_info.stacks == 0) then
+		if (progress == nil and stacks == 0) or (progress == 0 and stacks == 0) then
 			format = "EMPTY"
-		elseif (resource_info.progress == nil and resource_info.stacks == resource_info.max_stacks) or (resource_info.progress == 1 and resource_info.stacks == resource_info.max_stacks) then
+			description = nil
+		elseif (progress == nil and stacks == max_stacks) or (progress == 1 and stacks == max_stacks) then
 			format = "FULL"
+			description = nil
 		end
-		description = nil
 	end
 
 	local value_text = string.format(format, value)
