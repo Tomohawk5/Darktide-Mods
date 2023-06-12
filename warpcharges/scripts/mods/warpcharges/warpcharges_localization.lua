@@ -62,6 +62,9 @@ local localizations = {
 	text_option_martyrdom = {
 		en = "Martyrdom"
 	},
+	text_option_box = {
+		en = "Box"
+	},
 	gauge_value = {
 		en = "Value"
 	},
@@ -105,10 +108,22 @@ local localizations = {
 		en = "Veteran replenish value"
 	},
 	veteran_override_replenish_text_description = {
-		en = "Change Veteran value to 'Time (s)' if 'Demolition stockpile' is selected."
+		en = "Change Veteran value to 'Time (s)' if '{#color(255, 180, 0)}Demolition stockpile{#reset()}' is selected."
 	},
 	archetype_options = {
 		en = "Archetypes"
+	},
+	psyker = {
+		en = "PSYKER"
+	},
+	veteran = {
+		en = "VETERAN"
+	},
+	zealot = {
+		en = "ZEALOT"
+	},
+	ogryn = {
+		en = "OGRYN"
 	}
 }
 
@@ -131,9 +146,15 @@ for i, color_name in ipairs(color_names) do
 end
 
 local archetypes = { "psyker", "veteran", "zealot", "ogryn" }
+local colors = {
+	psyker = "{#color(59, 102, 150)}",
+	veteran = "{#color(100, 172, 28)}",
+	zealot = "{#color(204, 26, 28)}",
+	ogryn = "{#color(188, 138, 67)}"
+}
 for _, archetype in pairs(archetypes) do
 	localizations[archetype .. "_show_gauge"] = {
-		en = archetype
+		en = colors[archetype] .. localizations[archetype].en .. "{#reset()}" --TODO: fix this
 	}
 	localizations[archetype .. "_gauge_text"] = {
 		en = "Gauge Text"

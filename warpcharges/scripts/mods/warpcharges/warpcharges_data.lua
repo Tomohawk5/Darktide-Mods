@@ -9,7 +9,8 @@ mod.text_options = table.enum(
 	"text_option_warpcharges",
 	"text_option_grenades",
 	"text_option_blitz",
-	"text_option_martyrdom"
+	"text_option_martyrdom",
+	"text_option_box"
 )
 mod.value_options = table.enum(
 	"none",
@@ -84,6 +85,7 @@ local function archetype_options()
 			text_options = table.enum(
 				mod.text_options["none"],
 				mod.text_options["text_option_martyrdom"],
+				mod.text_options["text_option_grenades"],
 				mod.text_options["text_option_charges"],
 				mod.text_options["text_option_blitz"]
 			),
@@ -99,6 +101,7 @@ local function archetype_options()
 			text_options = table.enum(
 				mod.text_options["none"],
 				mod.text_options["text_option_grenades"],
+				mod.text_options["text_option_box"],
 				mod.text_options["text_option_charges"],
 				mod.text_options["text_option_blitz"]
 			),
