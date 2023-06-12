@@ -307,10 +307,10 @@ HudElementWarpCharges._draw_widgets = function (self, dt, t, input_service, ui_r
 end
 local function y_offset()
 	local Y_OFFSETS = {}
-	Y_OFFSETS[6] = 39 --34
-	Y_OFFSETS[4] = 59
-	Y_OFFSETS[3] = 85
-	Y_OFFSETS[2] = 136
+	Y_OFFSETS[6] = 39
+	Y_OFFSETS[4] = 64
+	Y_OFFSETS[3] = 90
+	Y_OFFSETS[2] = 141
 	return Y_OFFSETS[resource_info.max_stacks]
 end
 
@@ -384,7 +384,7 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 	local spacing = HudElementWarpChargesSettings.spacing
 	local shield_offset = (shield_width + spacing) * (num_shields - 1) * 0.5
 	if not self._horizontal then
-		shield_offset = shield_offset + y_offset() --Y_OFFSETS[resource_info.max_stacks]
+		shield_offset = shield_offset + y_offset()
 	end
 	local shields = self._shields
 
@@ -423,8 +423,8 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 		end
 
 		if  self._horizontal then
-			widget_offset[2] = self._flipped and 2 or 1
 			widget_offset[1] = shield_offset
+			widget_offset[2] = self._flipped and 2 or 1
 		else
 			local scenegraph_size = self:scenegraph_size("shield")
 			local height = scenegraph_size.y
