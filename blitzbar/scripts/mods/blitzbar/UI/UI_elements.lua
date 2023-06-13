@@ -323,14 +323,18 @@ HudElementblitzbar._get_value_text = function (self)
 	local value_option = mod:get(archetype .. "_gauge_value")
 	local description = mod:get(archetype .. "_gauge_value_text")
 
-	if self._veteran_replenish and mod:get("veteran_override_replenish_text") then
-		value_option = mod.value_options["value_option_time_seconds"]
+	if self._veteran_replenish and mod:get("veteran_override_replenish_text") and value_option ~= mod.value_options["none"] then
+		if value_option ~= mod.value_options["value_option_time_percent"] then
+			value_option = mod.value_options["value_option_time_seconds"]
+		end
 	end
 
 	local progress = resource_info.progress
 	local max_duration = resource_info.max_duration
 	local stacks = resource_info.stacks
 	local max_stacks = resource_info.max_stacks
+	local full = (progress == nil and stacks == max_stacks) or (progress == 1 and stacks == max_stacks)
+	local empty = (progress == nil and stacks == 0) or (progress == 0 and stacks == 0)
 
 	if value_option == mod.value_options["value_option_damage"] and (self._archetype_name == "psyker" or self._zealot_martyrdom) then
 		format = "%.0f%%"
@@ -351,10 +355,10 @@ HudElementblitzbar._get_value_text = function (self)
 
 	if mod:get("value_time_full_empty") then
 		if (progress == nil and stacks == 0) or (progress == 0 and stacks == 0) then
-			format = "EMPTY"
+			format = (self._archetype_name == "psyker" or self._zealot_martyrdom) and "" or "{#color(249, 69, 69)}EMPTY" -- TODO: localize this
 			description = nil
 		elseif (progress == nil and stacks == max_stacks) or (progress == 1 and stacks == max_stacks) then
-			format = "FULL"
+			format = (self._archetype_name == "psyker" or self._zealot_martyrdom) and "{#color(249, 69, 69)}MAX" or "FULL" -- TODO: localize this
 			description = nil
 		end
 	end

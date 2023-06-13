@@ -17,7 +17,7 @@ local localizations = {
 		en = "Always show",
 	},
 	show_gauge_description = {
-		en = "Show even when empty.\n\n" .. color_format("ui_disabled_text_color") .. "Veterans with the '" .. color_format("item_rarity_dark_5") .. "Demolition stockpile" .. color_format("ui_disabled_text_color") .. "' talent will never have an empty bar.",
+		en = "Show even when empty.\n\n" .. color_format("ui_disabled_text_color") .. "Veterans with the " .. color_format("item_rarity_dark_5") .. "Demolition stockpile" .. color_format("ui_disabled_text_color") .. " talent will never have an empty bar.",
 	},
 	gauge_orientation = {
 		en = "Orientation",
@@ -101,21 +101,24 @@ local localizations = {
 		en = "Full/Empty"
 	},
 	value_time_full_empty_description = {
-		en = "Display the text: 'FULL' or 'EMPTY'\ninstead of numerical values for the '" .. color_format("item_rarity_2") .. "Stacks{#reset()}' \n" ..
-			"option when at maximum or 0 stacks."
+		en = "\n" ..
+			color_format("ui_hud_overcharge_high") .. "MAX{#reset()} and " .. color_format("ui_disabled_text_color") .. "[NOTHING]{#reset()} for " .. color_format("ui_psyker") .. "Psyker{#reset()} and " .. color_format("ui_zealot") .. "Zealot{#reset()}." ..
+			"\n" .. color_format("terminal_text_header") .. "FULL{#reset()} and " .. color_format("terminal_text_body") .. "EMPTY{#reset()} for " .. color_format("ui_veteran") .. "Veteran{#reset()} and " .. color_format("ui_ogryn") .. "Ogryn{#reset()}." ..
+			"\n\nInstead of numerical values for the " .. color_format("item_rarity_2") .. "Stacks{#reset()} option when at maximum or 0 stacks."
 	},
 	martyrdom = {
 		en = "Zealot martyrdom"
 	},
 	martyrdom_description = {
-		en = "Use bar to display stacks of the Zealot passive '" .. color_format("item_rarity_5") .. "Martyrdom{#reset()}'."
+		en = "Use bar to display stacks of the Zealot passive " .. color_format("item_rarity_5") .. "Martyrdom{#reset()}." ..
+			"\n\n" .. color_format("ui_disabled_text_color") .. "Will show " .. color_format("item_rarity_dark_5") .. "Stun grenade" .. color_format("ui_disabled_text_color") .. " charges if not enabled."
 	},
 	veteran_override_replenish_text = {
 		en = "Veteran replenish value"
 	},
 	veteran_override_replenish_text_description = {
-		en = "Change Veteran '" .. color_format("item_rarity_2") .. "Stacks{#reset()}' value to '" .. color_format("item_rarity_2") .. "Time (s){#reset()}' \n" ..
-			"if '" .. color_format("item_rarity_5") .. "Demolition stockpile{#reset()}' is selected."
+		en = "Change Veteran " .. color_format("item_rarity_2") .. "Stacks{#reset()} value to " .. color_format("item_rarity_2") .. "Time (s){#reset()} " ..
+			"if " .. color_format("item_rarity_5") .. "Demolition stockpile{#reset()} is selected."
 	},
 	archetype_options = {
 		en = "Archetypes"
@@ -165,7 +168,7 @@ local localizations = {
 	},
 	_color_empty_description = {
 		en = "Color of each bar when empty.\n" ..
-			"Transparent at a value of " .. color_format("ui_disabled_text_color") .. "0{#reset()}."
+			"Transparent at a value of 0."
 	}
 }
 
