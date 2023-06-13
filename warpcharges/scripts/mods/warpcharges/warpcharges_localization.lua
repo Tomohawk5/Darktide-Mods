@@ -36,10 +36,10 @@ local localizations = {
 		en = "What text should appear to the left / top of the gauge."
 	},
 	none = {
-		en = ""
+		en = "{#color(32, 32, 32)}[NOTHING]{#reset()}"
 	},
 	none_display = {
-		en = ""
+		en = "ajsdhaksd"
 	},
 	text_option_charges = {
 		en = "Charges",
@@ -98,11 +98,17 @@ local localizations = {
 	gauge_color_2 = {
 		en = "Gauge color"
 	},
+	value_time_full_empty = {
+		en = "Full/Empty"
+	},
+	value_time_full_empty_description = {
+		en = "Display the text: 'FULL' or 'EMPTY'\ninstead of numerical values for the '{#color(255, 180, 0)}Stacks{#reset()}' option when at maximum or 0 stacks."
+	},
 	martyrdom = {
 		en = "Zealot martyrdom"
 	},
 	martyrdom_description = {
-		en = "Use bar to display stacks of Zealot passive."
+		en = "Use bar to display stacks of the Zealot passive '{#color(255, 180, 0)}Martyr'{#color(255, 180, 0)}Demolition stockpile{#reset()}'dom{#reset()}'."
 	},
 	veteran_override_replenish_text = {
 		en = "Veteran replenish value"
@@ -114,63 +120,65 @@ local localizations = {
 		en = "Archetypes"
 	},
 	psyker = {
-		en = "PSYKER"
+		en = "Psyker"
 	},
 	veteran = {
-		en = "VETERAN"
+		en = "Veteran"
 	},
 	zealot = {
-		en = "ZEALOT"
+		en = "Zealot"
 	},
 	ogryn = {
-		en = "OGRYN"
+		en = "Ogryn"
+	},
+	_gauge_text = {
+		en = "Gauge Text"
+	},
+	_gauge_value = {
+		en = "Value"
+	},
+	_gauge_value_text = {
+		en = "Value text"
+	},
+	_color_full = {
+		en = "Full color"
+	},
+	_color_empty = {
+		en = "Empty color"
 	}
 }
+local function color_format(color_name)
+	local color = Color[color_name](255, true)
+	return string.format("{#color(%s,%s,%s)}", color[2], color[3], color[4])
+end
 
-local function readable(text)
-	local readable_string = ""
-	local tokens = string.split(text, "_")
-	for i, token in ipairs(tokens) do
-		local first_letter = string.sub(token, 1, 1)
-		token = string.format("%s%s", string.upper(first_letter), string.sub(token, 2))
-		readable_string = string.trim(string.format("%s %s", readable_string, token))
+local function display_name(text)
+	local display_name = ""
+	local words = string.split(text, "_")
+	for _, word in ipairs(words) do
+		word = (word:gsub("^%l", string.upper)) -- Parenthesis [https://www.luafaq.org/gotchas.html#T8.1]
+		display_name = display_name .. " " .. word
 	end
-	return readable_string
+	return display_name
 end
 
 local color_names = Color.list
-for i, color_name in ipairs(color_names) do
-	local color_values = Color[color_name](255, true)
-	local text = InputUtils.apply_color_to_input_text(readable(color_name), color_values)
-	localizations[color_name] = { en = text }
+for _, color_name in ipairs(color_names) do
+	localizations[color_name] = { en = color_format(color_name) .. display_name(color_name) .. "{#reset()}"}
 end
 
 local archetypes = { "psyker", "veteran", "zealot", "ogryn" }
-local colors = {
-	psyker = "{#color(59, 102, 150)}",
-	veteran = "{#color(100, 172, 28)}",
-	zealot = "{#color(204, 26, 28)}",
-	ogryn = "{#color(188, 138, 67)}"
-}
+local options = { "_gauge_text", "_gauge_value", "_gauge_value_text", "_color_full", "_color_empty"}
 for _, archetype in pairs(archetypes) do
 	localizations[archetype .. "_show_gauge"] = {
-		en = colors[archetype] .. localizations[archetype].en .. "{#reset()}" --TODO: fix this
+		en = color_format("ui_" .. archetype) .. localizations[archetype].en .. "{#reset()}"
 	}
-	localizations[archetype .. "_gauge_text"] = {
-		en = "Gauge Text"
-	}
-	localizations[archetype .. "_gauge_value"] = {
-		en = "Value"
-	}
-	localizations[archetype .. "_gauge_value_text"] = {
-		en = "Value text"
-	}
-	localizations[archetype .. "_color_full"] = {
-		en = "Full color"
-	}
-	localizations[archetype .. "_color_empty"] = {
-		en = "Empty color"
-	}
+	for _, option in pairs(options) do
+		localizations[archetype .. option] = table.clone(localizations[option])
+		for language, _ in pairs(localizations[archetype .. option]) do
+			localizations[archetype .. option][language] = color_format("ui_" .. archetype .. "_text") .. localizations[archetype .. option][language] .. "{#reset()}"
+		end
+	end
 end
 
 return localizations
