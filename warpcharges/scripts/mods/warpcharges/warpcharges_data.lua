@@ -37,7 +37,11 @@ end
 local colors = {}
 
 for _, color_name in ipairs(Color.list) do
-	table.insert(colors, { text = color_name, value = color_name })
+	-- Regex ^(ui|terminal|item)
+	if (color_name:find("^ui") ~= nil) or (color_name:find("^terminal") ~= nil) or (color_name:find("^item") ~= nil) then
+		mod:echo(color_name)
+		table.insert(colors, { text = color_name, value = color_name })
+	end
 end
 
 table.sort(colors, function(a, b)
