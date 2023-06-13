@@ -1,4 +1,4 @@
-local mod = get_mod("warpcharges")
+local mod = get_mod("blitzbar")
 
 mod.lerp = function(a, b, t)
   return (1 - t) * a + t * b

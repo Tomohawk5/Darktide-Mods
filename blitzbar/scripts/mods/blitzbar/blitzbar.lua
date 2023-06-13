@@ -1,11 +1,11 @@
-local mod = get_mod("warpcharges")
+local mod = get_mod("blitzbar")
 
-mod:io_dofile("/warpcharges/scripts/utils")
+mod:io_dofile("/blitzbar/scripts/utils")
 
 local UIViewHandler = mod:original_require("scripts/managers/ui/ui_view_handler")
 
-local class_name = "HudElementWarpCharges"
-local filename = "warpcharges/scripts/mods/warpcharges/UI/UI_elements"
+local class_name = "HudElementblitzbar"
+local filename = "blitzbar/scripts/mods/blitzbar/UI/UI_elements"
 
 local function ui_hud_init_hook(func, self, elements, visibility_groups, params)
   if not table.find_by_key(elements, "class_name", class_name) then

@@ -1,6 +1,6 @@
-local mod = get_mod("warpcharges")
+local mod = get_mod("blitzbar")
 
-local hud_element_warp_charges = {
+local hud_element_blitz_bar = {
 	max_glow_alpha = 130,
 	center_offset = 210,
 	spacing = 4,
@@ -15,4 +15,4 @@ local hud_element_warp_charges = {
 	}
 }
 
-return settings("HudElementWarpCharges", hud_element_warp_charges)
+return settings("HudElementblitzbar", hud_element_blitz_bar)

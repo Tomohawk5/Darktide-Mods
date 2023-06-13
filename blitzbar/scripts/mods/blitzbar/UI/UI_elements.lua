@@ -1,12 +1,12 @@
-local mod = get_mod("warpcharges")
+local mod = get_mod("blitzbar")
 
-local Definitions = mod:io_dofile("warpcharges/scripts/mods/warpcharges/UI/UI_definitions")
-local HudElementWarpChargesSettings = mod:io_dofile("warpcharges/scripts/mods/warpcharges/UI/UI_settings")
+local Definitions = mod:io_dofile("blitzbar/scripts/mods/blitzbar/UI/UI_definitions")
+local HudElementblitzbarSettings = mod:io_dofile("blitzbar/scripts/mods/blitzbar/UI/UI_settings")
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local Stamina = mod:original_require("scripts/utilities/attack/stamina")
 local UIHudSettings = mod:original_require("scripts/settings/ui/ui_hud_settings")
 local TalentSettings = mod:original_require("scripts/settings/buff/talent_settings")
-local HudElementWarpCharges = class("HudElementWarpCharges", "HudElementBase")
+local HudElementblitzbar = class("HudElementblitzbar", "HudElementBase")
 
 local resource_info = {
 	max_stacks = nil,
@@ -23,8 +23,8 @@ local function _is_warp_charge_buff(s)
     return s == "psyker_biomancer_souls" or s == "psyker_biomancer_souls_increased_max_stacks"
 end
 
-HudElementWarpCharges.init = function (self, parent, draw_layer, start_scale)
-	HudElementWarpCharges.super.init(self, parent, draw_layer, start_scale, Definitions)
+HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
+	HudElementblitzbar.super.init(self, parent, draw_layer, start_scale, Definitions)
 
 	self._shields = {}
 	self._shield_width = 0
@@ -64,26 +64,26 @@ HudElementWarpCharges.init = function (self, parent, draw_layer, start_scale)
 	mod:set("gauge_text", self._archetype_name .. "_gauge_text")
 end
 
-HudElementWarpCharges.destroy = function (self)
-	HudElementWarpCharges.super.destroy(self)
+HudElementblitzbar.destroy = function (self)
+	HudElementblitzbar.super.destroy(self)
 end
 
-HudElementWarpCharges._add_shield = function (self)
+HudElementblitzbar._add_shield = function (self)
 	self._shields[#self._shields + 1] = {}
 end
 
-HudElementWarpCharges._remove_shield = function (self)
+HudElementblitzbar._remove_shield = function (self)
 	self._shields[#self._shields] = nil
 end
 
-HudElementWarpCharges._is_resource_buff = function (self, buff)
+HudElementblitzbar._is_resource_buff = function (self, buff)
 	return	self._archetype_name == "psyker" and (buff == "psyker_biomancer_souls" or buff == "psyker_biomancer_souls_increased_max_stacks")	or
 			self._veteran_replenish and (buff == "veteran_ranger_grenade_replenishment")														or
 			self._zealot_martyrdom and (buff == "zealot_maniac_martyrdom_base")
 end
 
-HudElementWarpCharges.update = function (self, dt, t, ui_renderer, render_settings, input_service)
-	HudElementWarpCharges.super.update(self, dt, t, ui_renderer, render_settings, input_service)
+HudElementblitzbar.update = function (self, dt, t, ui_renderer, render_settings, input_service)
+	HudElementblitzbar.super.update(self, dt, t, ui_renderer, render_settings, input_service)
 
     local widget = self._widgets_by_name.gauge
     if not widget then return end
@@ -138,10 +138,10 @@ HudElementWarpCharges.update = function (self, dt, t, ui_renderer, render_settin
 end
 
 -- TODO: need to trigger when talents change or exit inventory
-HudElementWarpCharges._resize_shield = function (self)
+HudElementblitzbar._resize_shield = function (self)
 	local shield_amount = resource_info.max_stacks or 0
-	local bar_size = HudElementWarpChargesSettings.bar_size
-	local segment_spacing = HudElementWarpChargesSettings.spacing
+	local bar_size = HudElementblitzbarSettings.bar_size
+	local segment_spacing = HudElementblitzbarSettings.spacing
 	local total_segment_spacing = segment_spacing * math.max(shield_amount - 1, 0)
 	local total_bar_length = bar_size[1] - total_segment_spacing
 
@@ -253,7 +253,7 @@ HudElementWarpCharges._resize_shield = function (self)
 	warning_style.angle = styles[orientation].angle
 end
 
-HudElementWarpCharges._update_shield_amount = function (self)
+HudElementblitzbar._update_shield_amount = function (self)
 	local shield_amount = resource_info.max_stacks or 0
 	if shield_amount ~= self._shield_amount then
 		local amount_difference = (self._shield_amount or 0) - shield_amount
@@ -273,7 +273,7 @@ HudElementWarpCharges._update_shield_amount = function (self)
 	end
 end
 
-HudElementWarpCharges._update_visibility = function (self, dt)
+HudElementblitzbar._update_visibility = function (self, dt)
 	local draw = resource_info.stacks > 0 or self._veteran_replenish
 
 	local alpha_speed = 3
@@ -288,14 +288,14 @@ HudElementWarpCharges._update_visibility = function (self, dt)
 	self._alpha_multiplier = alpha_multiplier
 end
 
-HudElementWarpCharges._draw_widgets = function (self, dt, t, input_service, ui_renderer, render_settings)
+HudElementblitzbar._draw_widgets = function (self, dt, t, input_service, ui_renderer, render_settings)
 	if mod._is_in_hub() then return end
 
 	if self._alpha_multiplier ~= 0 then
 		local previous_alpha_multiplier = render_settings.alpha_multiplier
 		render_settings.alpha_multiplier = self._alpha_multiplier
 
-		HudElementWarpCharges.super._draw_widgets(self, dt, t, input_service, ui_renderer, render_settings)
+		HudElementblitzbar.super._draw_widgets(self, dt, t, input_service, ui_renderer, render_settings)
 
 		local gauge_widget = self._widgets_by_name.gauge
 		gauge_widget.content.value_text = self:_get_value_text()
@@ -314,7 +314,7 @@ local function y_offset()
 	return Y_OFFSETS[resource_info.max_stacks]
 end
 
-HudElementWarpCharges._get_value_text = function (self)
+HudElementblitzbar._get_value_text = function (self)
 	local format = ""
 	local value = nil
 
@@ -369,7 +369,7 @@ HudElementWarpCharges._get_value_text = function (self)
 	return value_text
 end
 
-HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
+HudElementblitzbar._draw_shields = function (self, dt, t, ui_renderer)
 	local num_shields = self._shield_amount
 
     if not num_shields then return end
@@ -381,7 +381,7 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 	local shield_width = self._shield_width
 
 	local step_fraction = 1 / num_shields
-	local spacing = HudElementWarpChargesSettings.spacing
+	local spacing = HudElementblitzbarSettings.spacing
 	local shield_offset = (shield_width + spacing) * (num_shields - 1) * 0.5
 	if not self._horizontal then
 		shield_offset = shield_offset + y_offset()
@@ -439,4 +439,4 @@ HudElementWarpCharges._draw_shields = function (self, dt, t, ui_renderer)
 	end
 end
 
-return HudElementWarpCharges
+return HudElementblitzbar

@@ -1,4 +1,4 @@
-local mod = get_mod("warpcharges")
+local mod = get_mod("blitzbar")
 local InputUtils = mod:original_require("scripts/managers/input/input_utils")
 
 local localizations = {
@@ -39,7 +39,7 @@ local localizations = {
 		en = "{#color(32, 32, 32)}[NOTHING]{#reset()}"
 	},
 	none_display = {
-		en = "ajsdhaksd"
+		en = ""
 	},
 	text_option_charges = {
 		en = "Charges",

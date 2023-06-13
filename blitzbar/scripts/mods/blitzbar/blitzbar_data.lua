@@ -1,4 +1,4 @@
-local mod = get_mod("warpcharges")
+local mod = get_mod("blitzbar")
 local UIHudSettings = mod:original_require("scripts/settings/ui/ui_hud_settings")
 
 mod.text_options = table.enum(
@@ -37,7 +37,7 @@ end
 local colors = {}
 
 for _, color_name in ipairs(Color.list) do
-	-- Regex ^(ui|terminal|item)
+	-- Regex "^(ui|terminal|item)
 	if (color_name:find("^ui") ~= nil) or (color_name:find("^terminal") ~= nil) or (color_name:find("^item") ~= nil) then
 		mod:echo(color_name)
 		table.insert(colors, { text = color_name, value = color_name })

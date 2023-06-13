@@ -1,14 +1,14 @@
-local mod = get_mod("warpcharges")
+local mod = get_mod("blitzbar")
 
-local HudElementWarpCharges = mod:io_dofile("warpcharges/scripts/mods/warpcharges/UI/UI_settings")
+local HudElementblitzbar = mod:io_dofile("blitzbar/scripts/mods/blitzbar/UI/UI_settings")
 local UIWorkspaceSettings = mod:original_require("scripts/settings/ui/ui_workspace_settings")
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local UIHudSettings = mod:original_require("scripts/settings/ui/ui_hud_settings")
 local UIFontSettings = mod:original_require("scripts/managers/ui/ui_font_settings")
-local bar_size = HudElementWarpCharges.bar_size
-local area_size = HudElementWarpCharges.area_size
-local glow_size = HudElementWarpCharges.glow_size
-local center_offset = HudElementWarpCharges.center_offset
+local bar_size = HudElementblitzbar.bar_size
+local area_size = HudElementblitzbar.area_size
+local glow_size = HudElementblitzbar.glow_size
+local center_offset = HudElementblitzbar.center_offset
 local scenegraph_definition = {
 	screen = UIWorkspaceSettings.screen,
 	area = {
