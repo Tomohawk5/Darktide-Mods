@@ -39,7 +39,6 @@ local colors = {}
 for _, color_name in ipairs(Color.list) do
 	-- Regex "^(ui|terminal|item)
 	if (color_name:find("^ui") ~= nil) or (color_name:find("^terminal") ~= nil) or (color_name:find("^item") ~= nil) then
-		mod:echo(color_name)
 		table.insert(colors, { text = color_name, value = color_name })
 	end
 end
@@ -119,7 +118,6 @@ local function archetype_options()
 	local archetype_widgets = {}
 	for _, archetype in pairs(archetypes) do
 		local default = defaults[archetype]
-		mod:dump(default, ("default:" .. archetype), 4)
 		local widget = {
 			setting_id = archetype .. "_show_gauge",
 			type = "checkbox",

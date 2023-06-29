@@ -5,7 +5,7 @@ local HudElementblitzbarSettings = mod:io_dofile("blitzbar/scripts/mods/blitzbar
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local Stamina = mod:original_require("scripts/utilities/attack/stamina")
 local UIHudSettings = mod:original_require("scripts/settings/ui/ui_hud_settings")
-local TalentSettings = mod:original_require("scripts/settings/buff/talent_settings")
+local TalentSettings = mod:original_require("scripts/settings/talent/talent_settings") --mod:original_require("scripts/settings/buff/talent_settings")
 local HudElementblitzbar = class("HudElementblitzbar", "HudElementBase")
 
 local resource_info = {
@@ -321,9 +321,11 @@ HudElementblitzbar._get_value_text = function (self)
 	local archetype = self._archetype_name
 
 	local value_option = mod:get(archetype .. "_gauge_value")
+	if value_option == mod.value_options["none"] then return "" end
+
 	local description = mod:get(archetype .. "_gauge_value_text")
 
-	if self._veteran_replenish and mod:get("veteran_override_replenish_text") and value_option ~= mod.value_options["none"] then
+	if self._veteran_replenish and mod:get("veteran_override_replenish_text") then --and value_option ~= mod.value_options["none"] then
 		if value_option ~= mod.value_options["value_option_time_percent"] then
 			value_option = mod.value_options["value_option_time_seconds"]
 		end
@@ -355,10 +357,12 @@ HudElementblitzbar._get_value_text = function (self)
 
 	if mod:get("value_time_full_empty") then
 		if (progress == nil and stacks == 0) or (progress == 0 and stacks == 0) then
-			format = (self._archetype_name == "psyker" or self._zealot_martyrdom) and "" or "{#color(249, 69, 69)}EMPTY" -- TODO: localize this
+			format = (self._archetype_name == "psyker" or self._zealot_martyrdom)
+				and "" or ("{#color(249, 69, 69)}" .. mod:localize("empty"))
 			description = nil
 		elseif (progress == nil and stacks == max_stacks) or (progress == 1 and stacks == max_stacks) then
-			format = (self._archetype_name == "psyker" or self._zealot_martyrdom) and "{#color(249, 69, 69)}MAX" or "FULL" -- TODO: localize this
+			format = (self._archetype_name == "psyker" or self._zealot_martyrdom)
+				and ("{#color(249, 69, 69)}" .. mod:localize("max")) or mod:localize("full")
 			description = nil
 		end
 	end

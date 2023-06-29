@@ -35,10 +35,10 @@ local localizations = {
 		en = "Vertical (Right)",
 	},
 	none = {
-		en = color_format("ui_disabled_text_color") .. "[NOTHING]{#reset()}"
+		en = "", --color_format("ui_disabled_text_color") .. "[NOTHING]{#reset()}"
 	},
 	none_display = {
-		en = ""
+		en = "",
 	},
 	text_option_charges = {
 		en = "Charges",
@@ -169,6 +169,15 @@ local localizations = {
 	_color_empty_description = {
 		en = "Color of each bar when empty.\n" ..
 			"Transparent at a value of 0."
+	},
+	full = {
+		en = "FULL"
+	},
+	max = {
+		en = "MAX"
+	},
+	empty = {
+		en = "EMPTY"
 	}
 }
 
