@@ -243,5 +243,9 @@ return {
     en = "Show the hud elements at all times, not just during volley fire.",
     ru = "Показывать элементы интерфейса всегда, а не только во время Залпового огня.",
     ["zh-cn"] = "即使未发动齐射技能，也总是显示 HUD 组件。",
-  }
+  },
+  notification_volley_fire_end = {
+    en = "  Volley Fire  \nRefreshes : %%-3d\nDuration : %%-4.1f",
+    ["zh-cn"] = "  齐射  \n刷新次数：%%-3d\n总时长：%%-4.1f",
+  },
 }
