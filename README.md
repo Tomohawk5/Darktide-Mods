@@ -19,3 +19,11 @@ Choose which input prompts you want to see on your HUD.
 Source [/hideprompts](hideprompts)
 
 Download from [Nexus](https://www.nexusmods.com/warhammer40kdarktide/mods/150).
+
+## Blitz Bar
+![](https://staticdelivery.nexusmods.com/mods/4943/images/headers/180_1686071270.jpg)
+Show Warp charges, martyrdom stacks and grenades in a stamina style bar.
+
+source [/blitzbar](blitzbar)
+
+Download from [Nexus](https://www.nexusmods.com/warhammer40kdarktide/mods/180).
