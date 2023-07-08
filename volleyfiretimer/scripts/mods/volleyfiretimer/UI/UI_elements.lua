@@ -126,7 +126,7 @@ function HudElementVolleyFire:update(dt, t, ui_renderer, render_settings, input_
     elseif buff_info.was_active and not buff_info.active then
       if mod:get("stack_alert") then
         local text = string.format(
-          "  Volley Fire  \nRefreshes : %-3d\nDuration : %-4.1f",
+          mod:localize("notification_volley_fire_end"),
           buff_info.stacks - 1,
           Managers.time:time("gameplay") - buff_info.start
         )
