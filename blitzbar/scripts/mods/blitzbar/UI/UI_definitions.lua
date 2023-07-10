@@ -49,6 +49,7 @@ local scenegraph_definition = {
 	}
 }
 local value_text_style = table.clone(UIFontSettings.body_small)
+value_text_style.font_size = mod:get("value_text_size")
 value_text_style.offset = {
 	0,
 	10,
@@ -64,6 +65,7 @@ value_text_style.text_vertical_alignment = "top"
 value_text_style.text_horizontal_alignment = "right"
 value_text_style.text_color = Color[mod:get("gauge_color_1")](255, true) or UIHudSettings.color_tint_main_1
 local name_text_style = table.clone(value_text_style)
+name_text_style.font_size = mod:get("name_text_size")
 name_text_style.offset = {
 	0,
 	10,

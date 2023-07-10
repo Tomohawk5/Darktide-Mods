@@ -129,12 +129,6 @@ HudElementblitzbar.update = function (self, dt, t, ui_renderer, render_settings,
 	end
 
     self:_update_shield_amount()
-
-	if mod:get(self._archetype_name .. "_show_gauge") then
-		widget.content.visible = true
-	else
-		self:_update_visibility(dt)
-	end
 end
 
 -- TODO: need to trigger when talents change or exit inventory
@@ -274,9 +268,13 @@ HudElementblitzbar._update_shield_amount = function (self)
 end
 
 HudElementblitzbar._update_visibility = function (self, dt)
-	local draw = resource_info.stacks > 0 or self._veteran_replenish
+	local enabled = mod:get(self._archetype_name .. "_show_gauge")
+	local always_show = mod:get("show_gauge")
+	local empty = resource_info.stacks == 0
 
-	local alpha_speed = 3
+	local draw = enabled and (always_show or not empty)
+
+	local alpha_speed = 1 / mod:get("fade_speed")
 	local alpha_multiplier = self._alpha_multiplier or 0
 
 	if draw then
@@ -291,16 +289,26 @@ end
 HudElementblitzbar._draw_widgets = function (self, dt, t, input_service, ui_renderer, render_settings)
 	if mod._is_in_hub() then return end
 
+	local widget = self._widgets_by_name.gauge
+
+	local enabled = mod:get(self._archetype_name .. "_show_gauge")
+	local always_show = mod:get("show_gauge")
+	local empty = resource_info.stacks == 0
+
+	local show = enabled and (always_show or not empty)
+
+	self:_update_visibility(dt)
+
 	if self._alpha_multiplier ~= 0 then
 		local previous_alpha_multiplier = render_settings.alpha_multiplier
 		render_settings.alpha_multiplier = self._alpha_multiplier
 
 		HudElementblitzbar.super._draw_widgets(self, dt, t, input_service, ui_renderer, render_settings)
 
-		local gauge_widget = self._widgets_by_name.gauge
-		gauge_widget.content.value_text = self:_get_value_text()
-
-		self:_draw_shields(dt, t, ui_renderer)
+		if show then
+			widget.content.value_text = self:_get_value_text()
+			self:_draw_shields(dt, t, ui_renderer)
+		end
 
 		render_settings.alpha_multiplier = previous_alpha_multiplier
 	end

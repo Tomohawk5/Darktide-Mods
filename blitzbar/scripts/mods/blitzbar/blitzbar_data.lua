@@ -172,10 +172,34 @@ return {
 				options = list_options(mod.orientation_options)
 			},
 			{
+				setting_id = "gauge_width",
+				type = "numeric",
+				range = { 96, 418 },
+				default_value = 212,
+				decimals_number = 0,
+				step_size_value = 1
+			},
+			{
+				setting_id = "gauge_height",
+				type = "numeric",
+				range = { 4, 40 },
+				default_value = 10,
+				decimals_number = 0,
+				step_size_value = 1
+			},
+			{
 				setting_id = "gauge_color_1",
 				type = "dropdown",
 				default_value = "terminal_text_header",
 				options = get_colors()
+			},
+			{
+				setting_id = "value_text_size",
+				type = "numeric",
+				range = { 8, 32 },
+				default_value = 18,
+				decimals_number = 0,
+				step_size_value = 1
 			},
 			{
 				setting_id = "gauge_color_2",
@@ -184,9 +208,27 @@ return {
 				options = get_colors()
 			},
 			{
+				setting_id = "name_text_size",
+				type = "numeric",
+				range = { 8, 32 },
+				default_value = 18,
+				decimals_number = 0,
+				step_size_value = 1
+			},
+			{
 				setting_id = "show_gauge",
 				type = "checkbox",
-				default_value = true
+				default_value = true,
+				sub_widgets = {
+					{
+						setting_id = "fade_speed",
+						type = "numeric",
+						range = { 0.01, 1 },
+						default_value = 0.5,
+						decimals_number = 2,
+						step_size_value = 0.01
+					}
+				}
 			},
 			{
 				setting_id = "value_time_full_empty",
