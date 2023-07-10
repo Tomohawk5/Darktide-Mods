@@ -135,16 +135,20 @@ local localizations = {
 		["zh-cn"] = "指示器颜色",
 	},
 	value_text_size = {
-		en = "Value text size"
+		en = "Value text size",
+		["zh-cn"] = "数据文本大小",
 	},
 	name_text_size = {
-		en = "Gauge text size"
+		en = "Gauge text size",
+		["zh-cn"] = "指示器文本大小",
 	},
 	gauge_width = {
-		en = "Gauge width"
+		en = "Gauge width",
+		["zh-cn"] = "指示器宽度",
 	},
 	gauge_height = {
-		en = "Gauge height"
+		en = "Gauge height",
+		["zh-cn"] = "指示器高度",
 	},
 	value_time_full_empty = {
 		en = "Full/Empty",
