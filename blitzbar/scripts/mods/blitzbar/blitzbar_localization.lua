@@ -132,6 +132,18 @@ local localizations = {
 		en = "Gauge color",
 		["zh-cn"] = "指示器颜色",
 	},
+	value_text_size = {
+		en = "Value text size"
+	},
+	name_text_size = {
+		en = "Gauge text size"
+	},
+	gauge_width = {
+		en = "Gauge width"
+	},
+	gauge_height = {
+		en = "Gauge height"
+	},
 	value_time_full_empty = {
 		en = "Full/Empty",
 		["zh-cn"] = "满/空",
