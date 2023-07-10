@@ -24,10 +24,12 @@ local localizations = {
 		["zh-cn"] = "即使为空也显示。\n\n" .. color_format("ui_disabled_text_color") .. "装备" .. color_format("item_rarity_dark_5") .. "爆破储备" .. color_format("ui_disabled_text_color") .. "技能的老兵状态条永远不会为空。",
 	},
 	fade_speed = {
-		en = "Fade speed"
+		en = "Fade speed",
+		["zh-cn"] = "淡出速度",
 	},
 	fade_speed_description = {
-		en = "How fast in seconds should the bar dissapear when empty and re-apear when not.\n\n" .. color_format("ui_disabled_text_color") .. "Does nothing if 'Always show' is enabled."
+		en = "How fast in seconds should the bar disappear when empty and re-appear when not.\n\n" .. color_format("ui_disabled_text_color") .. "Does nothing if 'Always show' is enabled.",
+		["zh-cn"] = "状态条在空时消失和在非空时重新出现所需的秒数。\n\n" .. color_format("ui_disabled_text_color") .. "如果启用 '总是显示' 则此选项无效果。",
 	},
 	gauge_orientation = {
 		en = "Orientation",
