@@ -23,6 +23,12 @@ local localizations = {
 		en = "Show even when empty.\n\n" .. color_format("ui_disabled_text_color") .. "Veterans with the " .. color_format("item_rarity_dark_5") .. "Demolition stockpile" .. color_format("ui_disabled_text_color") .. " talent will never have an empty bar.",
 		["zh-cn"] = "即使为空也显示。\n\n" .. color_format("ui_disabled_text_color") .. "装备" .. color_format("item_rarity_dark_5") .. "爆破储备" .. color_format("ui_disabled_text_color") .. "技能的老兵状态条永远不会为空。",
 	},
+	fade_speed = {
+		en = "Fade speed"
+	},
+	fade_speed_description = {
+		en = "How fast in seconds should the bar dissapear when empty and re-apear when not.\n\n" .. color_format("ui_disabled_text_color") .. "Does nothing if 'Always show' is enabled."
+	},
 	gauge_orientation = {
 		en = "Orientation",
 		["zh-cn"] = "方向",

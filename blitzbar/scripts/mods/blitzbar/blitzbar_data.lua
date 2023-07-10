@@ -186,7 +186,17 @@ return {
 			{
 				setting_id = "show_gauge",
 				type = "checkbox",
-				default_value = true
+				default_value = true,
+				sub_widgets = {
+					{
+						setting_id = "fade_speed",
+						type = "numeric",
+						range = { 0.01, 1 },
+						default_value = 0.5,
+						decimals_number = 2,
+						step_size_value = 0.01
+					}
+				}
 			},
 			{
 				setting_id = "value_time_full_empty",
