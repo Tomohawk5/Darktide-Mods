@@ -5,7 +5,7 @@ local HudElementblitzbarSettings = mod:io_dofile("blitzbar/scripts/mods/blitzbar
 local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local Stamina = mod:original_require("scripts/utilities/attack/stamina")
 local UIHudSettings = mod:original_require("scripts/settings/ui/ui_hud_settings")
-local TalentSettings = mod:original_require("scripts/settings/talent/talent_settings") --mod:original_require("scripts/settings/buff/talent_settings")
+local TalentSettings = mod:original_require("scripts/settings/talent/talent_settings_new") --mod:original_require("scripts/settings/buff/talent_settings")
 local HudElementblitzbar = class("HudElementblitzbar", "HudElementBase")
 
 local resource_info = {
