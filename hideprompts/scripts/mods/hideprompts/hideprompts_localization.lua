@@ -12,7 +12,7 @@ return {
 		["zh-cn"] = "技能",
 	},
 	ability_slot_description = {
-		en = "HUD element showing your combat ability."
+		en = "HUD element showing your combat ability.",
 		["zh-cn"] = "显示主动技能的 HUD 组件。",
 	},
 	weapon_slots = {
@@ -20,7 +20,7 @@ return {
 		["zh-cn"] = "武器",
 	},
 	weapon_slots_description = {
-		en = "HUD element that shows your weapons, grenades and pocketables."
+		en = "HUD element that shows your weapons, grenades and pocketables.",
 		["zh-cn"] = "显示武器、手雷和携带品的 HUD 组件。",
 	}
 }
