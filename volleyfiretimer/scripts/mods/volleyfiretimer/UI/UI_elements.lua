@@ -3,10 +3,10 @@ local mod = get_mod("volleyfiretimer")
 local _definitions = mod:io_dofile("/volleyfiretimer/scripts/mods/volleyfiretimer/UI/UI_definitions")
 
 local veteran_ranger_buff_templates = require(
-  "scripts/settings/buff/player_archetype_specialization/veteran_ranger_buff_templates"
+  "scripts/settings/buff/player_archetype_specialization/veteran_buff_templates_new"
 )
 
-local ranged_stance_template = veteran_ranger_buff_templates.veteran_ranger_ranged_stance
+local ranged_stance_template = veteran_ranger_buff_templates.veteran_combat_ability_stance_master
 
 local HudElementVolleyFire = class("HudElementVolleyFire", "HudElementBase")
 
@@ -27,16 +27,7 @@ function HudElementVolleyFire:init(parent, draw_layer, start_scale)
 end
 
 local function _is_volley_fire_buff(s)
-  local volley_fire_buff_names = {
-    "veteran_ranger_ranged_stance",
-    "veteran_ranger_ranged_stance_headhunter",
-    "veteran_ranger_ranged_stance_big_game_hunter"
-  }
-  for _, buff in ipairs(volley_fire_buff_names) do
-    if buff == s then
-      return true
-    end
-  end
+  return s == "veteran_combat_ability_stance_master"
 end
 
 function HudElementVolleyFire:update(dt, t, ui_renderer, render_settings, input_service)
@@ -135,7 +126,6 @@ function HudElementVolleyFire:update(dt, t, ui_renderer, render_settings, input_
       widget.content.visible = mod:get("always_visible")
     end
   end
-  --mod:echo((buff_info.active and "true" or "false") .. " , " .. (buff_info.was_active and "true" or "false"))
   buff_info.was_active = buff_info.active
 end
 
