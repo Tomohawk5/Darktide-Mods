@@ -8,6 +8,9 @@ local UIHudSettings = mod:original_require("scripts/settings/ui/ui_hud_settings"
 local TalentSettings = mod:original_require("scripts/settings/talent/talent_settings_new") --mod:original_require("scripts/settings/buff/talent_settings")
 local HudElementblitzbar = class("HudElementblitzbar", "HudElementBase")
 
+-- NEW ABILITIES LOCATION
+--"scripts/settings/ability/player_abilities/player_abilities"
+
 local resource_info = {
 	max_stacks = nil,
 	max_duration = nil,
@@ -34,6 +37,9 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
     self._archetype_name = self._player:archetype_name()
     local profile		 = self._player:profile()
 
+	mod:dump(profile.talents, "profile.talents", 4)
+	mod:dump(profile, "profile", 4)
+
 	if self._archetype_name == "psyker" then
 		local souls_passive = TalentSettings.psyker_2.passive_1
 		local extra_souls	= TalentSettings.psyker_2.offensive_2_1.max_souls_talent
@@ -45,11 +51,53 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 	elseif self._archetype_name == "zealot" and mod:get("martyrdom") then
 		self._zealot_martyrdom = true
 
-		local martyrdom_passive = TalentSettings.zealot_2.passive_1
-		local extra_stacks = TalentSettings.zealot_2.offensive_2_3.max_stacks
+-- [zealot_increase_ranged_close_damage] = 1 (number)
+-- [zealot_toughness_on_heavy_kills] = 1 (number)
+-- [zealot_dash] = 1 (number)
+-- [zealot_heal_part_of_damage_taken] = 1 (number)
+-- [zealot_attack_speed] = 1 (number)
+-- [base_toughness_node_buff_low_1] = 1 (number)
+-- [zealot_increased_damage_vs_resilient] = 1 (number)
+-- [base_toughness_node_buff_low_2] = 1 (number)
+-- [base_melee_damage_node_buff_low_1] = 1 (number)
+-- [zealot_toughness_damage_coherency] = 1 (number)
+-- [base_melee_damage_node_buff_low_2] = 1 (number)
+-- [zealot_hits_grant_stacking_damage] = 1 (number)
+-- [zealot_martyrdom] = 1 (number)
+-- [base_toughness_node_buff_low_4] = 2 (number)
+-- [zealot_multi_hits_increase_damage] = 1 (number)
+-- [zealot_additional_wounds] = 1 (number)
+-- [base_toughness_damage_reduction_node_buff_low_1] = 1 (number)
+-- [base_toughness_damage_reduction_node_buff_low_4] = 1 (number)
+-- [zealot_resist_death] = 1 (number)
+-- [zealot_improved_weapon_handling_after_dodge] = 1 (number)
+-- [base_suppression_node_buff_low_1] = 1 (number)
+-- [zealot_damage_boosts_movement] = 1 (number)
+-- [zealot_flame_grenade] = 1 (number)
+-- [zealot_resist_death_healing] = 1 (number)
+-- [base_health_node_buff_medium_1] = 1 (number)
+-- [zealot_attack_speed_post_ability] = 1 (number)
+-- [zealot_toughness_damage_reduction_coherency_improved] = 1 (number)
+-- [zealot_martyrdom_grants_attack_speed] = 1 (number)
+-- [base_movement_speed_node_buff_low_1] = 1 (number)
+-- [zealot_martyrdom_grants_toughness] = 1 (number)
+-- [zealot_toughness_in_melee] = 1 (number)
 
-		resource_info.max_stacks		= profile.talents.zealot_2_tier_5_name_3 and extra_stacks or martyrdom_passive.max_stacks
-		resource_info.damage_per_stack	= martyrdom_passive.damage_per_step
+		local p = self._parent
+
+		local player_extensions = parent:player_extensions()
+
+		mod:dump(p, "p", 4)
+
+		--local player_extensions = p:player_extensions()	--parent._parent:player_extensions()
+		local health_extension = player_extensions.health
+		local max_wounds = health_extension:max_wounds()
+
+		local martyrdom_passive = TalentSettings.zealot_martyrdom
+		local extra_stacks = TalentSettings.zealot_additional_wounds
+
+		resource_info.max_stacks		= max_wounds --profile.talents.zealot_2_tier_5_name_3 and extra_stacks or martyrdom_passive.max_stacks
+		resource_info.damage_per_stack	= 1.08 --martyrdom_passive.damage_per_step
 		resource_info.max_duration		= nil
 	else
 		resource_info.max_stacks = TalentSettings[self._archetype_name .. "_2"].grenade.max_charges
