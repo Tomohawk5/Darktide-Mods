@@ -6,16 +6,21 @@ local UIWidget = mod:original_require("scripts/managers/ui/ui_widget")
 local Stamina = mod:original_require("scripts/utilities/attack/stamina")
 local UIHudSettings = mod:original_require("scripts/settings/ui/ui_hud_settings")
 local TalentSettings = mod:original_require("scripts/settings/talent/talent_settings_new") --mod:original_require("scripts/settings/buff/talent_settings")
+local ArchetypeTalents = mod:original_require("scripts/settings/ability/archetype_talents/archetype_talents")
+local AbilitySettings = mod:original_require("scripts/settings/ability/player_abilities/player_abilities")
 local HudElementblitzbar = class("HudElementblitzbar", "HudElementBase")
 
 -- NEW ABILITIES LOCATION
 --"scripts/settings/ability/player_abilities/player_abilities"
+--"scripts/settings/talent/talent_settings_new"
 
 local resource_info = {
 	max_stacks = nil,
 	max_duration = nil,
 	stacks = 0,
 	progress = 0,
+	replenish = nil,
+	replenish_buff = nil,
 	damage_per_stack = nil,
 	damage_boost = function (self)
 		return math.clamp(self.stacks, 0, self.max_stacks) * self.damage_per_stack
@@ -23,7 +28,8 @@ local resource_info = {
 }
 
 local function _is_warp_charge_buff(s)
-    return s == "psyker_biomancer_souls" or s == "psyker_biomancer_souls_increased_max_stacks"
+    --return s == "psyker_biomancer_souls" or s == "psyker_biomancer_souls_increased_max_stacks"
+	return s == "psyker_souls"
 end
 
 HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
@@ -36,76 +42,342 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 	self._player = Managers.player:local_player(1)
     self._archetype_name = self._player:archetype_name()
     local profile		 = self._player:profile()
+	local player_talents = profile.talents
 
-	mod:dump(profile.talents, "profile.talents", 4)
-	mod:dump(profile, "profile", 4)
+	--mod:dump(profile, "profile", 4)
+	--mod:dump(ArchetypeTalents, "ArchetypeTalents", 4)
+	--mod:dump(profile.talents, "profile.talents", 4)
+
+	-- if false then
+	-- 	if self._archetype_name == "psyker" then
+	-- 		local souls_passive = TalentSettings.psyker_2.passive_1
+	-- 		local extra_souls	= TalentSettings.psyker_2.offensive_2_1.max_souls_talent
+
+	-- 		resource_info.max_stacks		= profile.talents.psyker_2_tier_5_name_1 and extra_souls or souls_passive.base_max_souls
+	-- 		resource_info.damage_per_stack	= souls_passive.damage / extra_souls
+	-- 		resource_info.max_duration		= souls_passive.soul_duration
+
+	-- 	elseif self._archetype_name == "zealot" and mod:get("martyrdom") then
+	-- 		self._zealot_martyrdom = true
+
+	-- -- [zealot_increase_ranged_close_damage] = 1 (number)
+	-- -- [zealot_toughness_on_heavy_kills] = 1 (number)
+	-- -- [zealot_dash] = 1 (number)
+	-- -- [zealot_heal_part_of_damage_taken] = 1 (number)
+	-- -- [zealot_attack_speed] = 1 (number)
+	-- -- [base_toughness_node_buff_low_1] = 1 (number)
+	-- -- [zealot_increased_damage_vs_resilient] = 1 (number)
+	-- -- [base_toughness_node_buff_low_2] = 1 (number)
+	-- -- [base_melee_damage_node_buff_low_1] = 1 (number)
+	-- -- [zealot_toughness_damage_coherency] = 1 (number)
+	-- -- [base_melee_damage_node_buff_low_2] = 1 (number)
+	-- -- [zealot_hits_grant_stacking_damage] = 1 (number)
+	-- -- [zealot_martyrdom] = 1 (number)
+	-- -- [base_toughness_node_buff_low_4] = 2 (number)
+	-- -- [zealot_multi_hits_increase_damage] = 1 (number)
+	-- -- [zealot_additional_wounds] = 1 (number)
+	-- -- [base_toughness_damage_reduction_node_buff_low_1] = 1 (number)
+	-- -- [base_toughness_damage_reduction_node_buff_low_4] = 1 (number)
+	-- -- [zealot_resist_death] = 1 (number)
+	-- -- [zealot_improved_weapon_handling_after_dodge] = 1 (number)
+	-- -- [base_suppression_node_buff_low_1] = 1 (number)
+	-- -- [zealot_damage_boosts_movement] = 1 (number)
+	-- -- [zealot_flame_grenade] = 1 (number)
+	-- -- [zealot_resist_death_healing] = 1 (number)
+	-- -- [base_health_node_buff_medium_1] = 1 (number)
+	-- -- [zealot_attack_speed_post_ability] = 1 (number)
+	-- -- [zealot_toughness_damage_reduction_coherency_improved] = 1 (number)
+	-- -- [zealot_martyrdom_grants_attack_speed] = 1 (number)
+	-- -- [base_movement_speed_node_buff_low_1] = 1 (number)
+	-- -- [zealot_martyrdom_grants_toughness] = 1 (number)
+	-- -- [zealot_toughness_in_melee] = 1 (number)
+
+	-- -- MARTYRDOM
+	-- -- TalentSettings.zealot_2.offensive_3.attack_speed_per_segment
+	-- -- TalentSettings.zealot_2.passive_1.damage_per_step
+	-- -- TalentSettings.zealot_2.passive_1.martyrdom_max_stacks
+
+	-- 		local p = self._parent
+
+	-- 		local player_extensions = parent:player_extensions()
+
+	-- 		--mod:dump(p, "p", 4)
+
+	-- 		--local player_extensions = p:player_extensions()	--parent._parent:player_extensions()
+	-- 		--local health_extension = player_extensions.health
+	-- 		--local max_wounds = health_extension:max_wounds()
+
+	-- 		local martyrdom_passive = TalentSettings.zealot_martyrdom --TalentSettings.zealot_2.passive_1
+	-- 		local extra_stacks = TalentSettings.zealot_additional_wounds
+
+	-- 		resource_info.max_stacks		= 10 --max_wounds --profile.talents.zealot_2_tier_5_name_3 and extra_stacks or martyrdom_passive.max_stacks
+	-- 		resource_info.damage_per_stack	= 1.08 --martyrdom_passive.damage_per_step
+	-- 		resource_info.max_duration		= nil
+	-- 	else
+	-- 		resource_info.max_stacks = ArchetypeTalents.veteran.veteran_extra_grenade and 1 or 0 --TalentSettings[self._archetype_name .. "_2"].grenade.max_charges
+	-- 		if self._archetype_name == "veteran" then
+	-- 			self._veteran_replenish = false --profile.talents.veteran_2_tier_2_name_3
+	-- 			--resource_info.max_duration = TalentSettings.veteran_2.offensive_1_3.grenade_replenishment_cooldown
+	-- 			resource_info.max_duration = ArchetypeTalents.veteran.veteran_replenish_grenades.format_values.time.value
+	-- 		else
+	-- 			resource_info.max_duration = nil
+	-- 		end
+	-- 	end
+	-- end
+
+	-- psyker_souls_increase_damage = {
+	-- 	description = "loc_talent_psyker_souls_increase_damage_desc",
+	-- 	name = "Reduces warp charge generation per soul.",
+	-- 	display_name = "loc_talent_psyker_souls_increase_damage",
+	-- 	icon = "content/ui/textures/icons/talents/psyker_2/psyker_2_tier_2_3",
+	-- 	format_values = {
+	-- 		damage = {
+	-- 			prefix = "+",
+	-- 			format_type = "percentage",
+	-- 			value = talent_settings_2.passive_1.damage / talent_settings_2.offensive_2_1.max_souls_talent
+	-- 		}
+	-- 	},
+	-- 	passive = {
+	-- 		buff_template_name = "psyker_souls_increase_damage",
+	-- 		identifier = "psyker_souls_increase_damage"
+	-- 	}
+	-- }
+
+	-- psyker_increased_max_souls = {
+	-- 	description = "loc_talent_psyker_increased_souls_desc",
+	-- 	name = "Increases the maximum amount of souls you can have to 6.",
+	-- 	display_name = "loc_talent_psyker_increased_souls",
+	-- 	icon = "content/ui/textures/icons/talents/psyker_2/psyker_2_tier_5_1",
+	-- 	format_values = {
+	-- 		soul_amount = {
+	-- 			format_type = "number",
+	-- 			value = max_souls_talent
+	-- 		}
+	-- 	},
+	-- 	special_rule = {
+	-- 		special_rule_name = "psyker_increased_max_souls",
+	-- 		identifier = "psyker_increased_max_souls"
+	-- 	}
+	-- }
+
+	-- ##############################################################################
+	-- #							EMPOWERED PSIONICS								#
+	-- ##############################################################################
+	
+	-- psyker_empowered_ability = {
+	-- 	description = "loc_talent_psyker_empowered_ability_description",
+	-- 	name = "Passive - Kills have a chance to empower your next blitz ability",
+	-- 	display_name = "loc_talent_psyker_empowered_ability",
+	-- 	icon = "content/ui/textures/icons/talents/psyker_3/psyker_3_base_1",
+	-- 	format_values = {
+	-- 		chance = {
+	-- 			num_decimals = 1,
+	-- 			format_type = "percentage",
+	-- 			find_value = {
+	-- 				buff_template_name = "psyker_empowered_grenades_passive",
+	-- 				find_value_type = "buff_template",
+	-- 				path = {
+	-- 					"proc_events",
+	-- 					proc_events.on_hit
+	-- 				}
+	-- 			}
+	-- 		},
+	-- 		blitz_one = {
+	-- 			value = "loc_talent_psyker_brain_burst_improved",
+	-- 			format_type = "loc_string"
+	-- 		},
+	-- 		smite_cost = {
+	-- 			format_type = "percentage",
+	-- 			value = 1 - talent_settings_3.passive_1.psyker_smite_cost_multiplier
+	-- 		},
+	-- 		smite_attack_speed = {
+	-- 			format_type = "percentage",
+	-- 			find_value = {
+	-- 				buff_template_name = "psyker_empowered_grenades_passive_visual_buff",
+	-- 				find_value_type = "buff_template",
+	-- 				path = {
+	-- 					"stat_buffs",
+	-- 					stat_buffs.smite_attack_speed
+	-- 				}
+	-- 			}
+	-- 		},
+	-- 		smite_damage = {
+	-- 			prefix = "+",
+	-- 			format_type = "percentage",
+	-- 			find_value = {
+	-- 				buff_template_name = "psyker_empowered_grenades_passive_visual_buff",
+	-- 				find_value_type = "buff_template",
+	-- 				path = {
+	-- 					"stat_buffs",
+	-- 					stat_buffs.smite_damage
+	-- 				}
+	-- 			}
+	-- 		},
+	-- 		blitz_two = {
+	-- 			value = "loc_ability_psyker_chain_lightning",
+	-- 			format_type = "loc_string"
+	-- 		},
+	-- 		chain_lightning_damage = {
+	-- 			prefix = "+",
+	-- 			format_type = "percentage",
+	-- 			value = talent_settings_3.passive_1.chain_lightning_damage
+	-- 		},
+	-- 		chain_lightning_jump_time_multiplier = {
+	-- 			format_type = "percentage",
+	-- 			find_value = {
+	-- 				buff_template_name = "psyker_empowered_grenades_passive_visual_buff",
+	-- 				find_value_type = "buff_template",
+	-- 				path = {
+	-- 					"stat_buffs",
+	-- 					stat_buffs.chain_lightning_jump_time_multiplier
+	-- 				}
+	-- 			}
+	-- 		},
+	-- 		blitz_three = {
+	-- 			value = "loc_ability_psyker_blitz_throwing_knives",
+	-- 			format_type = "loc_string"
+	-- 		},
+	-- 		throwing_knives_cost = {
+	-- 			value = 1,
+	-- 			format_type = "percentage"
+	-- 		},
+	-- 		throwing_knives_charges = {
+	-- 			value = 0,
+	-- 			format_type = "number"
+	-- 		},
+	-- 		throwing_knives_old_damage = {
+	-- 			format_type = "number",
+	-- 			find_value = {
+	-- 				damage_profile_name = "psyker_throwing_knives",
+	-- 				find_value_type = "base_damage",
+	-- 				power_level = PowerLevelSettings.default_power_level
+	-- 			}
+	-- 		},
+	-- 		throwing_knives_new_damage = {
+	-- 			format_type = "number",
+	-- 			find_value = {
+	-- 				damage_profile_name = "psyker_throwing_knives_pierce",
+	-- 				find_value_type = "base_damage",
+	-- 				power_level = PowerLevelSettings.default_power_level
+	-- 			}
+	-- 		}
+	-- 	},
+	-- 	passive = {
+	-- 		buff_template_name = "psyker_empowered_grenades_passive",
+	-- 		identifier = "psyker_empowered_grenades_passive"
+	-- 	},
+	-- 	special_rule = {
+	-- 		special_rule_name = "psyker_empowered_grenades",
+	-- 		identifier = "psyker_empowered_grenades"
+	-- 	}
+	-- }
 
 	if self._archetype_name == "psyker" then
-		local souls_passive = TalentSettings.psyker_2.passive_1
-		local extra_souls	= TalentSettings.psyker_2.offensive_2_1.max_souls_talent
+		local knives = player_talents.psyker_grenade_throwing_knives
 
-		resource_info.max_stacks		= profile.talents.psyker_2_tier_5_name_1 and extra_souls or souls_passive.base_max_souls
-		resource_info.damage_per_stack	= souls_passive.damage / extra_souls
-		resource_info.max_duration		= souls_passive.soul_duration
+		local grenade = knives and profile.archetype.talents.psyker_grenade_throwing_knives
 
-	elseif self._archetype_name == "zealot" and mod:get("martyrdom") then
-		self._zealot_martyrdom = true
+		if grenade then
+			local grenade_ability = grenade.player_ability.ability
 
--- [zealot_increase_ranged_close_damage] = 1 (number)
--- [zealot_toughness_on_heavy_kills] = 1 (number)
--- [zealot_dash] = 1 (number)
--- [zealot_heal_part_of_damage_taken] = 1 (number)
--- [zealot_attack_speed] = 1 (number)
--- [base_toughness_node_buff_low_1] = 1 (number)
--- [zealot_increased_damage_vs_resilient] = 1 (number)
--- [base_toughness_node_buff_low_2] = 1 (number)
--- [base_melee_damage_node_buff_low_1] = 1 (number)
--- [zealot_toughness_damage_coherency] = 1 (number)
--- [base_melee_damage_node_buff_low_2] = 1 (number)
--- [zealot_hits_grant_stacking_damage] = 1 (number)
--- [zealot_martyrdom] = 1 (number)
--- [base_toughness_node_buff_low_4] = 2 (number)
--- [zealot_multi_hits_increase_damage] = 1 (number)
--- [zealot_additional_wounds] = 1 (number)
--- [base_toughness_damage_reduction_node_buff_low_1] = 1 (number)
--- [base_toughness_damage_reduction_node_buff_low_4] = 1 (number)
--- [zealot_resist_death] = 1 (number)
--- [zealot_improved_weapon_handling_after_dodge] = 1 (number)
--- [base_suppression_node_buff_low_1] = 1 (number)
--- [zealot_damage_boosts_movement] = 1 (number)
--- [zealot_flame_grenade] = 1 (number)
--- [zealot_resist_death_healing] = 1 (number)
--- [base_health_node_buff_medium_1] = 1 (number)
--- [zealot_attack_speed_post_ability] = 1 (number)
--- [zealot_toughness_damage_reduction_coherency_improved] = 1 (number)
--- [zealot_martyrdom_grants_attack_speed] = 1 (number)
--- [base_movement_speed_node_buff_low_1] = 1 (number)
--- [zealot_martyrdom_grants_toughness] = 1 (number)
--- [zealot_toughness_in_melee] = 1 (number)
+			resource_info.max_stacks = grenade_ability.max_charges
+			resource_info.replenish = true
+			resource_info.replenish_buff = "psyker_knife_replenishment"
+			resource_info.max_duration = grenade.cooldown
 
-		local p = self._parent
-
-		local player_extensions = parent:player_extensions()
-
-		mod:dump(p, "p", 4)
-
-		--local player_extensions = p:player_extensions()	--parent._parent:player_extensions()
-		local health_extension = player_extensions.health
-		local max_wounds = health_extension:max_wounds()
-
-		local martyrdom_passive = TalentSettings.zealot_martyrdom
-		local extra_stacks = TalentSettings.zealot_additional_wounds
-
-		resource_info.max_stacks		= max_wounds --profile.talents.zealot_2_tier_5_name_3 and extra_stacks or martyrdom_passive.max_stacks
-		resource_info.damage_per_stack	= 1.08 --martyrdom_passive.damage_per_step
-		resource_info.max_duration		= nil
-	else
-		resource_info.max_stacks = TalentSettings[self._archetype_name .. "_2"].grenade.max_charges
-		if self._archetype_name == "veteran" then
-			self._veteran_replenish = profile.talents.veteran_2_tier_2_name_3
-			resource_info.max_duration = TalentSettings.veteran_2.offensive_1_3.grenade_replenishment_cooldown
+			local assail_quicker = "psyker_reduced_throwing_knife_cooldown"
+			psyker_throwing_knives_reduced_cooldown.format_values.
 		else
+			resource_info.max_stacks = nil
 			resource_info.max_duration = nil
+			mod:error("NO GRENADE EQUIPPED")
+		end
+	end
+
+	if self._archetype_name == "zealot" then
+		local stun	= player_talents.zealot_shock_grenade or player_talents.zealot_improved_stun_grenade
+		local flame	= player_talents.zealot_flame_grenade
+		local knife	= player_talents.zealot_throwing_knives
+
+		mod:echo(stun)
+		mod:echo(flame)
+		mod:echo(knife)
+
+		local grenade = stun	and profile.archetype.talents.zealot_shock_grenade or
+						flame	and profile.archetype.talents.zealot_flame_grenade or
+						knife	and profile.archetype.talents.zealot_throwing_knives
+
+		if grenade then
+			local grenade_ability = grenade.player_ability.ability
+
+			mod:echo(grenade.name .. ": x" .. grenade_ability.max_charges)
+
+			resource_info.max_stacks = grenade_ability.max_charges
+		else
+			resource_info.max_stacks = nil
+			resource_info.max_duration = nil
+			mod:error("NO GRENADE EQUIPPED")
+		end
+	end
+
+	if self._archetype_name == "veteran" then
+
+		local frag = player_talents.veteran_frag_grenade
+		local krak = player_talents.veteran_krak_grenade
+		local smoke = player_talents.veteran_smoke_grenade
+
+		local grenade = frag	and profile.archetype.talents.frag_grenade or	--ArchetypeTalents.veteran.veteran_frag_grenade or
+						krak	and profile.archetype.talents.krak_grenade or	--ArchetypeTalents.veteran.veteran_krak_grenade or
+						smoke	and profile.archetype.talents.smoke_grenade	--ArchetypeTalents.veteran.veteran_smoke_grenade
+
+		if grenade then
+			local grenade_ability = grenade.player_ability.ability
+			local grenades = grenade_ability.max_charges
+			
+			mod:echo(grenade.name .. ": x" .. grenades)
+			
+			local extra_grenade		= player_talents.veteran_extra_grenade		and 1 or 0
+			local replenish_grenade = player_talents.veteran_replenish_grenades and 1 or 0
+			
+			--ArchetypeTalents.veteran.veteran_replenish_grenades
+			mod:echo("Extra Grenade: " .. (extra_grenade == 1 and "true" or "false"))			--mod:echo(extra_grenade)
+			mod:echo("Replenish Grenade: " .. (replenish_grenade == 1 and "true" or "false"))	--mod:echo(replenish_grenade)
+			
+			resource_info.max_stacks = grenades + extra_grenade
+			resource_info.replenish = replenish_grenade == 1
+			resource_info.replenish_buff = "veteran_grenade_replenishment"
+			resource_info.max_duration = profile.archetype.talents.veteran_replenish_grenades.format_values.time.value
+		else
+			resource_info.max_stacks = nil
+			resource_info.max_duration = nil
+			mod:error("NO GRENADE EQUIPPED")
+		end
+	end
+
+	if self._archetype_name == "ogryn" then
+		local rock	= player_talents.ogryn_grenade_friend_rock
+		local box	= player_talents.ogryn_grenade_box or player_talents.ogryn_box_explodes
+		local frag	= player_talents.ogryn_grenade_frag
+
+		local grenade = rock	and profile.archetype.talents.ogryn_grenade_friend_rock or
+						box		and profile.archetype.talents.ogryn_grenade_box or
+						frag	and profile.archetype.talents.ogryn_grenade_frag
+
+		if grenade then
+			local grenade_ability = grenade.player_ability.ability
+
+			mod:echo(grenade.name .. ": x" .. grenade_ability.max_charges)
+
+			resource_info.max_stacks	= grenade_ability.max_charges
+			if rock then
+				resource_info.replenish		= true
+				resource_info.replenish_buff = "ogryn_friend_grenade_replenishment"
+				resource_info.max_duration	= grenade.cooldown
+			end
+		else
+			resource_info.max_stacks = nil
+			resource_info.max_duration = nil
+			mod:error("NO GRENADE EQUIPPED")
 		end
 	end
 
@@ -131,6 +403,85 @@ HudElementblitzbar._is_resource_buff = function (self, buff)
 end
 
 HudElementblitzbar.update = function (self, dt, t, ui_renderer, render_settings, input_service)
+	HudElementblitzbar.super.update(self, dt, t, ui_renderer, render_settings, input_service)
+
+    local widget = self._widgets_by_name.gauge
+    if not widget then return end
+
+	local parent = self._parent
+	local player_extensions = parent:player_extensions()
+
+	local grenade = mod:get(self._archetype_name .. "_grenade")
+
+	if player_extensions then
+		local buff_extension = player_extensions.buff
+		if buff_extension then
+			local buffs = buff_extension:buffs()
+			for i = 1, #buffs do
+				local buff = buffs[i]
+				local buff_name = buff:template_name()
+
+				if buff_name == resource_info.replenish_buff then
+					resource_info.progress = buff:duration_progress()
+					--mod:echo(buff:duration_progress())
+				end
+			end
+		end
+
+
+		if grenade then
+			local ability_extension = player_extensions.ability
+			if ability_extension and ability_extension:ability_is_equipped("grenade_ability") then
+				resource_info.stacks = ability_extension:remaining_ability_charges("grenade_ability")
+			end
+
+			if not resource_info.replenish then
+				resource_info.progress = nil
+			end
+		else
+		end
+
+		-- ///////////////////////////////////////////////////////////////
+		--								[GRENADES]
+		-- ///////////////////////////////////////////////////////////////
+		-- ogryn_grenade_friend_rock
+		-- 	"ogryn_friend_grenade_replenishment"
+		-- veteran_frag_grenade.max_charges
+		-- veteran_krak_grenade.max_charges
+		-- veteran_smoke_grenade.max_charges
+		-- veteran_extra_grenade
+		-- 	passive = {
+		-- 		buff_template_name = "veteran_extra_grenade",
+		-- 		identifier = "veteran_extra_grenade"
+		-- 	}
+		-- veteran_replenish_grenades = {
+		-- 	format_values = {
+		-- 		amount = {
+		-- 			format_type = "value",
+		-- 			value = talent_settings_2.offensive_1_3.grenade_restored
+		-- 		},
+		-- 		time = {
+		-- 			format_type = "value",
+		-- 			value = talent_settings_2.offensive_1_3.grenade_replenishment_cooldown
+		-- 		}
+		-- 	},
+		-- 	passive = {
+		-- 		buff_template_name = "veteran_grenade_replenishment",
+		-- 		identifier = "veteran_grenade_replenishment"
+		-- 	}
+		-- }
+	end
+
+    self:_update_shield_amount()
+
+	if mod:get(self._archetype_name .. "_show_gauge") then
+		widget.content.visible = true
+	else
+		self:_update_visibility(dt)
+	end
+end
+
+local function update_old()
 	HudElementblitzbar.super.update(self, dt, t, ui_renderer, render_settings, input_service)
 
     local widget = self._widgets_by_name.gauge
@@ -322,7 +673,7 @@ HudElementblitzbar._update_shield_amount = function (self)
 end
 
 HudElementblitzbar._update_visibility = function (self, dt)
-	local draw = resource_info.stacks > 0 or self._veteran_replenish
+	local draw = resource_info.stacks > 0 or resource_info.replenish --self._veteran_replenish
 
 	local alpha_speed = 3
 	local alpha_multiplier = self._alpha_multiplier or 0
@@ -355,10 +706,18 @@ HudElementblitzbar._draw_widgets = function (self, dt, t, input_service, ui_rend
 end
 local function y_offset()
 	local Y_OFFSETS = {}
+	Y_OFFSETS[12] = 0
+	Y_OFFSETS[11] = 0
+	Y_OFFSETS[10] = 0
+	Y_OFFSETS[9] = 0
+	Y_OFFSETS[8] = 0
+	Y_OFFSETS[7] = 0
 	Y_OFFSETS[6] = 39
+	Y_OFFSETS[5] = 0
 	Y_OFFSETS[4] = 64
 	Y_OFFSETS[3] = 90
 	Y_OFFSETS[2] = 141
+	Y_OFFSETS[1] = 0
 	return Y_OFFSETS[resource_info.max_stacks]
 end
 
@@ -373,7 +732,8 @@ HudElementblitzbar._get_value_text = function (self)
 
 	local description = mod:get(archetype .. "_gauge_value_text")
 
-	if self._veteran_replenish and mod:get("veteran_override_replenish_text") then --and value_option ~= mod.value_options["none"] then
+	--if self._veteran_replenish and mod:get("veteran_override_replenish_text") then --and value_option ~= mod.value_options["none"] then
+	if resource_info.replenish and mod:get("veteran_override_replenish_text") then
 		if value_option ~= mod.value_options["value_option_time_percent"] then
 			value_option = mod.value_options["value_option_time_seconds"]
 		end
@@ -392,13 +752,16 @@ HudElementblitzbar._get_value_text = function (self)
 	elseif value_option == mod.value_options["value_option_stacks"] then
 		format = "%.0fx"
 		value = resource_info.stacks
-	elseif value_option == mod.value_options["value_option_time_percent"] and (self._archetype_name == "psyker" or self._veteran_replenish) then
+	--elseif value_option == mod.value_options["value_option_time_percent"] and (self._archetype_name == "psyker" or self._veteran_replenish) then
+	elseif value_option == mod.value_options["value_option_time_percent"] and (self._archetype_name == "psyker" or resource_info.replenish) then
 		format = "%.0f%%"
 		value = progress * 100
-	elseif value_option == mod.value_options["value_option_time_seconds"] and (self._archetype_name == "psyker" or self._veteran_replenish) then
+	--elseif value_option == mod.value_options["value_option_time_seconds"] and (self._archetype_name == "psyker" or self._veteran_replenish) then
+	elseif value_option == mod.value_options["value_option_time_seconds"] and (self._archetype_name == "psyker" or resource_info.replenish) then
 		format = "%.0fs"
 		value = progress * max_duration
-		if self._veteran_replenish then --count down for veteran demostockpile
+		--if self._veteran_replenish then --count down for veteran demostockpile
+		if resource_info.replenish then
 			value = max_duration - value
 		end
 	end
@@ -445,7 +808,7 @@ HudElementblitzbar._draw_shields = function (self, dt, t, ui_renderer)
 	local shields = self._shields
 
 	local progress = resource_info.progress or 1
-	local stacks = resource_info.stacks - (self._veteran_replenish and 0 or 1)
+	local stacks = resource_info.stacks - (resource_info.replenish and 0 or 1)
     local souls_progress = ( progress + ( stacks ) ) / resource_info.max_stacks
 
 	for i = num_shields, 1, -1 do

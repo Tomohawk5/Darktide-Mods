@@ -124,6 +124,11 @@ local function archetype_options()
 			default_value = true,
 			sub_widgets = {
 				{
+					setting_id = archetype .. "_grenade",
+					type = "checkbox",
+					default_value = true
+				},
+				{
 					setting_id = archetype .. "_gauge_text",
 					type = "dropdown",
 					default_value = default.text, --default_text[archetype], --mod.text_options["text_option_warpcharges"],
