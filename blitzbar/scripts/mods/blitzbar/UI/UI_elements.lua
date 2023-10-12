@@ -17,6 +17,7 @@ local HudElementblitzbar = class("HudElementblitzbar", "HudElementBase")
 local resource_info = {
 	max_stacks = nil,
 	max_duration = nil,
+	stack_buff = nil,
 	stacks = 0,
 	progress = 0,
 	replenish = nil,
@@ -163,7 +164,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 	-- ##############################################################################
 	-- #							EMPOWERED PSIONICS								#
 	-- ##############################################################################
-	
+
 	-- psyker_empowered_ability = {
 	-- 	description = "loc_talent_psyker_empowered_ability_description",
 	-- 	name = "Passive - Kills have a chance to empower your next blitz ability",
@@ -273,6 +274,106 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 	-- }
 
 	if self._archetype_name == "psyker" then
+		local psionics_equipped = player_talents.psyker_empowered_ability == 1
+		if psionics_equipped then
+			mod:echo("PSIONICS EQUIPPED")
+
+			local extra_stacks = player_talents.psyker_empowered_grenades_increased_max_stacks == 1
+
+			mod:echo("extra_stacks: " .. (extra_stacks and "true" or "false"))
+
+			local psionics = {
+				max_stacks = extra_stacks and 3 or 1,
+				max_duration = nil,
+				-- stack_buff = {
+				-- 	"psyker_empowered_grenades_passive",
+				-- 	"psyker_empowered_grenades_passive_improved"
+				-- },
+				stack_buff = extra_stacks and "psyker_empowered_grenades_passive_visual_buff_increased" or "psyker_empowered_grenades_passive_visual_buff",
+				stacks = 0,
+				progress = 0,
+				replenish = nil,
+				replenish_buff = nil,
+				damage_per_stack = nil,
+				damage_boost = nil
+			}
+
+			resource_info = table.clone(psionics)
+		end
+
+		local souls_equipped = player_talents.psyker_passive_souls_from_elite_kills == 1
+		if souls_equipped then
+			mod:echo("SOULS EQUIPPED")
+
+			local extra_souls = player_talents.psyker_increased_max_souls
+			local souls_amount = profile.archetype.talents.psyker_increased_max_souls.format_values.soul_amount.value -- 6
+			local souls_damage = player_talents.psyker_souls_increase_damage
+			local souls_damage_increase = profile.archetype.talents.psyker_souls_increased_damage.format_values.damage.value -- +0.04%
+
+			--template_data.buff_name = template_data.psyker_increased_max_souls and "psyker_souls_increased_max_stacks" or "psyker_souls"
+
+			local souls = {
+				max_stacks = extra_souls and 6 or 4,
+				max_duration = 20,
+				stack_buff = extra_souls and "psyker_souls_increased_max_stacks" or "psyker_souls",
+				stacks = 0,
+				progress = 0,
+				replenish = nil,
+				replenish_buff = nil,
+				damage_per_stack = souls_damage and souls_damage_increase or 0,
+				damage_boost = resource_info.damage_boost
+			}
+
+			resource_info = table.clone(souls)
+		end
+
+		local destiny_equipped = player_talents.psyker_marked
+		if destiny_equipped then
+			mod:echo("DESTINY EQUIPPED")
+
+			local destiny = {
+				max_stacks = 15,	-- or 30
+				max_duration = 15,	-- or 30
+				stack_buff = {
+					"psyker_marked_enemies_passive_bonus_stacking_increased_stacks",
+					"psyker_marked_enemies_passive_bonus_stacking_increased_duration",
+					"psyker_marked_enemies_passive_bonus_stacking",
+				},
+				stacks = 0,
+				progress = 0,
+				replenish = nil,
+				replenish_buff = nil,
+				damage_per_stack = 0, --psyker_souls_increase_damage.format_values.value,
+				damage_boost = nil
+			}
+
+			resource_info = table.clone(destiny)
+		end
+		-- psyker_souls_increase_damage = {
+		-- 	description = "loc_talent_psyker_souls_increase_damage_desc",
+		-- 	name = "Reduces warp charge generation per soul.",
+		-- 	display_name = "loc_talent_psyker_souls_increase_damage",
+		-- 	icon = "content/ui/textures/icons/talents/psyker_2/psyker_2_tier_2_3",
+		-- 	format_values = {
+		-- 		damage = {
+		-- 			prefix = "+",
+		-- 			format_type = "percentage",
+		-- 			value = talent_settings_2.passive_1.damage / talent_settings_2.offensive_2_1.max_souls_talent
+		-- 		}
+		-- 	},
+		-- 	passive = {
+		-- 		buff_template_name = "psyker_souls_increase_damage",
+		-- 		identifier = "psyker_souls_increase_damage"
+		-- 	}
+		-- }
+
+		--psyker_souls_increase_damage.passive.buff_template_name
+
+
+
+		--resource_info.max_stacks = stacks + extra_stacks
+		--resource_info.stack_buff = "psyker_empowered_grenades_passive"
+
 		local knives = player_talents.psyker_grenade_throwing_knives
 
 		local grenade = knives and profile.archetype.talents.psyker_grenade_throwing_knives
@@ -286,12 +387,46 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 			resource_info.max_duration = grenade.cooldown
 
 			local assail_quicker = "psyker_reduced_throwing_knife_cooldown"
-			psyker_throwing_knives_reduced_cooldown.format_values.
-		else
-			resource_info.max_stacks = nil
-			resource_info.max_duration = nil
-			mod:error("NO GRENADE EQUIPPED")
+			--psyker_throwing_knives_reduced_cooldown.format_values.
+		-- else
+		-- 	resource_info.max_stacks = nil
+		-- 	resource_info.max_duration = nil
+		-- 	mod:error("NO GRENADE EQUIPPED")
 		end
+
+		if not (souls_equipped or psionics_equipped or destiny_equipped or knives) then
+			resource_info = {
+				max_stacks = nil,
+				max_duration = nil,
+				stack_buff = nil,
+				stacks = nil,
+				progress = nil,
+				replenish = nil,
+				replenish_buff = nil,
+				damage_per_stack = nil,
+				damage_boost = nil
+			}
+		end
+
+		--local souls = player_talents.psyker_souls
+
+		-- psyker_increased_max_souls = {
+		-- 	description = "loc_talent_psyker_increased_souls_desc",
+		-- 	name = "Increases the maximum amount of souls you can have to 6.",
+		-- 	display_name = "loc_talent_psyker_increased_souls",
+		-- 	icon = "content/ui/textures/icons/talents/psyker_2/psyker_2_tier_5_1",
+		-- 	format_values = {
+		-- 		soul_amount = {
+		-- 			format_type = "number",
+		-- 			value = max_souls_talent
+		-- 		}
+		-- 	},
+		-- 	special_rule = {
+		-- 		special_rule_name = "psyker_increased_max_souls",
+		-- 		identifier = "psyker_increased_max_souls"
+		-- 	}
+		-- }
+
 	end
 
 	if self._archetype_name == "zealot" then
@@ -381,6 +516,17 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		end
 	end
 
+	mod:echo("> RESOURCE INFO")
+	--mod:echo("max_stacks: " .. resource_info.max_stacks == nil and "[x]" or resource_info.max_stacks)
+	mod:echo("max_stacks: " .. (resource_info.max_stacks or "[x]"))
+	mod:echo("max_duration: " .. (resource_info.max_duration or "[x]"))
+	mod:echo("stack_buff: " .. (resource_info.stack_buff or "[x]"))
+	mod:echo("replenish: " .. (resource_info.replenish or "[x]"))
+	mod:echo("replenish_buff: " .. (resource_info.replenish_buff or "[x]"))
+	mod:echo("damage_per_stack: " .. (resource_info.damage_per_stack or "[x]"))
+	mod:echo("damage_boost: " .. (resource_info.damage_boost  or "[x]"))
+	mod:echo("< RESOURCE INFO")
+
 	mod:set("gauge_text", self._archetype_name .. "_gauge_text")
 end
 
@@ -416,15 +562,33 @@ HudElementblitzbar.update = function (self, dt, t, ui_renderer, render_settings,
 	if player_extensions then
 		local buff_extension = player_extensions.buff
 		if buff_extension then
+			local found_buff = false
 			local buffs = buff_extension:buffs()
 			for i = 1, #buffs do
 				local buff = buffs[i]
 				local buff_name = buff:template_name()
 
-				if buff_name == resource_info.replenish_buff then
-					resource_info.progress = buff:duration_progress()
-					--mod:echo(buff:duration_progress())
+				if buff_name:find("^psyker_empowered") ~= nil then
+					mod:echo(buff_name)
 				end
+
+				if buff_name == resource_info.replenish_buff then
+					mod:echo("replenish_buff")
+					resource_info.progress = buff:duration_progress()
+					found_buff = true
+				end
+				
+				if buff_name == resource_info.stack_buff then
+					mod:echo("stack_buff")
+					resource_info.stacks = math.min(buff:stack_count(), resource_info.max_stacks)
+					resource_info.progress = buff:duration_progress()
+					found_buff = true
+				end
+			end
+
+			if not found_buff then
+				resource_info.progress = nil
+				resource_info.stacks = 0
 			end
 		end
 
@@ -471,6 +635,8 @@ HudElementblitzbar.update = function (self, dt, t, ui_renderer, render_settings,
 		-- 	}
 		-- }
 	end
+
+	--mod:echo(resource_info.stacks)
 
     self:_update_shield_amount()
 
@@ -746,18 +912,18 @@ HudElementblitzbar._get_value_text = function (self)
 	local full = (progress == nil and stacks == max_stacks) or (progress == 1 and stacks == max_stacks)
 	local empty = (progress == nil and stacks == 0) or (progress == 0 and stacks == 0)
 
-	if value_option == mod.value_options["value_option_damage"] and (self._archetype_name == "psyker" or self._zealot_martyrdom) then
+	if value_option == mod.value_options["value_option_damage"] and resource_info.damage_boost then --(self._archetype_name == "psyker" or self._zealot_martyrdom) then
 		format = "%.0f%%"
 		value = resource_info:damage_boost() * 100
 	elseif value_option == mod.value_options["value_option_stacks"] then
 		format = "%.0fx"
 		value = resource_info.stacks
 	--elseif value_option == mod.value_options["value_option_time_percent"] and (self._archetype_name == "psyker" or self._veteran_replenish) then
-	elseif value_option == mod.value_options["value_option_time_percent"] and (self._archetype_name == "psyker" or resource_info.replenish) then
+	elseif value_option == mod.value_options["value_option_time_percent"] and resource_info.replenish then --(self._archetype_name == "psyker" or resource_info.replenish) then
 		format = "%.0f%%"
 		value = progress * 100
 	--elseif value_option == mod.value_options["value_option_time_seconds"] and (self._archetype_name == "psyker" or self._veteran_replenish) then
-	elseif value_option == mod.value_options["value_option_time_seconds"] and (self._archetype_name == "psyker" or resource_info.replenish) then
+	elseif value_option == mod.value_options["value_option_time_seconds"] and resource_info.replenish then --(self._archetype_name == "psyker" or resource_info.replenish) then
 		format = "%.0fs"
 		value = progress * max_duration
 		--if self._veteran_replenish then --count down for veteran demostockpile
