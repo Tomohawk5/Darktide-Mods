@@ -17,14 +17,20 @@ local HudElementblitzbar = class("HudElementblitzbar", "HudElementBase")
 local resource_info = {
 	max_stacks = nil,
 	max_duration = nil,
+	decay = nil,
 	stack_buff = nil,
 	stacks = 0,
 	progress = 0,
+	timed = nil,
 	replenish = nil,
 	replenish_buff = nil,
 	damage_per_stack = nil,
 	damage_boost = function (self)
-		return math.clamp(self.stacks, 0, self.max_stacks) * self.damage_per_stack
+		if not self.stacks then return nil end
+		if not self.max_stacks then return nil end
+		if not self.damage_per_stack then return nil end
+
+		return math.min(self.stacks, self.max_stacks) * self.damage_per_stack
 	end
 }
 
@@ -276,7 +282,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 	if self._archetype_name == "psyker" then
 		local psionics_equipped = player_talents.psyker_empowered_ability == 1
 		if psionics_equipped then
-			mod:echo("PSIONICS EQUIPPED")
+			mod:notify("PSIONICS EQUIPPED")
 
 			local extra_stacks = player_talents.psyker_empowered_grenades_increased_max_stacks == 1
 
@@ -285,6 +291,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 			local psionics = {
 				max_stacks = extra_stacks and 3 or 1,
 				max_duration = nil,
+				decay = true,
 				-- stack_buff = {
 				-- 	"psyker_empowered_grenades_passive",
 				-- 	"psyker_empowered_grenades_passive_improved"
@@ -292,6 +299,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 				stack_buff = extra_stacks and "psyker_empowered_grenades_passive_visual_buff_increased" or "psyker_empowered_grenades_passive_visual_buff",
 				stacks = 0,
 				progress = 0,
+				timed = false,
 				replenish = nil,
 				replenish_buff = nil,
 				damage_per_stack = nil,
@@ -303,21 +311,23 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 
 		local souls_equipped = player_talents.psyker_passive_souls_from_elite_kills == 1
 		if souls_equipped then
-			mod:echo("SOULS EQUIPPED")
+			mod:notify("SOULS EQUIPPED")
 
 			local extra_souls = player_talents.psyker_increased_max_souls
 			local souls_amount = profile.archetype.talents.psyker_increased_max_souls.format_values.soul_amount.value -- 6
 			local souls_damage = player_talents.psyker_souls_increase_damage
-			local souls_damage_increase = profile.archetype.talents.psyker_souls_increased_damage.format_values.damage.value -- +0.04%
+			local souls_damage_increase = 0.04 --profile.archetype.talents.psyker_souls_increased_damage.format_values.damage.value -- +0.04%
 
 			--template_data.buff_name = template_data.psyker_increased_max_souls and "psyker_souls_increased_max_stacks" or "psyker_souls"
 
 			local souls = {
 				max_stacks = extra_souls and 6 or 4,
 				max_duration = 20,
+				decay = true,
 				stack_buff = extra_souls and "psyker_souls_increased_max_stacks" or "psyker_souls",
 				stacks = 0,
 				progress = 0,
+				timed = true,
 				replenish = nil,
 				replenish_buff = nil,
 				damage_per_stack = souls_damage and souls_damage_increase or 0,
@@ -327,24 +337,28 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 			resource_info = table.clone(souls)
 		end
 
-		local destiny_equipped = player_talents.psyker_marked
+		local destiny_equipped = player_talents.psyker_new_mark_passive
 		if destiny_equipped then
-			mod:echo("DESTINY EQUIPPED")
+			mod:notify("DESTINY EQUIPPED")
+
+			local increased_duration = player_talents.psyker_mark_increased_duration == 1
+			local increased_stacks = player_talents.psyker_mark_increased_max_stacks == 1
+			local weakspot_bonus = player_talents.psyker_mark_weakspot_kills == 1
 
 			local destiny = {
-				max_stacks = 15,	-- or 30
-				max_duration = 15,	-- or 30
-				stack_buff = {
-					"psyker_marked_enemies_passive_bonus_stacking_increased_stacks",
-					"psyker_marked_enemies_passive_bonus_stacking_increased_duration",
-					"psyker_marked_enemies_passive_bonus_stacking",
-				},
+				max_stacks = increased_stacks and 30 or 15,
+				max_duration = increased_duration and 30 or 15,
+				decay = false,
+				stack_buff =	(increased_stacks and "psyker_marked_enemies_passive_bonus_stacking_increased_stacks") or
+								(increased_duration and "psyker_marked_enemies_passive_bonus_stacking_increased_duration") or
+								"psyker_marked_enemies_passive_bonus_stacking",
 				stacks = 0,
 				progress = 0,
+				timed = true,
 				replenish = nil,
 				replenish_buff = nil,
 				damage_per_stack = 0, --psyker_souls_increase_damage.format_values.value,
-				damage_boost = nil
+				damage_boost = resource_info.damage_boost
 			}
 
 			resource_info = table.clone(destiny)
@@ -374,14 +388,21 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		--resource_info.max_stacks = stacks + extra_stacks
 		--resource_info.stack_buff = "psyker_empowered_grenades_passive"
 
+
+
 		local knives = player_talents.psyker_grenade_throwing_knives
 
 		local grenade = knives and profile.archetype.talents.psyker_grenade_throwing_knives
 
-		if grenade then
+		local assail = knives and mod:get("psyker_grenade")
+
+		if assail then
+			mod:notify("ASSAIL EQUIPPED")
 			local grenade_ability = grenade.player_ability.ability
 
 			resource_info.max_stacks = grenade_ability.max_charges
+			resource_info.decay = true
+			resource_info.timed = true
 			resource_info.replenish = true
 			resource_info.replenish_buff = "psyker_knife_replenishment"
 			resource_info.max_duration = grenade.cooldown
@@ -394,18 +415,21 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		-- 	mod:error("NO GRENADE EQUIPPED")
 		end
 
-		if not (souls_equipped or psionics_equipped or destiny_equipped or knives) then
+		if not (souls_equipped or psionics_equipped or destiny_equipped or assail) then
 			resource_info = {
 				max_stacks = nil,
 				max_duration = nil,
+				decay = true,
 				stack_buff = nil,
 				stacks = nil,
 				progress = nil,
+				timed = nil,
 				replenish = nil,
 				replenish_buff = nil,
 				damage_per_stack = nil,
 				damage_boost = nil
 			}
+			mod:notify("No Grenade / Keystone to display!")
 		end
 
 		--local souls = player_talents.psyker_souls
@@ -520,11 +544,13 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 	--mod:echo("max_stacks: " .. resource_info.max_stacks == nil and "[x]" or resource_info.max_stacks)
 	mod:echo("max_stacks: " .. (resource_info.max_stacks or "[x]"))
 	mod:echo("max_duration: " .. (resource_info.max_duration or "[x]"))
+	mod:echo("decay: " .. (resource_info.decay and (resource_info.decay and "true" or "false") or "[x]"))
 	mod:echo("stack_buff: " .. (resource_info.stack_buff or "[x]"))
-	mod:echo("replenish: " .. (resource_info.replenish or "[x]"))
+	mod:echo("timed: " .. (resource_info.timed and (resource_info.timed and "true" or "false") or "[x]"))
+	mod:echo("replenish: " .. (resource_info.replenish and (resource_info.replenish and "true" or "false") or "[x]"))
 	mod:echo("replenish_buff: " .. (resource_info.replenish_buff or "[x]"))
 	mod:echo("damage_per_stack: " .. (resource_info.damage_per_stack or "[x]"))
-	mod:echo("damage_boost: " .. (resource_info.damage_boost  or "[x]"))
+	mod:echo("damage_boost: " .. (resource_info.damage_boost  and "<Function>" or "[x]"))
 	mod:echo("< RESOURCE INFO")
 
 	mod:set("gauge_text", self._archetype_name .. "_gauge_text")
@@ -568,18 +594,19 @@ HudElementblitzbar.update = function (self, dt, t, ui_renderer, render_settings,
 				local buff = buffs[i]
 				local buff_name = buff:template_name()
 
-				if buff_name:find("^psyker_empowered") ~= nil then
-					mod:echo(buff_name)
-				end
+				-- DEBUG:
+				-- if buff_name:find("^psyker_marked_enemies_passive_bonus") ~= nil then
+				-- 	mod:echo(buff_name)
+				-- end
 
 				if buff_name == resource_info.replenish_buff then
-					mod:echo("replenish_buff")
+					--mod:echo("replenish_buff")
 					resource_info.progress = buff:duration_progress()
 					found_buff = true
 				end
-				
+
 				if buff_name == resource_info.stack_buff then
-					mod:echo("stack_buff")
+					--mod:echo("stack_buff")
 					resource_info.stacks = math.min(buff:stack_count(), resource_info.max_stacks)
 					resource_info.progress = buff:duration_progress()
 					found_buff = true
@@ -872,9 +899,11 @@ HudElementblitzbar._draw_widgets = function (self, dt, t, input_service, ui_rend
 end
 local function y_offset()
 	local Y_OFFSETS = {}
+	Y_OFFSETS[30] = 0
+	Y_OFFSETS[15] = 0
 	Y_OFFSETS[12] = 0
 	Y_OFFSETS[11] = 0
-	Y_OFFSETS[10] = 0
+	Y_OFFSETS[10] = 108
 	Y_OFFSETS[9] = 0
 	Y_OFFSETS[8] = 0
 	Y_OFFSETS[7] = 0
@@ -885,6 +914,15 @@ local function y_offset()
 	Y_OFFSETS[2] = 141
 	Y_OFFSETS[1] = 0
 	return Y_OFFSETS[resource_info.max_stacks]
+end
+
+local function vertical_offset(n)
+	local total_segment_spacing = 4 * math.max(n - 1, 0)
+	local total_bar_length = 200 - total_segment_spacing
+
+	local w = math.round(n > 0 and total_bar_length / n or total_bar_length)
+
+	return ((200 / n) + 4) * (n - 1) * 0.5
 end
 
 HudElementblitzbar._get_value_text = function (self)
@@ -915,15 +953,15 @@ HudElementblitzbar._get_value_text = function (self)
 	if value_option == mod.value_options["value_option_damage"] and resource_info.damage_boost then --(self._archetype_name == "psyker" or self._zealot_martyrdom) then
 		format = "%.0f%%"
 		value = resource_info:damage_boost() * 100
-	elseif value_option == mod.value_options["value_option_stacks"] then
+	elseif value_option == mod.value_options["value_option_stacks"] and stacks then
 		format = "%.0fx"
 		value = resource_info.stacks
 	--elseif value_option == mod.value_options["value_option_time_percent"] and (self._archetype_name == "psyker" or self._veteran_replenish) then
-	elseif value_option == mod.value_options["value_option_time_percent"] and resource_info.replenish then --(self._archetype_name == "psyker" or resource_info.replenish) then
+	elseif value_option == mod.value_options["value_option_time_percent"] and resource_info.timed and progress then --(self._archetype_name == "psyker" or resource_info.replenish) then
 		format = "%.0f%%"
 		value = progress * 100
 	--elseif value_option == mod.value_options["value_option_time_seconds"] and (self._archetype_name == "psyker" or self._veteran_replenish) then
-	elseif value_option == mod.value_options["value_option_time_seconds"] and resource_info.replenish then --(self._archetype_name == "psyker" or resource_info.replenish) then
+	elseif value_option == mod.value_options["value_option_time_seconds"] and resource_info.timed and progress and max_duration then --(self._archetype_name == "psyker" or resource_info.replenish) then
 		format = "%.0fs"
 		value = progress * max_duration
 		--if self._veteran_replenish then --count down for veteran demostockpile
@@ -969,13 +1007,35 @@ HudElementblitzbar._draw_shields = function (self, dt, t, ui_renderer)
 	local spacing = HudElementblitzbarSettings.spacing
 	local shield_offset = (shield_width + spacing) * (num_shields - 1) * 0.5
 	if not self._horizontal then
-		shield_offset = shield_offset + y_offset()
+		--shield_offset = shield_offset + y_offset()
+
+		local n = num_shields
+
+		local total_segment_spacing = 4 * math.max(n - 1, 0)
+		local total_bar_length = 200 - total_segment_spacing
+		local w = math.round(n > 0 and total_bar_length / n or total_bar_length)
+
+		w = total_bar_length
+		w = (w * 0.5) + (shield_width - 2)
+		w = (total_bar_length * 0.5) + (shield_width)
+		w = 100 + (shield_width * 0.5) + 4 -- BEST SO FAR
+		w = 100 + (shield_width * 0.5) + (num_shields * 8)
+
+		mod:echo("w : " .. w)
+
+		shield_offset = w
 	end
 	local shields = self._shields
 
 	local progress = resource_info.progress or 1
 	local stacks = resource_info.stacks - (resource_info.replenish and 0 or 1)
     local souls_progress = ( progress + ( stacks ) ) / resource_info.max_stacks
+
+	local decay = resource_info.decay
+
+	--mod:echo("step_fraction: " .. step_fraction)
+	--mod:echo("progress: " .. progress)
+	--mod:echo("souls_progress: " .. souls_progress)
 
 	for i = num_shields, 1, -1 do
 		local shield = shields[i]
@@ -985,26 +1045,32 @@ HudElementblitzbar._draw_shields = function (self, dt, t, ui_renderer)
 		local end_value = i * step_fraction
 		local start_value = end_value - step_fraction
 
+		--mod:echo("start: " .. start_value .. " end: " .. end_value)
+		--mod:echo(string.format("S: %.4f, E: %.4f, P: %.4f", start_value, end_value, souls_progress))
+		--mod:echo(string.format("SP: %.4f, P: %.4f", souls_progress, progress))
+		--mod:echo(decay)
+
 		local color_full_name	= mod:get(self._archetype_name .. "_color_full")	or "ui_hud_yellow_super_light"
 		local color_empty_name	= mod:get(self._archetype_name .. "_color_empty")	or "ui_hud_yellow_medium"
 
 		local value
 		if souls_progress >= end_value then
-			value = 0
+			value = decay and 1 or progress
 		elseif start_value < souls_progress then
-			value = 1 - progress
+			value = progress
 		else
-			value = 1
+			value = 0
 		end
 
 		local color_full	= Color[color_full_name](255, true)
-		local color_empty	= Color[color_empty_name](value == 1 and 100 or 255, true)
+		local color_empty	= Color[color_empty_name](value == 1 and 255 or 100, true)
 
 		local widget_style = widget.style
 		local widget_color = widget_style.full.color
 
 		for e = 1, 4 do
-			widget_color[e] = math.lerp(color_full[e], color_empty[e], value)
+			--widget_color[e] = math.lerp(color_full[e], color_empty[e], value)
+			widget_color[e] = math.lerp(color_empty[e], color_full[e], value)
 		end
 
 		if  self._horizontal then
@@ -1021,6 +1087,7 @@ HudElementblitzbar._draw_shields = function (self, dt, t, ui_renderer)
 		UIWidget.draw(widget, ui_renderer)
 
 		shield_offset = shield_offset - shield_width - spacing
+		mod:echo(i .. " : " .. shield_offset)
 	end
 end
 
