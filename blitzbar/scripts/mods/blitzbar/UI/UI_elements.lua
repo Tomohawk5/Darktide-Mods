@@ -492,16 +492,16 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		if grenade then
 			local grenade_ability = grenade.player_ability.ability
 			local grenades = grenade_ability.max_charges
-			
+
 			mod:echo(grenade.name .. ": x" .. grenades)
-			
+
 			local extra_grenade		= player_talents.veteran_extra_grenade		and 1 or 0
 			local replenish_grenade = player_talents.veteran_replenish_grenades and 1 or 0
-			
+
 			--ArchetypeTalents.veteran.veteran_replenish_grenades
 			mod:echo("Extra Grenade: " .. (extra_grenade == 1 and "true" or "false"))			--mod:echo(extra_grenade)
 			mod:echo("Replenish Grenade: " .. (replenish_grenade == 1 and "true" or "false"))	--mod:echo(replenish_grenade)
-			
+
 			resource_info.max_stacks = grenades + extra_grenade
 			resource_info.replenish = replenish_grenade == 1
 			resource_info.replenish_buff = "veteran_grenade_replenishment"
@@ -521,6 +521,84 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		local grenade = rock	and profile.archetype.talents.ogryn_grenade_friend_rock or
 						box		and profile.archetype.talents.ogryn_grenade_box or
 						frag	and profile.archetype.talents.ogryn_grenade_frag
+
+		local feel_no_pain = player_talents.ogryn_carapace_armor
+		if feel_no_pain then
+			local feel_no_pain = {
+				max_stacks = 10,
+				max_duration = nil,
+				decay = true,
+				stack_buff = "ogryn_carapace_armor_child",
+				stacks = 0,
+				progress = 0,
+				timed = false,
+				replenish = true,
+				replenish_buff = "ogryn_carapace_armor_parent",
+				damage_per_stack = nil,
+				damage_boost = nil
+			}
+			resource_info = table.clone(feel_no_pain)
+		end
+
+		-- ogryn_carapace_armor = {
+		-- 	description = "loc_talent_ogryn_carapace_armor_desc",
+		-- 	name = "Carapace armor",
+		-- 	display_name = "loc_talent_ogryn_carapace_armor",
+		-- 	icon = "content/ui/textures/icons/talents/ogryn_1/ogryn_1_base_3",
+		-- 	format_values = {
+		-- 		toughness_regen = {
+		-- 			prefix = "+",
+		-- 			format_type = "percentage",
+		-- 			find_value = {
+		-- 				buff_template_name = "ogryn_carapace_armor_child",
+		-- 				find_value_type = "buff_template",
+		-- 				path = {
+		-- 					"stat_buffs",
+		-- 					stat_buffs.toughness_regen_rate_modifier
+		-- 				}
+		-- 			}
+		-- 		},
+		-- 		damage_reduction = {
+		-- 			prefix = "+",
+		-- 			format_type = "percentage",
+		-- 			find_value = {
+		-- 				buff_template_name = "ogryn_carapace_armor_child",
+		-- 				find_value_type = "buff_template",
+		-- 				path = {
+		-- 					"stat_buffs",
+		-- 					stat_buffs.toughness_damage_taken_modifier
+		-- 				}
+		-- 			},
+		-- 			value_manipulation = function (value)
+		-- 				return math.abs(value) * 100
+		-- 			end
+		-- 		},
+		-- 		stacks = {
+		-- 			format_type = "number",
+		-- 			find_value = {
+		-- 				buff_template_name = "ogryn_carapace_armor_child",
+		-- 				find_value_type = "buff_template",
+		-- 				path = {
+		-- 					"max_stacks"
+		-- 				}
+		-- 			}
+		-- 		},
+		-- 		duration = {
+		-- 			format_type = "number",
+		-- 			find_value = {
+		-- 				buff_template_name = "ogryn_carapace_armor_parent",
+		-- 				find_value_type = "buff_template",
+		-- 				path = {
+		-- 					"restore_child_duration"
+		-- 				}
+		-- 			}
+		-- 		}
+		-- 	},
+		-- 	passive = {
+		-- 		buff_template_name = "ogryn_carapace_armor_parent",
+		-- 		identifier = "ogryn_carapace_armor_parent"
+		-- 	}
+		-- }
 
 		if grenade then
 			local grenade_ability = grenade.player_ability.ability
@@ -612,6 +690,8 @@ HudElementblitzbar.update = function (self, dt, t, ui_renderer, render_settings,
 					found_buff = true
 				end
 			end
+
+			--has_unique_buff_id("ogryn_carapace_armor_explosion_on_zero_stacks_effect")
 
 			if not found_buff then
 				resource_info.progress = nil
@@ -1021,7 +1101,7 @@ HudElementblitzbar._draw_shields = function (self, dt, t, ui_renderer)
 		w = 100 + (shield_width * 0.5) + 4 -- BEST SO FAR
 		w = 100 + (shield_width * 0.5) + (num_shields * 8)
 
-		mod:echo("w : " .. w)
+		--mod:echo("w : " .. w)
 
 		shield_offset = w
 	end
@@ -1087,7 +1167,7 @@ HudElementblitzbar._draw_shields = function (self, dt, t, ui_renderer)
 		UIWidget.draw(widget, ui_renderer)
 
 		shield_offset = shield_offset - shield_width - spacing
-		mod:echo(i .. " : " .. shield_offset)
+		--mod:echo(i .. " : " .. shield_offset)
 	end
 end
 
