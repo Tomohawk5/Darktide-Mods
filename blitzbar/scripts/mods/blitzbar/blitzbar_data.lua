@@ -3,14 +3,33 @@ local UIHudSettings = mod:original_require("scripts/settings/ui/ui_hud_settings"
 
 mod.text_options = table.enum(
 	"none",
+	"text_option_blitz",
 	"text_option_charges",
+	"text_option_grenades",
+	-- PSYKER
+	"text_option_assail",
 	"text_option_souls",
 	"text_option_warp",
 	"text_option_warpcharges",
-	"text_option_grenades",
-	"text_option_blitz",
+	"text_option_psionics",
+	"text_option_destiny",
+	"text_option_marks",
+	-- ZEALOT
 	"text_option_martyrdom",
-	"text_option_box"
+	"text_option_knife",
+	"text_option_piety",
+	"text_option_inexorable",
+	"text_option_stun",
+	"text_option_flame",
+	-- VETERAN
+	"text_option_frag",
+	"text_option_krak",
+	"text_option_smoke",
+	-- OGRYN
+	"text_option_box",
+	"text_option_armour",
+	"text_option_nuke",
+	"text_option_rock"
 )
 mod.value_options = table.enum(
 	"none",
@@ -58,22 +77,29 @@ local function archetype_options()
 			text = mod.text_options["text_option_warpcharges"],
 			text_options = table.enum(
 				mod.text_options["none"],
+				mod.text_options["text_option_blitz"],
+				mod.text_options["text_option_charges"],
 				mod.text_options["text_option_warp"],
 				mod.text_options["text_option_warpcharges"],
 				mod.text_options["text_option_souls"],
-				mod.text_options["text_option_charges"],
-				mod.text_options["text_option_blitz"]
+				mod.text_options["text_option_psionics"],
+				mod.text_options["text_option_destiny"],
+				mod.text_options["text_option_marks"],
+				mod.text_options["text_option_assail"]
 			),
-			value = mod.value_options["value_option_time_percent"],
+			value = mod.value_options["value_option_stacks"],
 			value_options = mod.value_options
 		},
 		veteran = {
 			text = mod.text_options["text_option_grenades"],
 			text_options = table.enum(
 				mod.text_options["none"],
-				mod.text_options["text_option_grenades"],
+				mod.text_options["text_option_blitz"],
 				mod.text_options["text_option_charges"],
-				mod.text_options["text_option_blitz"]
+				mod.text_options["text_option_grenades"],
+				mod.text_options["text_option_frag"],
+				mod.text_options["text_option_krak"],
+				mod.text_options["text_option_smoke"]
 			),
 			value = mod.value_options["value_option_stacks"],
 			value_options = table.enum(
@@ -87,32 +113,34 @@ local function archetype_options()
 			text = mod.text_options["text_option_martyrdom"],
 			text_options = table.enum(
 				mod.text_options["none"],
-				mod.text_options["text_option_martyrdom"],
-				mod.text_options["text_option_grenades"],
+				mod.text_options["text_option_blitz"],
 				mod.text_options["text_option_charges"],
-				mod.text_options["text_option_blitz"]
+				mod.text_options["text_option_grenades"],
+				mod.text_options["text_option_stun"],
+				mod.text_options["text_option_flame"],
+				mod.text_options["text_option_knife"],
+				mod.text_options["text_option_piety"],
+				mod.text_options["text_option_martyrdom"],
+				mod.text_options["text_option_inexorable"]
 			),
-			value = mod.value_options["value_option_damage"],
-			value_options = table.enum(
-				mod.value_options["none"],
-				mod.value_options["value_option_damage"],
-				mod.value_options["value_option_stacks"]
-			)
+			value = mod.value_options["value_option_stacks"],
+			value_options = mod.value_options
 		},
 		ogryn = {
 			text = mod.text_options["text_option_grenades"],
 			text_options = table.enum(
 				mod.text_options["none"],
+				mod.text_options["text_option_blitz"],
+				mod.text_options["text_option_charges"],
 				mod.text_options["text_option_grenades"],
 				mod.text_options["text_option_box"],
-				mod.text_options["text_option_charges"],
-				mod.text_options["text_option_blitz"]
+				mod.text_options["text_option_frag"],
+				mod.text_options["text_option_nuke"],
+				mod.text_options["text_option_rock"],
+				mod.text_options["text_option_armour"]
 			),
 			value = mod.value_options["value_option_stacks"],
-			value_options = table.enum(
-				mod.value_options["none"],
-				mod.value_options["value_option_stacks"]
-			)
+			value_options = mod.value_options
 		}
 	}
 	local archetype_widgets = {}

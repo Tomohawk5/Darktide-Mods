@@ -34,14 +34,31 @@ local localizations = {
 	orientation_option_vertical_flipped = {
 		en = "Vertical (Right)",
 	},
+
+	-- ##############################
+	-- #        TEXT_OPTIONS        #
+	-- ##############################
 	none = {
 		en = "", --color_format("ui_disabled_text_color") .. "[NOTHING]{#reset()}"
 	},
 	none_display = {
 		en = "",
 	},
+	text_option_blitz = {
+		en = "Blitz"
+	},
 	text_option_charges = {
 		en = "Charges",
+	},
+	text_option_grenades = {
+		en = "Grenades"
+	},
+
+	-- ##############################
+	-- #           PSYKER           #
+	-- ##############################
+	text_option_assail = {
+		en = "Assail"
 	},
 	text_option_souls = {
 		en = "Souls",
@@ -52,18 +69,70 @@ local localizations = {
 	text_option_warpcharges = {
 		en = "Warp charges",
 	},
-	text_option_grenades = {
-		en = "Grenades"
+	text_option_psionics = {
+		en = "Psionics"
 	},
-	text_option_blitz = {
-		en = "Blitz"
+	text_option_destiny = {
+		en = "Destiny"
 	},
+	text_option_marks = {
+		en = "Marks"
+	},
+
+	-- ##############################
+	-- #           ZEALOT           #
+	-- ##############################
 	text_option_martyrdom = {
 		en = "Martyrdom"
 	},
+	text_option_knife = {
+		en = "Knife"
+	},
+	text_option_piety = {
+		en = "Piety"
+	},
+	text_option_inexorable = {
+		en = "Inexorable"
+	},
+	text_option_stun = {
+		en = "Stun"
+	},
+	text_option_flame = {
+		en = "Flame"
+	},
+
+	-- ##############################
+	-- #          VETERAN           #
+	-- ##############################
+	text_option_frag = {
+		en = "Frag"
+	},
+	text_option_krak = {
+		en = "Krak"
+	},
+	text_option_smoke = {
+		en = "Smoke"
+	},
+
+	-- ##############################
+	-- #           OGRYN           #
+	-- ##############################
 	text_option_box = {
 		en = "Box"
 	},
+	text_option_armour = {
+		en = "Armour"
+	},
+	text_option_nuke = {
+		en = "Nuke"
+	},
+	text_option_rock = {
+		en = "Rock"
+	},
+
+	-- ##############################
+	-- #           VALUE            #
+	-- ##############################
 	gauge_value = {
 		en = "Value"
 	},
