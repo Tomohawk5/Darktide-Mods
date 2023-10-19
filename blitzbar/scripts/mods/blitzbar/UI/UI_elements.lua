@@ -489,7 +489,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 				mod:notify("KNIFE EQUIPPED")
 				local knife_grenade = {
 					display_name = mod.text_options["text_option_knife"],
-					max_stacks = talents.zealot_shock_grenade.player_ability.ability.max_charges,
+					max_stacks = talents.zealot_throwing_knives.player_ability.ability.max_charges,
 					max_duration = nil,
 					decay = true,
 					grenade_ability = true,
