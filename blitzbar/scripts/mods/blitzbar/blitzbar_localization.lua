@@ -217,6 +217,12 @@ local localizations = {
 	ogryn = {
 		en = "Ogryn"
 	},
+	_grenade = {
+		en = "Prefer Grenade"
+	},
+	_grenade_description = {
+		en = "Will display grenade charges over keystone charges if possible."
+	},
 	_show_gauge_description = {
 		en = "Show the bar on this archetype."
 	},
@@ -279,7 +285,7 @@ for _, color_name in ipairs(color_names) do
 end
 
 local archetypes = { "psyker", "veteran", "zealot", "ogryn" }
-local options = { "_gauge_text", "_gauge_value", "_gauge_value_text", "_color_full", "_color_empty"}
+local options = { "_grenade", "_gauge_text", "_gauge_value", "_gauge_value_text", "_color_full", "_color_empty"}
 for _, archetype in pairs(archetypes) do
 	localizations[archetype .. "_show_gauge"] = {
 		en = color_format("ui_" .. archetype) .. localizations[archetype].en .. "{#reset()}"

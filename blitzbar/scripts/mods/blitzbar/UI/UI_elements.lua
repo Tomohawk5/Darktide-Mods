@@ -14,6 +14,7 @@ local resource_info_template = {
 	max_stacks = nil,
 	max_duration = nil,
 	decay = nil,
+	grenade_ability = nil,
 	stack_buff = nil,
 	stacks = 0,
 	progress = 0,
@@ -294,6 +295,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 				max_stacks = extra_stacks and 3 or 1,
 				max_duration = nil,
 				decay = true,
+				grenade_ability = false,
 				-- stack_buff = {
 				-- 	"psyker_empowered_grenades_passive",
 				-- 	"psyker_empowered_grenades_passive_improved"
@@ -327,6 +329,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 				max_stacks = extra_souls and 6 or 4,
 				max_duration = 20,
 				decay = true,
+				grenade_ability = false,
 				stack_buff = extra_souls and "psyker_souls_increased_max_stacks" or "psyker_souls",
 				stacks = 0,
 				progress = 0,
@@ -353,6 +356,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 				max_stacks = increased_stacks and 30 or 15,
 				max_duration = increased_duration and 30 or 15,
 				decay = false,
+				grenade_ability = false,
 				stack_buff =	(increased_stacks and "psyker_marked_enemies_passive_bonus_stacking_increased_stacks") or
 								(increased_duration and "psyker_marked_enemies_passive_bonus_stacking_increased_duration") or
 								"psyker_marked_enemies_passive_bonus_stacking",
@@ -383,6 +387,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 				max_stacks = grenade_ability.max_charges,
 				max_duration = grenade.cooldown,
 				decay = true,
+				grenade_ability = true,
 				stack_buff = nil,
 				stacks = 0,
 				progress = 0,
@@ -439,11 +444,13 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		if mod:get("zealot_grenade") then
 			local stun_equipped = player_talents.zealot_shock_grenade or player_talents.zealot_improved_stun_grenade
 			if stun_equipped then
+				mod:notify("STUN EQUIPPED")
 				local stun_grenade = {
 					display_name = mod.text_options["text_option_stun"],
 					max_stacks = talents.zealot_shock_grenade.player_ability.ability.max_charges,
 					max_duration = nil,
 					decay = true,
+					grenade_ability = true,
 					stack_buff = nil,
 					stacks = 0,
 					progress = 0,
@@ -458,11 +465,13 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 
 			local flame_equipped = player_talents.zealot_flame_grenade
 			if flame_equipped then
+				mod:notify("FLAME EQUIPPED")
 				local flame_grenade = {
 					display_name = mod.text_options["text_option_flame"],
 					max_stacks = talents.zealot_flame_grenade.player_ability.ability.max_charges,
 					max_duration = nil,
 					decay = true,
+					grenade_ability = true,
 					stack_buff = nil,
 					stacks = 0,
 					progress = 0,
@@ -477,11 +486,13 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 
 			local knife_equipped = player_talents.zealot_throwing_knives
 			if knife_equipped then
+				mod:notify("KNIFE EQUIPPED")
 				local knife_grenade = {
 					display_name = mod.text_options["text_option_knife"],
 					max_stacks = talents.zealot_shock_grenade.player_ability.ability.max_charges,
 					max_duration = nil,
 					decay = true,
+					grenade_ability = true,
 					stack_buff = nil,
 					stacks = 0,
 					progress = 0,
@@ -511,12 +522,13 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 			local replenish_grenade = player_talents.veteran_replenish_grenades == 1
 
 			local vet_grenade = {
-				display_name =	(frag and "text_option_frag") or
-								(krak and "text_option_krak") or
-								"text_option_smoke",
+				display_name =	(frag and mod.text_options["text_option_frag"]) or
+								(krak and mod.text_options["text_option_krak"]) or
+								mod.text_options["text_option_smoke"],
 				max_stacks = grenade_ability.max_charges + (player_talents.veteran_extra_grenade or 0),
 				max_duration = replenish_grenade and talents.veteran_replenish_grenades.format_values.time.value or nil,
 				decay = true,
+				grenade_ability = true,
 				stack_buff = nil,
 				stacks = 0,
 				progress = 0,
@@ -534,11 +546,13 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 	if self._archetype_name == "ogryn" then
 		local ogryn_armour = player_talents.ogryn_carapace_armor
 		if ogryn_armour then
+			mod:notify("ARMOUR EQUIPPED")
 			local feel_no_pain = {
 				display_name = mod.text_options["text_option_armour"],
 				max_stacks = 10,
 				max_duration = 6,
 				decay = true,
+				grenade_ability = false,
 				stack_buff = "ogryn_carapace_armor_child",
 				stacks = 0,
 				progress = 0,
@@ -551,14 +565,16 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 			resource_info = table.clone(feel_no_pain)
 		end
 
-		if mod:get("ogryn_grenade") then
+		if mod:get("ogryn_grenade") or not ogryn_armour then
 			local rock	= player_talents.ogryn_grenade_friend_rock
 			if rock then
+				mod:notify("ROCK EQUIPPED")
 				local rock_grenade = {
 					display_name = mod.text_options["text_option_rock"],
 					max_stacks = rock.player_ability.ability.max_charges,
 					max_duration = talents.ogryn_grenade_friend_rock.cooldown,
 					decay = true,
+					grenade_ability = true,
 					stack_buff = nil,
 					stacks = 0,
 					progress = 0,
@@ -573,11 +589,13 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 
 			local box	= player_talents.ogryn_grenade_box or player_talents.ogryn_box_explodes
 			if box then
+				mod:notify("BOX EQUIPPED")
 				local box_grenade = {
 					display_name = mod.text_options["text_option_box"],
 					max_stacks = 2,
 					max_duration = nil,
 					decay = true,
+					grenade_ability = true,
 					stack_buff = nil,
 					stacks = 0,
 					progress = 0,
@@ -592,11 +610,13 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 
 			local frag	= player_talents.ogryn_grenade_frag
 			if frag then
+				mod:notify("NUKE EQUIPPED")
 				local frag_grenade = {
 					display_name = mod.text_options["text_option_frag"],
 					max_stacks = 1,
 					max_duration = nil,
 					decay = true,
+					grenade_ability = true,
 					stack_buff = nil,
 					stacks = 0,
 					progress = 0,
@@ -675,6 +695,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 			max_stacks = nil,
 			max_duration = nil,
 			decay = true,
+			grenade_ability = false,
 			stack_buff = nil,
 			stacks = nil,
 			progress = nil,
@@ -701,7 +722,6 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 	-- mod:echo("< RESOURCE INFO")
 
 	if mod:get("auto_text_option") then
-		mod:echo(mod:get("auto_text_option"))
 		mod:echo(resource_info.display_name)
 		mod:set("gauge_text", resource_info.display_name or mod.text_options["text_option_blitz"])
 	else
@@ -736,7 +756,7 @@ HudElementblitzbar.update = function (self, dt, t, ui_renderer, render_settings,
 	local parent = self._parent
 	local player_extensions = parent:player_extensions()
 
-	local grenade = mod:get(self._archetype_name .. "_grenade")
+	--local grenade = mod:get(self._archetype_name .. "_grenade") and resource_info.grenade_ability
 
 	if player_extensions then
 		local buff_extension = player_extensions.buff
@@ -775,7 +795,7 @@ HudElementblitzbar.update = function (self, dt, t, ui_renderer, render_settings,
 			end
 		end
 
-		if grenade or (resource_info.stack_buff == nil and resource_info.replenish_buff == nil) then
+		if resource_info.grenade_ability then -- or (resource_info.stack_buff == nil and resource_info.replenish_buff == nil) then
 			local ability_extension = player_extensions.ability
 			if ability_extension and ability_extension:ability_is_equipped("grenade_ability") then
 				resource_info.stacks = ability_extension:remaining_ability_charges("grenade_ability")
