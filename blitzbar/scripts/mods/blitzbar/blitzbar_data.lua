@@ -237,6 +237,16 @@ return {
 				default_value = false
 			},
 			{
+				setting_id = "value_decimals",
+				type = "checkbox",
+				default_value = false
+			},
+			{
+				setting_id = "auto_text_option",
+				type = "checkbox",
+				default_value = false
+			},
+			{
 				setting_id = "archetype_options",
 				type = "group",
 				sub_widgets = archetype_options()

@@ -10,6 +10,7 @@ local HudElementblitzbar = class("HudElementblitzbar", "HudElementBase")
 --"scripts/settings/talent/talent_settings_new"
 
 local resource_info_template = {
+	display_name = nil,
 	max_stacks = nil,
 	max_duration = nil,
 	decay = nil,
@@ -289,6 +290,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 			mod:echo("extra_stacks: " .. (extra_stacks and "true" or "false"))
 
 			local psionics = {
+				display_name = mod.text_options["text_option_psionics"],
 				max_stacks = extra_stacks and 3 or 1,
 				max_duration = nil,
 				decay = true,
@@ -321,6 +323,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 			--template_data.buff_name = template_data.psyker_increased_max_souls and "psyker_souls_increased_max_stacks" or "psyker_souls"
 
 			local souls = {
+				display_name = mod.text_options["text_option_warpcharges"],
 				max_stacks = extra_souls and 6 or 4,
 				max_duration = 20,
 				decay = true,
@@ -346,6 +349,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 			local weakspot_bonus = player_talents.psyker_mark_weakspot_kills == 1
 
 			local destiny = {
+				display_name = mod.text_options["text_option_destiny"],
 				max_stacks = increased_stacks and 30 or 15,
 				max_duration = increased_duration and 30 or 15,
 				decay = false,
@@ -358,48 +362,57 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 				replenish = nil,
 				replenish_buff = nil,
 				damage_per_stack = 0, --psyker_souls_increase_damage.format_values.value,
-				damage_boost = resource_info.damage_boost
+				damage_boost = resource_info_template.damage_boost
 			}
 
 			resource_info = table.clone(destiny)
 		end
 
 		local knives = player_talents.psyker_grenade_throwing_knives
+		local knives_equipped = knives and mod:get("psyker_grenade")
 
-		local grenade = knives and talents.psyker_grenade_throwing_knives
+		if knives_equipped then
 
-		local assail = knives and mod:get("psyker_grenade")
-
-		if assail then
-			mod:notify("ASSAIL EQUIPPED")
+			local grenade = knives and talents.psyker_grenade_throwing_knives
 			local grenade_ability = grenade.player_ability.ability
 
-			resource_info.max_stacks = grenade_ability.max_charges
-			resource_info.decay = true
-			resource_info.timed = true
-			resource_info.replenish = true
-			resource_info.replenish_buff = "psyker_knife_replenishment"
-			resource_info.max_duration = grenade.cooldown
-
 			local assail_quicker = "psyker_reduced_throwing_knife_cooldown"
-		end
 
-		if not (souls_equipped or psionics_equipped or destiny_equipped or assail) then
-			resource_info = {
-				max_stacks = nil,
-				max_duration = nil,
+			local assail = {
+				display_name = mod.text_options["text_option_assail"],
+				max_stacks = grenade_ability.max_charges,
+				max_duration = grenade.cooldown,
 				decay = true,
 				stack_buff = nil,
-				stacks = nil,
-				progress = nil,
-				timed = nil,
-				replenish = nil,
-				replenish_buff = nil,
-				damage_per_stack = nil,
+				stacks = 0,
+				progress = 0,
+				timed = true,
+				replenish = true,
+				replenish_buff = "psyker_knife_replenishment",
+				damage_per_stack = 0,
 				damage_boost = nil
 			}
-			mod:notify("No Grenade / Keystone to display!")
+
+			resource_info = table.clone(assail)
 		end
+
+		-- if not (souls_equipped or psionics_equipped or destiny_equipped or knives_equipped) then
+		-- 	resource_info = {
+		-- 		display_name = "none",
+		-- 		max_stacks = nil,
+		-- 		max_duration = nil,
+		-- 		decay = true,
+		-- 		stack_buff = nil,
+		-- 		stacks = nil,
+		-- 		progress = nil,
+		-- 		timed = nil,
+		-- 		replenish = nil,
+		-- 		replenish_buff = nil,
+		-- 		damage_per_stack = nil,
+		-- 		damage_boost = nil
+		-- 	}
+		-- 	mod:notify("No Grenade / Keystone to display!")
+		-- end
 
 		--local souls = player_talents.psyker_souls
 
@@ -423,28 +436,63 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 	end
 
 	if self._archetype_name == "zealot" then
-		local stun	= player_talents.zealot_shock_grenade or player_talents.zealot_improved_stun_grenade
-		local flame	= player_talents.zealot_flame_grenade
-		local knife	= player_talents.zealot_throwing_knives
+		if mod:get("zealot_grenade") then
+			local stun_equipped = player_talents.zealot_shock_grenade or player_talents.zealot_improved_stun_grenade
+			if stun_equipped then
+				local stun_grenade = {
+					display_name = mod.text_options["text_option_stun"],
+					max_stacks = talents.zealot_shock_grenade.player_ability.ability.max_charges,
+					max_duration = nil,
+					decay = true,
+					stack_buff = nil,
+					stacks = 0,
+					progress = 0,
+					timed = false,
+					replenish = false,
+					replenish_buff = nil,
+					damage_per_stack = nil,
+					damage_boost = nil
+				}
+				resource_info = table.clone(stun_grenade)
+			end
 
-		mod:echo(stun)
-		mod:echo(flame)
-		mod:echo(knife)
+			local flame_equipped = player_talents.zealot_flame_grenade
+			if flame_equipped then
+				local flame_grenade = {
+					display_name = mod.text_options["text_option_flame"],
+					max_stacks = talents.zealot_flame_grenade.player_ability.ability.max_charges,
+					max_duration = nil,
+					decay = true,
+					stack_buff = nil,
+					stacks = 0,
+					progress = 0,
+					timed = false,
+					replenish = false,
+					replenish_buff = nil,
+					damage_per_stack = nil,
+					damage_boost = nil
+				}
+				resource_info = table.clone(flame_grenade)
+			end
 
-		local grenade = stun	and talents.zealot_shock_grenade or
-						flame	and talents.zealot_flame_grenade or
-						knife	and talents.zealot_throwing_knives
-
-		if grenade then
-			local grenade_ability = grenade.player_ability.ability
-
-			mod:echo(grenade.name .. ": x" .. grenade_ability.max_charges)
-
-			resource_info.max_stacks = grenade_ability.max_charges
-		else
-			resource_info.max_stacks = nil
-			resource_info.max_duration = nil
-			mod:error("NO GRENADE EQUIPPED")
+			local knife_equipped = player_talents.zealot_throwing_knives
+			if knife_equipped then
+				local knife_grenade = {
+					display_name = mod.text_options["text_option_knife"],
+					max_stacks = talents.zealot_shock_grenade.player_ability.ability.max_charges,
+					max_duration = nil,
+					decay = true,
+					stack_buff = nil,
+					stacks = 0,
+					progress = 0,
+					timed = false,
+					replenish = false,
+					replenish_buff = nil,
+					damage_per_stack = nil,
+					damage_boost = nil
+				}
+				resource_info = table.clone(knife_grenade)
+			end
 		end
 	end
 
@@ -454,39 +502,40 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		local krak = player_talents.veteran_krak_grenade
 		local smoke = player_talents.veteran_smoke_grenade
 
-		local grenade = frag	and talents.frag_grenade or	--ArchetypeTalents.veteran.veteran_frag_grenade or
-						krak	and talents.krak_grenade or	--ArchetypeTalents.veteran.veteran_krak_grenade or
-						smoke	and talents.smoke_grenade	--ArchetypeTalents.veteran.veteran_smoke_grenade
+		local grenade = frag	and talents.veteran_frag_grenade or
+						krak	and talents.veteran_krak_grenade or
+						smoke	and talents.veteran_smoke_grenade
 
 		if grenade then
 			local grenade_ability = grenade.player_ability.ability
-			local grenades = grenade_ability.max_charges
+			local replenish_grenade = player_talents.veteran_replenish_grenades == 1
 
-			mod:echo(grenade.name .. ": x" .. grenades)
-
-			local extra_grenade		= player_talents.veteran_extra_grenade		and 1 or 0
-			local replenish_grenade = player_talents.veteran_replenish_grenades and 1 or 0
-
-			--ArchetypeTalents.veteran.veteran_replenish_grenades
-			mod:echo("Extra Grenade: " .. (extra_grenade == 1 and "true" or "false"))			--mod:echo(extra_grenade)
-			mod:echo("Replenish Grenade: " .. (replenish_grenade == 1 and "true" or "false"))	--mod:echo(replenish_grenade)
-
-			resource_info.max_stacks = grenades + extra_grenade
-			resource_info.replenish = replenish_grenade == 1
-			resource_info.replenish_buff = "veteran_grenade_replenishment"
-			resource_info.max_duration = talents.veteran_replenish_grenades.format_values.time.value
-		else
-			resource_info.max_stacks = nil
-			resource_info.max_duration = nil
-			mod:error("NO GRENADE EQUIPPED")
+			local vet_grenade = {
+				display_name =	(frag and "text_option_frag") or
+								(krak and "text_option_krak") or
+								"text_option_smoke",
+				max_stacks = grenade_ability.max_charges + (player_talents.veteran_extra_grenade or 0),
+				max_duration = replenish_grenade and talents.veteran_replenish_grenades.format_values.time.value or nil,
+				decay = true,
+				stack_buff = nil,
+				stacks = 0,
+				progress = 0,
+				timed = replenish_grenade,
+				replenish = replenish_grenade,
+				replenish_buff = replenish_grenade and "veteran_grenade_replenishment" or nil,
+				damage_per_stack = nil,
+				damage_boost = nil
+			}
+			resource_info = table.clone(vet_grenade)
 		end
 	end
 
 	-- TODO: Fix grenade charge bars not being empty
 	if self._archetype_name == "ogryn" then
-		local feel_no_pain = player_talents.ogryn_carapace_armor
-		if feel_no_pain then
+		local ogryn_armour = player_talents.ogryn_carapace_armor
+		if ogryn_armour then
 			local feel_no_pain = {
+				display_name = mod.text_options["text_option_armour"],
 				max_stacks = 10,
 				max_duration = 6,
 				decay = true,
@@ -506,6 +555,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 			local rock	= player_talents.ogryn_grenade_friend_rock
 			if rock then
 				local rock_grenade = {
+					display_name = mod.text_options["text_option_rock"],
 					max_stacks = rock.player_ability.ability.max_charges,
 					max_duration = talents.ogryn_grenade_friend_rock.cooldown,
 					decay = true,
@@ -524,6 +574,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 			local box	= player_talents.ogryn_grenade_box or player_talents.ogryn_box_explodes
 			if box then
 				local box_grenade = {
+					display_name = mod.text_options["text_option_box"],
 					max_stacks = 2,
 					max_duration = nil,
 					decay = true,
@@ -542,6 +593,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 			local frag	= player_talents.ogryn_grenade_frag
 			if frag then
 				local frag_grenade = {
+					display_name = mod.text_options["text_option_frag"],
 					max_stacks = 1,
 					max_duration = nil,
 					decay = true,
@@ -616,9 +668,10 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		-- 		buff_template_name = "ogryn_carapace_armor_parent",
 		-- 		identifier = "ogryn_carapace_armor_parent"
 		-- 	}
-		-- }	
+		-- }
 	if resource_info == nil then
 		resource_info = {
+			display_name = mod.text_options["none"],
 			max_stacks = nil,
 			max_duration = nil,
 			decay = true,
@@ -634,20 +687,26 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		mod:error("No Grenade / Keystone to display!")
 	end
 
-	mod:echo("> RESOURCE INFO")
-	--mod:echo("max_stacks: " .. resource_info.max_stacks == nil and "[x]" or resource_info.max_stacks)
-	mod:echo("max_stacks: " .. (resource_info.max_stacks or "[x]"))
-	mod:echo("max_duration: " .. (resource_info.max_duration or "[x]"))
-	mod:echo("decay: " .. (resource_info.decay and (resource_info.decay and "true" or "false") or "[x]"))
-	mod:echo("stack_buff: " .. (resource_info.stack_buff or "[x]"))
-	mod:echo("timed: " .. (resource_info.timed and (resource_info.timed and "true" or "false") or "[x]"))
-	mod:echo("replenish: " .. (resource_info.replenish and (resource_info.replenish and "true" or "false") or "[x]"))
-	mod:echo("replenish_buff: " .. (resource_info.replenish_buff or "[x]"))
-	mod:echo("damage_per_stack: " .. (resource_info.damage_per_stack or "[x]"))
-	mod:echo("damage_boost: " .. (resource_info.damage_boost  and "<Function>" or "[x]"))
-	mod:echo("< RESOURCE INFO")
+	-- mod:echo("> RESOURCE INFO")
+	-- --mod:echo("max_stacks: " .. resource_info.max_stacks == nil and "[x]" or resource_info.max_stacks)
+	-- mod:echo("max_stacks: " .. (resource_info.max_stacks or "[x]"))
+	-- mod:echo("max_duration: " .. (resource_info.max_duration or "[x]"))
+	-- mod:echo("decay: " .. (resource_info.decay and (resource_info.decay and "true" or "false") or "[x]"))
+	-- mod:echo("stack_buff: " .. (resource_info.stack_buff or "[x]"))
+	-- mod:echo("timed: " .. (resource_info.timed and (resource_info.timed and "true" or "false") or "[x]"))
+	-- mod:echo("replenish: " .. (resource_info.replenish and (resource_info.replenish and "true" or "false") or "[x]"))
+	-- mod:echo("replenish_buff: " .. (resource_info.replenish_buff or "[x]"))
+	-- mod:echo("damage_per_stack: " .. (resource_info.damage_per_stack or "[x]"))
+	-- mod:echo("damage_boost: " .. (resource_info.damage_boost  and "<Function>" or "[x]"))
+	-- mod:echo("< RESOURCE INFO")
 
-	mod:set("gauge_text", self._archetype_name .. "_gauge_text")
+	if mod:get("auto_text_option") then
+		mod:echo(mod:get("auto_text_option"))
+		mod:echo(resource_info.display_name)
+		mod:set("gauge_text", resource_info.display_name or mod.text_options["text_option_blitz"])
+	else
+		mod:set("gauge_text", self._archetype_name .. "_gauge_text")
+	end
 end
 
 HudElementblitzbar.destroy = function (self)
@@ -716,8 +775,7 @@ HudElementblitzbar.update = function (self, dt, t, ui_renderer, render_settings,
 			end
 		end
 
-
-		if grenade then
+		if grenade or (resource_info.stack_buff == nil and resource_info.replenish_buff == nil) then
 			local ability_extension = player_extensions.ability
 			if ability_extension and ability_extension:ability_is_equipped("grenade_ability") then
 				resource_info.stacks = ability_extension:remaining_ability_charges("grenade_ability")
@@ -726,7 +784,6 @@ HudElementblitzbar.update = function (self, dt, t, ui_renderer, render_settings,
 			if not resource_info.replenish then
 				resource_info.progress = nil
 			end
-		else
 		end
 	end
 
@@ -1011,17 +1068,15 @@ HudElementblitzbar._get_value_text = function (self)
 	local max_duration = resource_info.max_duration
 	local stacks = resource_info.stacks
 	local max_stacks = resource_info.max_stacks
-	local full = (progress == nil and stacks == max_stacks) or (progress == 1 and stacks == max_stacks)
-	local empty = (progress == nil and stacks == 0) or (progress == 0 and stacks == 0)
 
 	if value_option == mod.value_options["value_option_damage"] and resource_info.damage_boost then
-		format = "%.0f%%"
+		format = "%." .. (mod:get("value_decimals") and "1" or "0") .. "f%%"
 		value = resource_info:damage_boost() * 100
 	elseif value_option == mod.value_options["value_option_stacks"] and stacks then
 		format = "%.0fx"
 		value = resource_info.stacks
 	elseif value_option == mod.value_options["value_option_time_percent"] and resource_info.timed and progress then
-		format = "%.0f%%"
+		format = "%." .. (mod:get("value_decimals") and "1" or "0") .. "f%%"
 		value = progress * 100
 	elseif value_option == mod.value_options["value_option_time_seconds"] and resource_info.timed and progress and max_duration then
 		format = "%.0fs"

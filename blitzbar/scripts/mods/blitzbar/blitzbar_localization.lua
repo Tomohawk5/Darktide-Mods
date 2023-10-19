@@ -34,6 +34,12 @@ local localizations = {
 	orientation_option_vertical_flipped = {
 		en = "Vertical (Right)",
 	},
+	auto_text_option = {
+		en = "Auto Gauge Text",
+	},
+	auto_text_option_description = {
+		en = "Automatically sets gauge text to match what the bar is displaying.",
+	},
 
 	-- ##############################
 	-- #        TEXT_OPTIONS        #
@@ -133,6 +139,13 @@ local localizations = {
 	-- ##############################
 	-- #           VALUE            #
 	-- ##############################
+	value_decimals = {
+		en = "Decimals",
+	},
+	value_decimals_description = {
+		en = "Show 1 decimal place for percentage values." ..
+		"\n" .. color_format("ui_ogryn") .. "Ogryn{#reset()} Feel No Pain stacks will appear incorrect with this off.",
+	},
 	gauge_value = {
 		en = "Value"
 	},
@@ -268,7 +281,6 @@ end
 local archetypes = { "psyker", "veteran", "zealot", "ogryn" }
 local options = { "_gauge_text", "_gauge_value", "_gauge_value_text", "_color_full", "_color_empty"}
 for _, archetype in pairs(archetypes) do
-	--localizations[archetype .. "_show_gauge_description"] = localizations["_show_gauge_description"]
 	localizations[archetype .. "_show_gauge"] = {
 		en = color_format("ui_" .. archetype) .. localizations[archetype].en .. "{#reset()}"
 	}
