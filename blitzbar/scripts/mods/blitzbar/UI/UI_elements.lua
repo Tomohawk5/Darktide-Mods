@@ -54,11 +54,11 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 	if self._archetype_name == "psyker" then
 		local psionics_equipped = player_talents.psyker_empowered_ability == 1
 		if psionics_equipped then
-			mod:notify("PSIONICS EQUIPPED")
+			--mod:notify("PSIONICS EQUIPPED")
 
 			local extra_stacks = player_talents.psyker_empowered_grenades_increased_max_stacks == 1
 
-			mod:echo("extra_stacks: " .. (extra_stacks and "true" or "false"))
+			--mod:echo("extra_stacks: " .. (extra_stacks and "true" or "false"))
 
 			local psionics = {
 				display_name = mod.text_options["text_option_psionics"],
@@ -81,7 +81,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 
 		local souls_equipped = player_talents.psyker_passive_souls_from_elite_kills == 1
 		if souls_equipped then
-			mod:notify("SOULS EQUIPPED")
+			--mod:notify("SOULS EQUIPPED")
 
 			local extra_souls = player_talents.psyker_increased_max_souls
 			local souls_amount = talents.psyker_increased_max_souls.format_values.soul_amount.value -- 6
@@ -109,7 +109,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 
 		local destiny_equipped = player_talents.psyker_new_mark_passive
 		if destiny_equipped then
-			mod:notify("DESTINY EQUIPPED")
+			--mod:notify("DESTINY EQUIPPED")
 
 			local increased_duration = player_talents.psyker_mark_increased_duration == 1
 			local increased_stacks = player_talents.psyker_mark_increased_max_stacks == 1
@@ -165,7 +165,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 	if self._archetype_name == "zealot" then
 		local martyrdom_equipped = player_talents.zealot_martyrdom
 		if martyrdom_equipped then
-			mod:notify("MARTYRDOM EQUIPPED")
+			--mod:notify("MARTYRDOM EQUIPPED")
 			local martyrdom = {
 				display_name = mod.text_options["text_option_martyrdom"],
 				max_stacks = talents.zealot_martyrdom.format_values.max_wounds.value, --9, zealot_additional_wounds:["zealot_preacher_more_segments"]
@@ -185,7 +185,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		end
 		local piety_equipped = player_talents.zealot_fanatic_rage
 		if piety_equipped then
-			mod:notify("PIETY EQUIPPED")
+			--mod:notify("PIETY EQUIPPED")
 			local piety = {
 				display_name = mod.text_options["text_option_piety"],
 				max_stacks = talents.zealot_fanatic_rage.format_values.max_stacks.value,
@@ -206,7 +206,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 
 		local inexorable_equipped = player_talents.zealot_quickness_passive
 		if inexorable_equipped then
-			mod:notify("INEXORABLE EQUIPPED")
+			--mod:notify("INEXORABLE EQUIPPED")
 			local inexorable = {
 				display_name = mod.text_options["text_option_inexorable"],
 				max_stacks = talents.zealot_quickness_passive.format_values.max_stacks.value, -- 20
@@ -228,7 +228,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		if mod:get("zealot_grenade") or not (martyrdom_equipped or piety_equipped or inexorable_equipped) then
 			local stun_equipped = player_talents.zealot_shock_grenade or player_talents.zealot_improved_stun_grenade
 			if stun_equipped then
-				mod:notify("STUN EQUIPPED")
+				--mod:notify("STUN EQUIPPED")
 				local stun_grenade = {
 					display_name = mod.text_options["text_option_stun"],
 					max_stacks = talents.zealot_shock_grenade.player_ability.ability.max_charges,
@@ -249,7 +249,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 
 			local flame_equipped = player_talents.zealot_flame_grenade
 			if flame_equipped then
-				mod:notify("FLAME EQUIPPED")
+				--mod:notify("FLAME EQUIPPED")
 				local flame_grenade = {
 					display_name = mod.text_options["text_option_flame"],
 					max_stacks = talents.zealot_flame_grenade.player_ability.ability.max_charges,
@@ -270,7 +270,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 
 			local knife_equipped = player_talents.zealot_throwing_knives
 			if knife_equipped then
-				mod:notify("KNIFE EQUIPPED")
+				--mod:notify("KNIFE EQUIPPED")
 				local knife_grenade = {
 					display_name = mod.text_options["text_option_knife"],
 					max_stacks = talents.zealot_throwing_knives.player_ability.ability.max_charges,
@@ -330,7 +330,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 	if self._archetype_name == "ogryn" then
 		local ogryn_armour = player_talents.ogryn_carapace_armor
 		if ogryn_armour then
-			mod:notify("ARMOUR EQUIPPED")
+			--mod:notify("ARMOUR EQUIPPED")
 			local feel_no_pain = {
 				display_name = mod.text_options["text_option_armour"],
 				max_stacks = 10,
@@ -352,7 +352,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		if mod:get("ogryn_grenade") or not ogryn_armour then
 			local rock = player_talents.ogryn_grenade_friend_rock
 			if rock then
-				mod:notify("ROCK EQUIPPED")
+				--mod:notify("ROCK EQUIPPED")
 				local rock_grenade = {
 					display_name = mod.text_options["text_option_rock"],
 					max_stacks = talents.ogryn_grenade_friend_rock.player_ability.ability.max_charges,
@@ -373,7 +373,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 
 			local box = player_talents.ogryn_grenade_box or player_talents.ogryn_box_explodes
 			if box then
-				mod:notify("BOX EQUIPPED")
+				--mod:notify("BOX EQUIPPED")
 				local box_grenade = {
 					display_name = mod.text_options["text_option_box"],
 					max_stacks = talents.ogryn_grenade_box.player_ability.ability.max_charges, --2,
@@ -394,7 +394,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 
 			local frag = player_talents.ogryn_grenade_frag
 			if frag then
-				mod:notify("NUKE EQUIPPED")
+				--mod:notify("NUKE EQUIPPED")
 				local frag_grenade = {
 					display_name = mod.text_options["text_option_frag"],
 					max_stacks = talents.ogryn_grenade_frag.player_ability.ability.max_charges, --1,
@@ -434,20 +434,20 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		mod:error("No Grenade / Keystone to display!")
 	end
 
-	mod:echo("> RESOURCE INFO")
-	mod:echo("max_stacks: " .. (resource_info.max_stacks or "[x]"))
-	mod:echo("max_duration: " .. (resource_info.max_duration or "[x]"))
-	mod:echo("decay: " .. (resource_info.decay and (resource_info.decay and "true" or "false") or "[x]"))
-	mod:echo("stack_buff: " .. (resource_info.stack_buff or "[x]"))
-	mod:echo("timed: " .. (resource_info.timed and (resource_info.timed and "true" or "false") or "[x]"))
-	mod:echo("replenish: " .. (resource_info.replenish and (resource_info.replenish and "true" or "false") or "[x]"))
-	mod:echo("replenish_buff: " .. (resource_info.replenish_buff or "[x]"))
-	mod:echo("damage_per_stack: " .. (resource_info.damage_per_stack or "[x]"))
-	mod:echo("damage_boost: " .. (resource_info.damage_boost  and "<Function>" or "[x]"))
-	mod:echo("< RESOURCE INFO")
+	--mod:echo("> RESOURCE INFO")
+	--mod:echo("max_stacks: " .. (resource_info.max_stacks or "[x]"))
+	--mod:echo("max_duration: " .. (resource_info.max_duration or "[x]"))
+	--mod:echo("decay: " .. (resource_info.decay and (resource_info.decay and "true" or "false") or "[x]"))
+	--mod:echo("stack_buff: " .. (resource_info.stack_buff or "[x]"))
+	--mod:echo("timed: " .. (resource_info.timed and (resource_info.timed and "true" or "false") or "[x]"))
+	--mod:echo("replenish: " .. (resource_info.replenish and (resource_info.replenish and "true" or "false") or "[x]"))
+	--mod:echo("replenish_buff: " .. (resource_info.replenish_buff or "[x]"))
+	--mod:echo("damage_per_stack: " .. (resource_info.damage_per_stack or "[x]"))
+	--mod:echo("damage_boost: " .. (resource_info.damage_boost  and "<Function>" or "[x]"))
+	--mod:echo("< RESOURCE INFO")
 
 	if mod:get("auto_text_option") then
-		mod:echo(resource_info.display_name)
+		--mod:echo(resource_info.display_name)
 		mod:set("gauge_text", resource_info.display_name or mod.text_options["text_option_blitz"])
 	else
 		mod:set("gauge_text", self._archetype_name .. "_gauge_text")
