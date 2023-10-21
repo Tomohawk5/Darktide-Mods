@@ -86,7 +86,13 @@ local widget_definitions = {
 			value_id = "name_text",
 			style_id = "name_text",
 			pass_type = "text",
-			value = Utf8.upper(mod:localize(mod:get(mod:get("gauge_text")))),
+			value = (function ()
+				if mod:get("auto_text_option") then
+					return Utf8.upper(mod:localize(mod:get("gauge_text")))
+				else
+					return Utf8.upper(mod:localize(mod:get(mod:get("gauge_text"))))
+				end
+			end)(),
 			style = name_text_style
 		},
 		{
