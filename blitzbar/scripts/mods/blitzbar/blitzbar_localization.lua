@@ -1,7 +1,7 @@
 local mod = get_mod("blitzbar")
 local InputUtils = mod:original_require("scripts/managers/input/input_utils")
 
-local function color_format(color_name)
+local function cf(color_name)
 	local color = Color[color_name](255, true)
 	return string.format("{#color(%s,%s,%s)}", color[2], color[3], color[4])
 end
@@ -11,13 +11,14 @@ local localizations = {
 		en = "Blitz Bar",
 	},
 	mod_description = {
-		en = "Blitz Bar description.",
+		en = "#NAME?",
 	},
 	show_gauge = {
 		en = "Always show",
 	},
 	show_gauge_description = {
-		en = "Show even when empty.\n\n" .. color_format("ui_disabled_text_color") .. "Veterans with the " .. color_format("item_rarity_dark_5") .. "Demolition stockpile" .. color_format("ui_disabled_text_color") .. " talent will never have an empty bar.",
+		en = "Show even when empty.\n\n"
+			.. cf("ui_disabled_text_color") .. "Options that " .. cf("ui_hud_green_medium") .. "refill" .. cf("ui_disabled_text_color") .. " over time will always be shown."
 	},
 	gauge_orientation = {
 		en = "Orientation",
@@ -35,7 +36,7 @@ local localizations = {
 		en = "Vertical (Right)",
 	},
 	auto_text_option = {
-		en = "Auto Gauge Text",
+		en = "Auto gauge text",
 	},
 	auto_text_option_description = {
 		en = "Automatically sets gauge text to match what the bar is displaying.",
@@ -45,7 +46,7 @@ local localizations = {
 	-- #        TEXT_OPTIONS        #
 	-- ##############################
 	none = {
-		en = "", --color_format("ui_disabled_text_color") .. "[NOTHING]{#reset()}"
+		en = "",
 	},
 	none_display = {
 		en = "",
@@ -143,8 +144,8 @@ local localizations = {
 		en = "Decimals",
 	},
 	value_decimals_description = {
-		en = "Show 1 decimal place for percentage values." ..
-		"\n" .. color_format("ui_ogryn") .. "Ogryn{#reset()} Feel No Pain stacks will appear incorrect with this off.",
+		en = "Show 1 decimal place for percentage values.\n\n"
+		.. cf("ui_ogryn") .. "Ogryn{#reset()}" .. cf("ui_ogryn_text") .. " Feel no pain" .. cf("ui_disabled_text_color") .. " will appear incorrect with this off.",
 	},
 	gauge_value = {
 		en = "Value"
@@ -183,24 +184,24 @@ local localizations = {
 		en = "Full/Empty"
 	},
 	value_time_full_empty_description = {
-		en = "\n" ..
-			color_format("ui_hud_overcharge_high") .. "MAX{#reset()} and " .. color_format("ui_disabled_text_color") .. "[NOTHING]{#reset()} for " .. color_format("ui_psyker") .. "Psyker{#reset()} and " .. color_format("ui_zealot") .. "Zealot{#reset()}." ..
-			"\n" .. color_format("terminal_text_header") .. "FULL{#reset()} and " .. color_format("terminal_text_body") .. "EMPTY{#reset()} for " .. color_format("ui_veteran") .. "Veteran{#reset()} and " .. color_format("ui_ogryn") .. "Ogryn{#reset()}." ..
-			"\n\nInstead of numerical values for the " .. color_format("item_rarity_2") .. "Stacks{#reset()} option when at maximum or 0 stacks."
+		en = "Instead of numerical values for the " .. cf("item_rarity_2") .. "Stacks{#reset()} option when at maximum or 0 stacks.\n"
+			.. "\n"
+			.. cf("item_rarity_1") .. "Grenade\t{#reset()}:  " .. cf("terminal_text_header") .. "FULL{#reset()} and " .. cf("terminal_text_body") .. "EMPTY{#reset()}\n"
+			.. cf("item_rarity_4") .. "Keystone\t{#reset()}:  " .. cf("ui_hud_overcharge_high") .. "MAX{#reset()} and " .. cf("ui_disabled_text_color") .. "[NOTHING]{#reset()}\n"
 	},
 	martyrdom = {
 		en = "Zealot martyrdom"
 	},
 	martyrdom_description = {
-		en = "Use bar to display stacks of the Zealot passive " .. color_format("item_rarity_5") .. "Martyrdom{#reset()}." ..
-			"\n\n" .. color_format("ui_disabled_text_color") .. "Will show " .. color_format("item_rarity_dark_5") .. "Stun grenade" .. color_format("ui_disabled_text_color") .. " charges if not enabled."
+		en = "Use bar to display stacks of the Zealot passive " .. cf("item_rarity_5") .. "Martyrdom{#reset()}." ..
+			"\n\n" .. cf("ui_disabled_text_color") .. "Will show " .. cf("item_rarity_dark_5") .. "Stun grenade" .. cf("ui_disabled_text_color") .. " charges if not enabled."
 	},
 	veteran_override_replenish_text = {
-		en = "Veteran replenish value"
+		en = "Replenish time value"
 	},
 	veteran_override_replenish_text_description = {
-		en = "Change Veteran " .. color_format("item_rarity_2") .. "Stacks{#reset()} value to " .. color_format("item_rarity_2") .. "Time (s){#reset()} " ..
-			"if " .. color_format("item_rarity_5") .. "Demolition stockpile{#reset()} is selected."
+		en = "Automatically change " .. cf("item_rarity_2") .. "Stacks{#reset()} value to\n"
+			.. cf("item_rarity_2") .. "Time (s){#reset()} for options that " .. cf("ui_hud_green_light") .. "refill{#reset()} over time.\n"
 	},
 	archetype_options = {
 		en = "Archetypes"
@@ -221,7 +222,7 @@ local localizations = {
 		en = "Prefer Grenade"
 	},
 	_grenade_description = {
-		en = "Will display grenade charges over keystone charges if possible."
+		en = "Will display " .. cf("item_rarity_1") .. "Grenade{#reset()} charges over " .. cf("item_rarity_4") .. "Keystone{#reset()} charges if possible."
 	},
 	_show_gauge_description = {
 		en = "Show the bar on this archetype."
@@ -230,20 +231,22 @@ local localizations = {
 		en = "Gauge Text"
 	},
 	_gauge_text_description = {
-		en = "What text should appear next to the gauge."
+		en = "What text should appear next to the gauge.\n"
+			.. "\n"
+			.. cf("ui_disabled_text_color") .. "Will have no affect if " .. cf("terminal_text_body") .. "Auto gauge text" .. cf("ui_disabled_text_color") .. " is enabled."
 	},
 	_gauge_value = {
 		en = "Value"
 	},
 	_gauge_value_description = {
 		en = "Value to be displayed next to the gauge. \n" ..
-			"If the value would make no sense then " .. color_format("ui_disabled_text_color") .. "[NOTHING]{#reset()} will be shown instead"
+			"If the value would make no sense then " .. cf("ui_disabled_text_color") .. "[NOTHING]{#reset()} will be shown instead"
 	},
 	_gauge_value_text = {
 		en = "Value text"
 	},
 	_gauge_value_text_description = {
-		en = "Value text description"
+		en = "Show additional text before value."
 	},
 	_color_full = {
 		en = "Full color"
@@ -281,20 +284,20 @@ end
 
 local color_names = Color.list
 for _, color_name in ipairs(color_names) do
-	localizations[color_name] = { en = color_format(color_name) .. display_name(color_name) .. "{#reset()}"}
+	localizations[color_name] = { en = cf(color_name) .. display_name(color_name) .. "{#reset()}"}
 end
 
 local archetypes = { "psyker", "veteran", "zealot", "ogryn" }
 local options = { "_grenade", "_gauge_text", "_gauge_value", "_gauge_value_text", "_color_full", "_color_empty"}
 for _, archetype in pairs(archetypes) do
 	localizations[archetype .. "_show_gauge"] = {
-		en = color_format("ui_" .. archetype) .. localizations[archetype].en .. "{#reset()}"
+		en = cf("ui_" .. archetype) .. localizations[archetype].en .. "{#reset()}"
 	}
 	for _, option in pairs(options) do
 		localizations[archetype .. option] = table.clone(localizations[option])
 		localizations[archetype .. option .. "_description"] = table.clone(localizations[option .. "_description"])
 		for language, _ in pairs(localizations[archetype .. option]) do
-			localizations[archetype .. option][language] = color_format("ui_" .. archetype .. "_text") .. localizations[archetype .. option][language] .. "{#reset()}"
+			localizations[archetype .. option][language] = cf("ui_" .. archetype .. "_text") .. localizations[archetype .. option][language] .. "{#reset()}"
 			localizations[archetype .. option .. "_description"][language] = localizations[archetype .. option .. "_description"][language]
 		end
 	end

@@ -74,7 +74,7 @@ local function archetype_options()
 	local archetypes = { "psyker", "veteran", "zealot", "ogryn" }
 	local defaults = {
 		psyker = {
-			text = mod.text_options["text_option_warpcharges"],
+			text = mod.text_options["text_option_warp"],
 			text_options = table.enum(
 				mod.text_options["none"],
 				mod.text_options["text_option_blitz"],
@@ -110,7 +110,7 @@ local function archetype_options()
 			)
 		},
 		zealot = {
-			text = mod.text_options["text_option_martyrdom"],
+			text = mod.text_options["text_option_blitz"],
 			text_options = table.enum(
 				mod.text_options["none"],
 				mod.text_options["text_option_blitz"],
@@ -154,19 +154,19 @@ local function archetype_options()
 				{
 					setting_id = archetype .. "_grenade",
 					type = "checkbox",
-					default_value = true
+					default_value = false
 				},
 				{
 					setting_id = archetype .. "_gauge_text",
 					type = "dropdown",
-					default_value = default.text, --default_text[archetype], --mod.text_options["text_option_warpcharges"],
-					options = list_options(default.text_options) --list_options(mod.text_options)
+					default_value = default.text,
+					options = list_options(default.text_options)
 				},
 				{
 					setting_id = archetype .. "_gauge_value",
 					type = "dropdown",
-					default_value = default.value, --default_value[archetype], --mod.value_options["value_option_stacks"],
-					options = list_options(default.value_options) --list_options(mod.value_options)
+					default_value = default.value,
+					options = list_options(default.value_options)
 				},
 				{
 					setting_id = archetype .. "_gauge_value_text",
@@ -205,21 +205,21 @@ return {
 				options = list_options(mod.orientation_options)
 			},
 			{
-				setting_id = "gauge_color_1",
-				type = "dropdown",
-				default_value = "terminal_text_header",
-				options = get_colors()
-			},
-			{
 				setting_id = "gauge_color_2",
 				type = "dropdown",
 				default_value = "terminal_text_body",
 				options = get_colors()
 			},
 			{
+				setting_id = "gauge_color_1",
+				type = "dropdown",
+				default_value = "terminal_text_header",
+				options = get_colors()
+			},
+			{
 				setting_id = "show_gauge",
 				type = "checkbox",
-				default_value = true
+				default_value = false
 			},
 			{
 				setting_id = "value_time_full_empty",
@@ -227,24 +227,19 @@ return {
 				default_value = false
 			},
 			{
-				setting_id = "martyrdom",
+				setting_id = "veteran_override_replenish_text",
 				type = "checkbox",
 				default_value = true
 			},
 			{
-				setting_id = "veteran_override_replenish_text",
-				type = "checkbox",
-				default_value = false
-			},
-			{
 				setting_id = "value_decimals",
 				type = "checkbox",
-				default_value = false
+				default_value = true
 			},
 			{
 				setting_id = "auto_text_option",
 				type = "checkbox",
-				default_value = false
+				default_value = true
 			},
 			{
 				setting_id = "archetype_options",
