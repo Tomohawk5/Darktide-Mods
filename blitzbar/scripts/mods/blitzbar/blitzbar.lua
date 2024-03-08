@@ -49,7 +49,8 @@ function mod.on_unload(exit_game)
 end
 
 mod:hook_safe(UIViewHandler, "close_view", function(self, view_name, force_close)
-  if view_name == "dmf_options_view" or view_name == "inventory_view" then
+  --mod:echo(view_name)
+  if view_name == "dmf_options_view" or view_name == "inventory_view" or view_name == "inventory_background_view" or view_name == "talent_builder_view" then
     recreate_hud()
   end
 end)
