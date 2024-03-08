@@ -1,5 +1,5 @@
 local mod = get_mod("blitzbar")
-local InputUtils = mod:original_require("scripts/managers/input/input_utils")
+--local InputUtils = mod:original_require("scripts/managers/input/input_utils")
 
 local function cf(color_name)
 	local color = Color[color_name](255, true)
