@@ -2,8 +2,6 @@ local mod = get_mod("volleyfiretimer")
 mod:io_dofile("/volleyfiretimer/scripts/utils")
 
 local UIViewHandler = mod:original_require("scripts/managers/ui/ui_view_handler")
-local veteran_ranger_buff_templates = mod:original_require(
-"scripts/settings/buff/player_archetype_specialization/veteran_buff_templates_new")
 
 local class_name = "HudElementVolleyFire"
 local filename = "volleyfiretimer/scripts/mods/volleyfiretimer/UI/UI_elements"
