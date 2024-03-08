@@ -36,6 +36,8 @@ local resource_info
 HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 	HudElementblitzbar.super.init(self, parent, draw_layer, start_scale, Definitions)
 
+	--mod:echo("HudElementblitzbar.init")
+
 	self._shields = {}
 	self._shield_width = 0
 	self._shield_widget = self:_create_widget("shield", Definitions.shield_definition)
@@ -166,9 +168,10 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		local martyrdom_equipped = player_talents.zealot_martyrdom
 		if martyrdom_equipped then
 			--mod:notify("MARTYRDOM EQUIPPED")
+            local health_extension = ScriptUnit.extension(self._player.player_unit, "health_system")
 			local martyrdom = {
 				display_name = mod.text_options["text_option_martyrdom"],
-				max_stacks = talents.zealot_martyrdom.format_values.max_wounds.value, --9, zealot_additional_wounds:["zealot_preacher_more_segments"]
+				max_stacks = health_extension and (health_extension:max_wounds() - 1) or talents.zealot_martyrdom.format_values.max_wounds.value, --9, zealot_additional_wounds:["zealot_preacher_more_segments"]
 				max_duration = nil,
 				decay = true,
 				grenade_ability = false,
@@ -340,7 +343,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 				stack_buff = "ogryn_carapace_armor_child",
 				stacks = 0,
 				progress = 0,
-				timed = false,
+				timed = true,
 				replenish = true,
 				replenish_buff = "ogryn_carapace_armor_parent",
 				damage_per_stack = 0.025,
@@ -713,22 +716,22 @@ HudElementblitzbar._draw_widgets = function (self, dt, t, input_service, ui_rend
 end
 local function y_offset()
 	local Y_OFFSETS = {}
-	Y_OFFSETS[30] = 100.5
-	Y_OFFSETS[25] = 96
-	Y_OFFSETS[20] = 98
-	Y_OFFSETS[15] = 107
-	Y_OFFSETS[12] = 106.5
-	Y_OFFSETS[11] = 0
-	Y_OFFSETS[10] = 108
-	Y_OFFSETS[9] = 114.5
-	Y_OFFSETS[8] = 0
-	Y_OFFSETS[7] = 0
-	Y_OFFSETS[6] = 123.5
-	Y_OFFSETS[5] = 0
-	Y_OFFSETS[4] = 140.5
-	Y_OFFSETS[3] = 158
-	Y_OFFSETS[2] = 192
-	Y_OFFSETS[1] = 294
+	Y_OFFSETS[30]	= 100.5
+	Y_OFFSETS[25]	= 96
+	Y_OFFSETS[20]	= 98
+	Y_OFFSETS[15]	= 107
+	Y_OFFSETS[12]	= 106.5
+	Y_OFFSETS[11]	= 0
+	Y_OFFSETS[10]	= 108
+	Y_OFFSETS[9]	= 114.5
+	Y_OFFSETS[8]	= 0
+	Y_OFFSETS[7]	= 0
+	Y_OFFSETS[6]	= 123.5
+	Y_OFFSETS[5]	= 131
+	Y_OFFSETS[4]	= 140.5
+	Y_OFFSETS[3]	= 158
+	Y_OFFSETS[2]	= 192
+	Y_OFFSETS[1]	= 294
 	return Y_OFFSETS[resource_info.max_stacks] or 0
 end
 
