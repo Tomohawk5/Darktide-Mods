@@ -352,6 +352,29 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 			}
         end
 
+        local weapon_switch_equipped = player_talents.veteran_weapon_switch_passive
+        if weapon_switch_equipped then
+            mod:notify("WEAPONS EQUIPPED")
+            local more_damage_talent = talent_extension:has_special_rule("veteran_improved_tag_more_damage")
+            local extra_stacks = player_talents.veteran_improved_tag_more_damage == 1
+			resource_info = {
+				display_name = mod.text_options["text_option_weapon_switch"],
+				max_stacks = 10,
+				max_duration = 2,
+				decay = true,
+				grenade_ability = false,
+                talent_resource = unit_data_extension:read_component("talent_resource"), -- Ranged Stacks
+				stack_buff = "veteran_weapon_switch_melee_visual",
+				stacks = 0,
+				progress = 0,
+				timed = true,
+				replenish = true,
+				replenish_buff = "",
+				damage_per_stack = 15, -- 15%
+				damage_boost = resource_info_template.damage_boost
+			}
+        end
+
         if mod:get("veteran_grenade") or not (snipers_focus_equipped or improved_tag_equipped or weapon_switch_equipped) then
         
             local replenish_grenade = player_talents.veteran_replenish_grenades == 1
