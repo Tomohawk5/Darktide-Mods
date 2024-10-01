@@ -25,6 +25,9 @@ mod.text_options = table.enum(
 	"text_option_frag",
 	"text_option_krak",
 	"text_option_smoke",
+    "text_option_snipers_focus",
+    "text_option_improved_tag",
+    "text_option_weapon_switch",
 	-- OGRYN
 	"text_option_box",
 	"text_option_armour",
@@ -99,7 +102,10 @@ local function archetype_options()
 				mod.text_options["text_option_grenades"],
 				mod.text_options["text_option_frag"],
 				mod.text_options["text_option_krak"],
-				mod.text_options["text_option_smoke"]
+				mod.text_options["text_option_smoke"],
+                mod.text_options["text_option_snipers_focus"],
+                mod.text_options["text_option_improved_tag"],
+                mod.text_options["text_option_weapon_switch"]
 			),
 			value = mod.value_options["value_option_stacks"],
 			value_options = table.enum(

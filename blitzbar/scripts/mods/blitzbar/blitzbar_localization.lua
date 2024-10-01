@@ -120,6 +120,15 @@ local localizations = {
 	text_option_smoke = {
 		en = "Smoke"
 	},
+	text_option_snipers_focus = {
+		en = "Marksman"
+	},
+	text_option_improved_tag = {
+		en = "Focus"
+	},
+	text_option_weapon_switch = {
+		en = "Weapon"
+	},
 
 	-- ##############################
 	-- #           OGRYN           #

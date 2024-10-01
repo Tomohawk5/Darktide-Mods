@@ -9,18 +9,22 @@ local HudElementblitzbar = class("HudElementblitzbar", "HudElementBase")
 --"scripts/settings/ability/player_abilities/player_abilities"
 --"scripts/settings/talent/talent_settings_new"
 
+--TODO: Resource type enum
+--TODO: Rename / Consolodate (damage_per_stack -> resource_buff?)
+
 local resource_info_template = {
 	display_name = nil,
 	max_stacks = nil,
 	max_duration = nil,
-	decay = nil,
+	decay = nil,                        -- STACKS FALL OFF 1 AT A TIME ?
 	grenade_ability = nil,
-	stack_buff = nil,
+    talent_resource = nil,              -- unit_data_extension:read_component("talent_resource")
+	stack_buff = nil,                   -- BUFF THAT DETERMINES STACK COUNT
 	stacks = 0,
 	progress = 0,
-	timed = nil,
-	replenish = nil,
-	replenish_buff = nil,
+	timed = nil,                        -- DOES THE BUFF HAVE A TIMER ?
+	replenish = nil,                    -- DOES THE BUFF REFILL ITSELF ?
+	replenish_buff = nil,               -- BUFF THAT DETEMINES REFILL
 	damage_per_stack = nil,
 	damage_boost = function (self)
 		if not self.stacks then return nil end
@@ -50,6 +54,8 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 	local player_talents = profile.talents
 	local talents = profile.archetype.talents
 
+    local talent_extension = ScriptUnit.extension(self._player.player_unit, "talent_system")
+    local unit_data_extension = ScriptUnit.has_extension(self._player.player_unit, "unit_data_system")
 
 	resource_info = nil
 
@@ -296,37 +302,117 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 
 	if self._archetype_name == "veteran" then
 
-		local frag = player_talents.veteran_frag_grenade
-		local krak = player_talents.veteran_krak_grenade
-		local smoke = player_talents.veteran_smoke_grenade
+        local snipers_focus_equipped = player_talents.veteran_snipers_focus
+        if snipers_focus_equipped then
+            mod:notify("MARKSMAN EQUIPPED")
 
-		local grenade = frag	and talents.veteran_frag_grenade or
-						krak	and talents.veteran_krak_grenade or
-						smoke	and talents.veteran_smoke_grenade
-
-		if grenade then
-			local grenade_ability = grenade.player_ability.ability
-			local replenish_grenade = player_talents.veteran_replenish_grenades == 1
-
-			local vet_grenade = {
-				display_name =	(frag and 	mod.text_options["text_option_frag"]) or
-								(krak and 	mod.text_options["text_option_krak"]) or
-											mod.text_options["text_option_smoke"],
-				max_stacks = grenade_ability.max_charges + (player_talents.veteran_extra_grenade or 0),
-				max_duration = replenish_grenade and talents.veteran_replenish_grenades.format_values.time.value or nil,
-				decay = true,
-				grenade_ability = true,
+            local stacks_on_still = talent_extension:has_special_rule("veteran_snipers_focus_stacks_on_still")
+            local max_stacks = talent_extension:has_special_rule("veteran_snipers_focus_increased_stacks")
+                                and talents.veteran_snipers_focus_increased_stacks.format_values.new_stacks.value   -- 15
+                                or talents.veteran_snipers_focus_increased_stacks.format_values.stacks.value        -- 10
+            
+			resource_info = {
+				display_name = mod.text_options["text_option_snipers_focus"],
+				max_stacks = max_stacks, -- 10 or 15
+				max_duration = nil,
+				decay = not talent_extension:has_special_rule("veteran_snipers_focus_stacks_on_still"),
+				grenade_ability = false,
+                talent_resource = unit_data_extension:read_component("talent_resource"),
 				stack_buff = nil,
 				stacks = 0,
 				progress = 0,
-				timed = replenish_grenade,
-				replenish = replenish_grenade,
-				replenish_buff = replenish_grenade and "veteran_grenade_replenishment" or nil,
-				damage_per_stack = nil,
-				damage_boost = nil
+				timed = false, --talent_extension:has_special_rule("veteran_snipers_focus_stacks_on_still"),
+				replenish = false, --talent_extension:has_special_rule("veteran_snipers_focus_stacks_on_still"),    --TODO: Get progress working? Not essential
+				replenish_buff = "", --"veteran_snipers_focus",
+				damage_per_stack = 0.075, -- 7.5% ranged finesse
+				damage_boost = resource_info_template.damage_boost
 			}
-			resource_info = table.clone(vet_grenade)
-		end
+        end
+
+        local improved_tag_equipped = player_talents.veteran_improved_tag
+        if improved_tag_equipped then
+            mod:notify("FOCUS EQUIPPED")
+            local more_damage_talent = talent_extension:has_special_rule("veteran_improved_tag_more_damage")
+            local extra_stacks = player_talents.veteran_improved_tag_more_damage == 1
+			resource_info = {
+				display_name = mod.text_options["text_option_improved_tag"],
+				max_stacks = extra_stacks and 8 or 5,
+				max_duration = 2,
+				decay = true,
+				grenade_ability = false,
+                talent_resource = unit_data_extension:read_component("talent_resource"),
+				stack_buff = "veteran_improved_tag_effect",
+				stacks = 0,
+				progress = 0,
+				timed = true,
+				replenish = true,
+				replenish_buff = "veteran_improved_tag",
+				damage_per_stack = 15, -- 15%
+				damage_boost = resource_info_template.damage_boost
+			}
+        end
+
+        if mod:get("veteran_grenade") or not (snipers_focus_equipped or improved_tag_equipped or weapon_switch_equipped) then
+        
+            local replenish_grenade = player_talents.veteran_replenish_grenades == 1
+        
+            if player_talents.veteran_frag_grenade or player_talents.veteran_frag_grenade_bleed then
+                mod:notify("FRAG EQUIPPED")
+                resource_info = {
+                    display_name =	mod.text_options["text_option_frag"],
+                    max_stacks = talents.veteran_frag_grenade.player_ability.ability.max_charges + (player_talents.veteran_extra_grenade or 0),
+                    max_duration = replenish_grenade and talents.veteran_replenish_grenades.format_values.time.value or nil,
+                    decay = true,
+                    grenade_ability = true,
+                    stack_buff = nil,
+                    stacks = 0,
+                    progress = 0,
+                    timed = replenish_grenade,
+                    replenish = replenish_grenade,
+                    replenish_buff = replenish_grenade and "veteran_grenade_replenishment" or nil,
+                    damage_per_stack = nil,
+                    damage_boost = nil
+                }
+            end
+
+            if player_talents.veteran_krak_grenade then
+                mod:notify("KRAK EQUIPPED")
+                resource_info = {
+                    display_name =	mod.text_options["text_option_krak"],
+                    max_stacks = talents.veteran_krak_grenade.player_ability.ability.max_charges + (player_talents.veteran_extra_grenade or 0),
+                    max_duration = replenish_grenade and talents.veteran_replenish_grenades.format_values.time.value or nil,
+                    decay = true,
+                    grenade_ability = true,
+                    stack_buff = nil,
+                    stacks = 0,
+                    progress = 0,
+                    timed = replenish_grenade,
+                    replenish = replenish_grenade,
+                    replenish_buff = replenish_grenade and "veteran_grenade_replenishment" or nil,
+                    damage_per_stack = nil,
+                    damage_boost = nil
+                }
+            end
+
+            if player_talents.veteran_smoke_grenade then
+                mod:notify("SMOKE EQUIPPED")
+                resource_info = {
+                    display_name =	mod.text_options["text_option_smoke"],
+                    max_stacks = talents.veteran_smoke_grenade.player_ability.ability.max_charges + (player_talents.veteran_extra_grenade or 0),
+                    max_duration = replenish_grenade and talents.veteran_replenish_grenades.format_values.time.value or nil,
+                    decay = true,
+                    grenade_ability = true,
+                    stack_buff = nil,
+                    stacks = 0,
+                    progress = 0,
+                    timed = replenish_grenade,
+                    replenish = replenish_grenade,
+                    replenish_buff = replenish_grenade and "veteran_grenade_replenishment" or nil,
+                    damage_per_stack = nil,
+                    damage_boost = nil
+                }
+            end
+        end
 	end
 
 	-- TODO: Fix grenade charge bars not being empty
@@ -535,6 +621,11 @@ HudElementblitzbar.update = function (self, dt, t, ui_renderer, render_settings,
 				resource_info.progress = nil
 			end
 		end
+
+        if resource_info.talent_resource then
+            resource_info.stacks = resource_info.talent_resource.current_resource
+            resource_info.progress = 0
+        end
 	end
 
     self:_update_shield_amount()
@@ -774,6 +865,7 @@ HudElementblitzbar._get_value_text = function (self)
 		end
 	end
 
+    -- TODO: grenade_ability -> isKeystone?
 	if mod:get("value_time_full_empty") then
 		if (progress == nil and stacks == 0) or (progress == 0 and stacks == 0) then
 			format = (resource_info.grenade_ability) and "" or ("{#color(249, 69, 69)}" .. mod:localize("empty"))
@@ -860,7 +952,7 @@ HudElementblitzbar._draw_shields = function (self, dt, t, ui_renderer)
 			widget_offset[2] = height - shield_offset
 		end
 
-		UIWidget.draw(widget, ui_renderer)
+		UIWidget.draw(widget, ui_renderer) -- TODO: Add dirty checks for performance
 
 		shield_offset = shield_offset - shield_width - spacing
 	end
