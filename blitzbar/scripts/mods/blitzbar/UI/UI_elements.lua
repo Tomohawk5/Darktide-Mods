@@ -304,13 +304,13 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 
         local snipers_focus_equipped = player_talents.veteran_snipers_focus
         if snipers_focus_equipped then
-            mod:notify("MARKSMAN EQUIPPED")
+            --mod:notify("MARKSMAN EQUIPPED")
 
-            local stacks_on_still = talent_extension:has_special_rule("veteran_snipers_focus_stacks_on_still")
+            local stacks_on_still = talent_extension and talent_extension:has_special_rule("veteran_snipers_focus_stacks_on_still")
             local max_stacks = talent_extension:has_special_rule("veteran_snipers_focus_increased_stacks")
                                 and talents.veteran_snipers_focus_increased_stacks.format_values.new_stacks.value   -- 15
                                 or talents.veteran_snipers_focus_increased_stacks.format_values.stacks.value        -- 10
-            
+
 			resource_info = {
 				display_name = mod.text_options["text_option_snipers_focus"],
 				max_stacks = max_stacks, -- 10 or 15
@@ -331,7 +331,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 
         local improved_tag_equipped = player_talents.veteran_improved_tag
         if improved_tag_equipped then
-            mod:notify("FOCUS EQUIPPED")
+            --mod:notify("FOCUS EQUIPPED")
             local more_damage_talent = talent_extension:has_special_rule("veteran_improved_tag_more_damage")
             local extra_stacks = player_talents.veteran_improved_tag_more_damage == 1
 			resource_info = {
@@ -354,7 +354,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 
         local weapon_switch_equipped = player_talents.veteran_weapon_switch_passive
         if weapon_switch_equipped then
-            mod:notify("WEAPONS EQUIPPED")
+            --mod:notify("WEAPONS EQUIPPED")
             local more_damage_talent = talent_extension:has_special_rule("veteran_improved_tag_more_damage")
             local extra_stacks = player_talents.veteran_improved_tag_more_damage == 1
 			resource_info = {
@@ -380,7 +380,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
             local replenish_grenade = player_talents.veteran_replenish_grenades == 1
         
             if player_talents.veteran_frag_grenade or player_talents.veteran_frag_grenade_bleed then
-                mod:notify("FRAG EQUIPPED")
+                --mod:notify("FRAG EQUIPPED")
                 resource_info = {
                     display_name =	mod.text_options["text_option_frag"],
                     max_stacks = talents.veteran_frag_grenade.player_ability.ability.max_charges + (player_talents.veteran_extra_grenade or 0),
@@ -399,7 +399,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
             end
 
             if player_talents.veteran_krak_grenade then
-                mod:notify("KRAK EQUIPPED")
+                --mod:notify("KRAK EQUIPPED")
                 resource_info = {
                     display_name =	mod.text_options["text_option_krak"],
                     max_stacks = talents.veteran_krak_grenade.player_ability.ability.max_charges + (player_talents.veteran_extra_grenade or 0),
@@ -418,7 +418,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
             end
 
             if player_talents.veteran_smoke_grenade then
-                mod:notify("SMOKE EQUIPPED")
+                --mod:notify("SMOKE EQUIPPED")
                 resource_info = {
                     display_name =	mod.text_options["text_option_smoke"],
                     max_stacks = talents.veteran_smoke_grenade.player_ability.ability.max_charges + (player_talents.veteran_extra_grenade or 0),
