@@ -307,7 +307,7 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
             --mod:notify("MARKSMAN EQUIPPED")
 
             local stacks_on_still = talent_extension and talent_extension:has_special_rule("veteran_snipers_focus_stacks_on_still")
-            local max_stacks = talent_extension:has_special_rule("veteran_snipers_focus_increased_stacks")
+            local max_stacks = (talent_extension and talent_extension:has_special_rule("veteran_snipers_focus_increased_stacks"))
                                 and talents.veteran_snipers_focus_increased_stacks.format_values.new_stacks.value   -- 15
                                 or talents.veteran_snipers_focus_increased_stacks.format_values.stacks.value        -- 10
 

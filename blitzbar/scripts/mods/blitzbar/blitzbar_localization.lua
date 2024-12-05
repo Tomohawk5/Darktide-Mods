@@ -196,7 +196,7 @@ local localizations = {
 		en = "Instead of numerical values for the " .. cf("item_rarity_2") .. "Stacks{#reset()} option when at maximum or 0 stacks.\n"
 			.. "\n"
 			.. cf("item_rarity_1") .. "Grenade\t{#reset()}:  " .. cf("terminal_text_header") .. "FULL{#reset()} and " .. cf("terminal_text_body") .. "EMPTY{#reset()}\n"
-			.. cf("item_rarity_4") .. "Keystone\t{#reset()}:  " .. cf("ui_hud_overcharge_high") .. "MAX{#reset()} and " .. cf("ui_disabled_text_color") .. "[NOTHING]{#reset()}\n"
+			.. cf("item_rarity_4") .. "Keystone\t{#reset()}:  " .. cf("ui_interaction_critical") .. "MAX{#reset()} and " .. cf("ui_disabled_text_color") .. "[NOTHING]{#reset()}\n"
 	},
 	martyrdom = {
 		en = "Zealot martyrdom"
