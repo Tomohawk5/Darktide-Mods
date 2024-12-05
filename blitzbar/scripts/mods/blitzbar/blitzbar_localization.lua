@@ -13,7 +13,7 @@ local localizations = {
 	},
 	mod_description = {
 		en = "Adds a stamina style bar to show your current grenade or keystone charges.",
-		["zh-cn"] = "添加类似体力条的状态条，显示当前的手雷数量或钥石层数。",
+		["zh-cn"] = "添加类似体力条的状态条，显示当前的手雷数量或楔石层数。",
 	},
 	show_gauge = {
 		en = "Always show",
@@ -101,7 +101,7 @@ local localizations = {
 	},
 	text_option_destiny = {
 		en = "Destiny",
-		["zh-cn"] = "扰动命运",
+		["zh-cn"] = "颠覆命运",
 	},
 	text_option_marks = {
 		en = "Marks",
@@ -125,7 +125,7 @@ local localizations = {
 	},
 	text_option_inexorable = {
 		en = "Inexorable",
-		["zh-cn"] = "命定审判",
+		["zh-cn"] = "无情审判",
 	},
 	text_option_stun = {
 		en = "Stun",
@@ -241,7 +241,7 @@ local localizations = {
 		["zh-cn"] = "在" .. cf("item_rarity_2") .. "数量{#reset()}选项为最大值或 0 时，不显示数字。\n"
 			.. "\n"
 			.. cf("item_rarity_1") .. "手雷\t{#reset()}：" .. cf("terminal_text_header") .. "满{#reset()}和" .. cf("terminal_text_body") .. "空{#reset()}\n"
-			.. cf("item_rarity_4") .. "钥石\t{#reset()}：" .. cf("ui_hud_overcharge_high") .. "最大{#reset()}和" .. cf("ui_disabled_text_color") .. "[无]{#reset()}\n",
+			.. cf("item_rarity_4") .. "楔石\t{#reset()}：" .. cf("ui_hud_overcharge_high") .. "最大{#reset()}和" .. cf("ui_disabled_text_color") .. "[无]{#reset()}\n",
 	},
 	martyrdom = {
 		en = "Zealot martyrdom",
@@ -289,7 +289,7 @@ local localizations = {
 	},
 	_grenade_description = {
 		en = "Will display " .. cf("item_rarity_1") .. "Grenade{#reset()} charges over " .. cf("item_rarity_4") .. "Keystone{#reset()} charges if possible.",
-		["zh-cn"] = "如果可能，则优先显示" .. cf("item_rarity_1") .. "手雷{#reset()}而非" .. cf("item_rarity_4") .. "钥石{#reset()}充能。",
+		["zh-cn"] = "如果可能，则优先显示" .. cf("item_rarity_1") .. "手雷{#reset()}而非" .. cf("item_rarity_4") .. "楔石{#reset()}充能。",
 	},
 	_show_gauge_description = {
 		en = "Show the bar on this archetype.",
