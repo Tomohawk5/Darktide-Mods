@@ -152,13 +152,16 @@ local localizations = {
 		["zh-cn"] = "烟雾",
 	},
 	text_option_snipers_focus = {
-		en = "Marksman"
+		en = "Marksman",
+		["zh-cn"] = "神射手",
 	},
 	text_option_improved_tag = {
-		en = "Focus"
+		en = "Focus",
+		["zh-cn"] = "聚焦目标",
 	},
 	text_option_weapon_switch = {
-		en = "Weapon"
+		en = "Weapon",
+		["zh-cn"] = "武器专家",
 	},
 
 	-- ##############################
