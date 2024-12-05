@@ -151,6 +151,15 @@ local localizations = {
 		en = "Smoke",
 		["zh-cn"] = "烟雾",
 	},
+	text_option_snipers_focus = {
+		en = "Marksman"
+	},
+	text_option_improved_tag = {
+		en = "Focus"
+	},
+	text_option_weapon_switch = {
+		en = "Weapon"
+	},
 
 	-- ##############################
 	-- #           OGRYN           #
@@ -237,11 +246,11 @@ local localizations = {
 		en = "Instead of numerical values for the " .. cf("item_rarity_2") .. "Stacks{#reset()} option when at maximum or 0 stacks.\n"
 			.. "\n"
 			.. cf("item_rarity_1") .. "Grenade\t{#reset()}:  " .. cf("terminal_text_header") .. "FULL{#reset()} and " .. cf("terminal_text_body") .. "EMPTY{#reset()}\n"
-			.. cf("item_rarity_4") .. "Keystone\t{#reset()}:  " .. cf("ui_hud_overcharge_high") .. "MAX{#reset()} and " .. cf("ui_disabled_text_color") .. "[NOTHING]{#reset()}\n",
+			.. cf("item_rarity_4") .. "Keystone\t{#reset()}:  " .. cf("ui_interaction_critical") .. "MAX{#reset()} and " .. cf("ui_disabled_text_color") .. "[NOTHING]{#reset()}\n",
 		["zh-cn"] = "在" .. cf("item_rarity_2") .. "数量{#reset()}选项为最大值或 0 时，不显示数字。\n"
 			.. "\n"
 			.. cf("item_rarity_1") .. "手雷\t{#reset()}：" .. cf("terminal_text_header") .. "满{#reset()}和" .. cf("terminal_text_body") .. "空{#reset()}\n"
-			.. cf("item_rarity_4") .. "楔石\t{#reset()}：" .. cf("ui_hud_overcharge_high") .. "最大{#reset()}和" .. cf("ui_disabled_text_color") .. "[无]{#reset()}\n",
+			.. cf("item_rarity_4") .. "楔石\t{#reset()}：" .. cf("ui_interaction_critical") .. "最大{#reset()}和" .. cf("ui_disabled_text_color") .. "[无]{#reset()}\n",
 	},
 	martyrdom = {
 		en = "Zealot martyrdom",
