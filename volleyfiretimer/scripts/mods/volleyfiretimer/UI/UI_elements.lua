@@ -38,28 +38,20 @@ local executioners_stance = {
 
 local voice_of_command = {
     class_tag = "squad_leader",
-    talent = vet_talents.veteran_combat_ability_increase_and_restore_toughness_to_coherency, --vet_talents.veteran_combat_ability_stagger_nearby_enemies,
+    talent = vet_talents.veteran_combat_ability_increase_and_restore_toughness_to_coherency,
     buff_id = "veteran_combat_ability_increase_toughness_to_coherency",
     max_duration = voice_of_command_template.duration,
-    conditional_exit_func = nil, --voice_of_command_template.conditional_exit_func,
+    conditional_exit_func = nil,
     notification = nil,
-    -- notification = function()
-    --   return string.format(
-    --     "  Voice of Command  \nAllies : %-3d",
-    --     buff_info.stacks - 1
-    --   )
-    -- end,
     stacks = false,
     timer = true
 }
 
--- "scripts\extension_systems\buff\buffs\veteran_stealth_bonuses_buff"
 local infiltrate = {
     class_tag = "shock_trooper",
     talent = vet_talents.veteran_invisibility_on_combat_ability,
     buff_id = "veteran_invisibility",
     max_duration = 5,
-    --buff_id = "veteran_invisibility_on_combat_ability",
     conditional_exit_func = infiltrate_template.conditional_exit_func,
     notification = function()
         return string.format(
@@ -85,8 +77,6 @@ function HudElementVolleyFire:init(parent, draw_layer, start_scale)
 
     local profile = self._player:profile()
     local player_talents = profile.talents
-
-    --player_talents.veteran_combat_ability_stagger_nearby_enemies
     if player_talents.veteran_combat_ability_stagger_nearby_enemies == 1 then
         combat_ability = voice_of_command
     elseif player_talents.veteran_invisibility_on_combat_ability == 1 then
@@ -94,14 +84,6 @@ function HudElementVolleyFire:init(parent, draw_layer, start_scale)
     else
         combat_ability = executioners_stance
     end
-
-    --"scripts\extension_systems\ability\equipped_ability_effect_scripts\shout_effects"
-    --local unit = context.unit
-    --local unit_data_extension = context.unit_data_extension
-    --self._combat_ability_component = unit_data_extension:read_component("combat_ability")
-    --self._combat_ability_action_component = unit_data_extension:read_component("combat_ability_action")
-
-    --local ability_extension = ScriptUnit.extension(self._player_unit, "buff_system")
     if not mod:get("always_visible") then
         local widget = self._widgets_by_name.volley_fire_duration
         if widget then
@@ -109,8 +91,6 @@ function HudElementVolleyFire:init(parent, draw_layer, start_scale)
             widget.content.stack_text = ""
         end
     end
-
-    mod:notify(combat_ability.class_tag)
 end
 
 local function _is_volley_fire_buff(s)
