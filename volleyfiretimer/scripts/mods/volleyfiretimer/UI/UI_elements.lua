@@ -2,7 +2,7 @@ local mod = get_mod("volleyfiretimer")
 
 local _definitions = mod:io_dofile("/volleyfiretimer/scripts/mods/volleyfiretimer/UI/UI_definitions")
 
-local vet_talents = require("scripts/settings/ability/archetype_talents/veteran_talents")
+local vet_talents = require("scripts/settings/ability/archetype_talents/talents/veteran_talents")
 
 local veteran_buff_templates = require(
     "scripts/settings/buff/archetype_buff_templates/veteran_buff_templates"
