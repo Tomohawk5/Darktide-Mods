@@ -416,12 +416,12 @@ for _, color_name in ipairs(color_names) do
 	localizations[color_name] = { en = cf(color_name) .. display_name(color_name) .. "{#reset()}"}
 end
 
-local archetypes = { "psyker", "veteran", "zealot", "ogryn", "adamant" }
+local archetypes = { "psyker", "veteran", "zealot", "ogryn", "adamant", "broker" }
 local options = { "_grenade", "_gauge_text", "_gauge_value", "_gauge_value_text", "_color_full", "_color_empty"}
 for _, archetype in pairs(archetypes) do
 	-- hacky adamant override lol
 	local archetype_for_color = archetype
-	if archetype == "adamant" then
+	if (archetype == "adamant") or (archetype == "broker") then
 		archetype_for_color = "veteran"
 	end
 	
