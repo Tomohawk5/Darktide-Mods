@@ -327,6 +327,9 @@ local localizations = {
 	adamant = {
 		en = "Arbitrator"
 	},
+	broker = {
+		en = "Hive Scum"
+	},
 	_grenade = {
 		en = "Prefer Grenade",
 		["zh-cn"] = "优先手雷",
