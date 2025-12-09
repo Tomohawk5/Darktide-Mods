@@ -575,6 +575,43 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		end
 	end
 
+	-- Hive Scum
+	if self._archetype_name == "broker" then
+		local blinder = player_talents.broker_blitz_flash_grenade_improved or player_talents.broker_blitz_flash_grenade
+		local bazooka = player_talents.broker_blitz_missile_launcher
+		local chem_grenade = player_talents.broker_blitz_tox_grenade
+
+		local grenade = (blinder		and (talents.broker_blitz_flash_grenade_improved or talents.broker_blitz_flash_grenade)) or
+						(bazooka		and talents.broker_blitz_missile_launcher) or
+						(chem_grenade	and talents.broker_blitz_tox_grenade)
+
+		if grenade then
+			local grenade_ability = grenade.player_ability.ability
+			-- Blinder Grenades replenish natively (through kills)
+			local replenish_grenade = (player_talents.broker_blitz_flash_grenade_improved == 1) or (player_talents.broker_blitz_flash_grenade == 1)
+			local replenish_buff_logic = replenish_grenade and "broker_passive_blitz_charge_on_kill"
+
+			local broker_grenade = {
+				display_name =	(chem_grenade and 	mod.text_options["text_option_chem_grenade"]) or
+								(bazooka and 	mod.text_options["text_option_missile_launcher"]) or
+												mod.text_options["text_option_blinder"],
+				max_stacks = grenade_ability.max_charges + (player_talents.broker_passive_increased_blitz_ammo or 0),
+				max_duration = nil,
+				decay = true,
+				grenade_ability = true,
+				stack_buff = nil,
+				stacks = 0,
+				progress = 0,
+				timed = false,
+				replenish = replenish_grenade,
+				replenish_buff = replenish_buff_logic or nil,
+				damage_per_stack = nil,
+				damage_boost = nil
+			}
+			resource_info = table.clone(broker_grenade)
+		end
+	end
+
 	if resource_info == nil then
 		resource_info = {
 			display_name = mod.text_options["none"],
