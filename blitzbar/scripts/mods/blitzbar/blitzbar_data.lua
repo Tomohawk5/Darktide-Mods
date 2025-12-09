@@ -200,8 +200,9 @@ local function archetype_options()
 		local default = defaults[archetype]
 		-- hacky adamant override lol
 		-- ui_adamant and ui_adamant_text are not in colors.lua, so use veteran colors
+		--	are you FUCKING kidding me it happened to hive scum too?
 		local archetype_for_color = archetype
-		if archetype == "adamant" then
+		if (archetype == "adamant") or (archetype == "broker") then
 			archetype_for_color = "veteran"
 		end
 		local widget = {
