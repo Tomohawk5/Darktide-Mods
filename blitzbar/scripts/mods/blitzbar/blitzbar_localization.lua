@@ -198,6 +198,22 @@ local localizations = {
 	},
 
 	-- ##############################
+	-- #         HIVE SCUM          #
+	-- ##############################
+	text_option_blinder = {
+		en = "Blinder"
+		--en = Localize("loc_talent_broker_blitz_flash_grenade")
+	},
+	text_option_missile_launcher = {
+		en = "Bazooka"
+		--en = Localize("loc_talent_broker_blitz_missile_launcher")
+	},
+	text_option_chem_grenade = {
+		en = "Chem"
+		--en = Localize("loc_talent_broker_blitz_tox_grenade")
+	},
+
+	-- ##############################
 	-- #           VALUE            #
 	-- ##############################
 	value_decimals = {

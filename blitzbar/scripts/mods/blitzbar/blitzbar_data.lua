@@ -36,7 +36,11 @@ mod.text_options = table.enum(
 	-- ARBITRATOR (ADAMANT)
 	"text_option_whistle",
 	"text_option_mine",
-	"text_option_adamant_grenade"
+	"text_option_adamant_grenade",
+	-- HIVE SCUM (BROKER)
+	"text_option_blinder",
+	"text_option_missile_launcher",
+	"text_option_chem_grenade"
 )
 mod.value_options = table.enum(
 	"none",
