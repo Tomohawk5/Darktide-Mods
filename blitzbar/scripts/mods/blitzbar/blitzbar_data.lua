@@ -82,7 +82,7 @@ local function get_colors()
 end
 
 local function archetype_options()
-	local archetypes = { "psyker", "veteran", "zealot", "ogryn", "adamant" }
+	local archetypes = { "psyker", "veteran", "zealot", "ogryn", "adamant", "broker" }
 	local defaults = {
 		psyker = {
 			text = mod.text_options["text_option_warp"],
@@ -174,7 +174,26 @@ local function archetype_options()
 				mod.value_options["value_option_time_seconds"],
 				mod.value_options["value_option_time_percent"]
 			)
-		}
+		},
+		broker = {
+			text = mod.text_options["text_option_grenades"],
+			text_options = table.enum(
+				mod.text_options["none"],
+				mod.text_options["text_option_blitz"],
+				mod.text_options["text_option_charges"],
+				mod.text_options["text_option_grenades"],
+				mod.text_options["text_option_blinder"],
+				mod.text_options["text_option_missile_launcher"],
+				mod.text_options["text_option_chem_grenade"]
+			),
+			value = mod.value_options["value_option_stacks"],
+			value_options = table.enum(
+				mod.value_options["none"],
+				mod.value_options["value_option_stacks"],
+				mod.value_options["value_option_time_seconds"],
+				mod.value_options["value_option_time_percent"]
+			)
+		},
 	}
 	local archetype_widgets = {}
 	for _, archetype in pairs(archetypes) do
