@@ -728,6 +728,11 @@ HudElementblitzbar.update = function (self, dt, t, ui_renderer, render_settings,
 			local ability_extension = player_extensions.ability
 			if ability_extension and ability_extension:ability_is_equipped("grenade_ability") then
 				resource_info.stacks = ability_extension:remaining_ability_charges("grenade_ability")
+				
+				-- UGLY AS SHIT manual override for Hives Cum Blinder grenades
+				if resource_info.display_name == mod.text_options["text_option_blinder"] then
+					resource_info.stacks = resource_info.stacks - 1
+				end
 			end
 
 			if not resource_info.replenish then
