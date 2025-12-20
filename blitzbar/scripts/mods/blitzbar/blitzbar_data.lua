@@ -32,7 +32,15 @@ mod.text_options = table.enum(
 	"text_option_box",
 	"text_option_armour",
 	"text_option_nuke",
-	"text_option_rock"
+	"text_option_rock",
+	-- ARBITRATOR (ADAMANT)
+	"text_option_whistle",
+	"text_option_mine",
+	"text_option_adamant_grenade",
+	-- HIVE SCUM (BROKER)
+	"text_option_blinder",
+	"text_option_missile_launcher",
+	"text_option_chem_grenade"
 )
 mod.value_options = table.enum(
 	"none",
@@ -74,7 +82,7 @@ local function get_colors()
 end
 
 local function archetype_options()
-	local archetypes = { "psyker", "veteran", "zealot", "ogryn" }
+	local archetypes = { "psyker", "veteran", "zealot", "ogryn", "adamant", "broker" }
 	local defaults = {
 		psyker = {
 			text = mod.text_options["text_option_warp"],
@@ -147,11 +155,56 @@ local function archetype_options()
 			),
 			value = mod.value_options["value_option_stacks"],
 			value_options = mod.value_options
-		}
+		},
+		adamant = {
+			text = mod.text_options["text_option_grenades"],
+			text_options = table.enum(
+				mod.text_options["none"],
+				mod.text_options["text_option_blitz"],
+				mod.text_options["text_option_charges"],
+				mod.text_options["text_option_grenades"],
+				mod.text_options["text_option_whistle"],
+				mod.text_options["text_option_mine"],
+				mod.text_options["text_option_adamant_grenade"]
+			),
+			value = mod.value_options["value_option_stacks"],
+			value_options = table.enum(
+				mod.value_options["none"],
+				mod.value_options["value_option_stacks"],
+				mod.value_options["value_option_time_seconds"],
+				mod.value_options["value_option_time_percent"]
+			)
+		},
+		broker = {
+			text = mod.text_options["text_option_grenades"],
+			text_options = table.enum(
+				mod.text_options["none"],
+				mod.text_options["text_option_blitz"],
+				mod.text_options["text_option_charges"],
+				mod.text_options["text_option_grenades"],
+				mod.text_options["text_option_blinder"],
+				mod.text_options["text_option_missile_launcher"],
+				mod.text_options["text_option_chem_grenade"]
+			),
+			value = mod.value_options["value_option_stacks"],
+			value_options = table.enum(
+				mod.value_options["none"],
+				mod.value_options["value_option_stacks"],
+				mod.value_options["value_option_time_seconds"],
+				mod.value_options["value_option_time_percent"]
+			)
+		},
 	}
 	local archetype_widgets = {}
 	for _, archetype in pairs(archetypes) do
 		local default = defaults[archetype]
+		-- hacky adamant override lol
+		-- ui_adamant and ui_adamant_text are not in colors.lua, so use veteran colors
+		--	are you FUCKING kidding me it happened to hive scum too?
+		local archetype_for_color = archetype
+		if (archetype == "adamant") or (archetype == "broker") then
+			archetype_for_color = "veteran"
+		end
 		local widget = {
 			setting_id = archetype .. "_show_gauge",
 			type = "checkbox",
@@ -182,13 +235,13 @@ local function archetype_options()
 				{
 					setting_id = archetype .. "_color_full",
 					type = "dropdown",
-					default_value = "ui_" .. archetype,
+					default_value = "ui_" .. archetype_for_color,
 					options = get_colors()
 				},
 				{
 					setting_id = archetype .. "_color_empty",
 					type = "dropdown",
-					default_value = "ui_" .. archetype .. "_text",
+					default_value = "ui_" .. archetype_for_color .. "_text",
 					options = get_colors()
 				}
 			}

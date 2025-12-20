@@ -527,6 +527,96 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		end
 	end
 
+	-- Arbitrator
+	if self._archetype_name == "adamant" then
+		-- Dog shock explosion
+		local whistle = player_talents.adamant_whistle
+		local mine = player_talents.adamant_shock_mine
+		local impact = player_talents.adamant_grenade_improved or player_talents.adamant_grenade
+
+		local grenade = (whistle	and talents.adamant_whistle) or
+						(mine		and talents.adamant_shock_mine) or
+						(impact		and (talents.adamant_grenade_improved or talents.adamant_grenade))
+
+		if grenade then
+			local grenade_ability = grenade.player_ability.ability
+			-- Shock mine replenishes naturally. Lone Wolf "keystone" gives grenade regen to all
+			local replenish_grenade = (player_talents.adamant_whistle == 1) or (player_talents.adamant_disable_companion == 1)
+			local grenades_to_add = 0
+			local replenish_time = 0
+			local replenish_buff_logic = nil -- AND will accept any string, so I need this if/else up here to choose the correct replenish buff to check. otherwise it will always take the first one
+			if player_talents.adamant_disable_companion then
+				grenades_to_add = talents.adamant_disable_companion.format_values.charges.value
+				replenish_time = talents.adamant_disable_companion.format_values.time.value
+				replenish_buff_logic = replenish_grenade and "adamant_grenade_replenishment"
+			elseif whistle then
+				replenish_time = talents.adamant_whistle.format_values.cooldown.value
+				replenish_buff_logic = replenish_grenade and "adamant_whistle_replenishment"
+			end
+
+			local adamant_grenade = {
+				display_name =	(whistle and 	mod.text_options["text_option_whistle"]) or
+								(mine and 		mod.text_options["text_option_mine"]) or
+												mod.text_options["text_option_adamant_grenade"],
+				max_stacks = grenade_ability.max_charges + grenades_to_add,
+				max_duration = (replenish_grenade and replenish_time) or nil,
+				decay = true,
+				grenade_ability = true,
+				stack_buff = nil,
+				stacks = 0,
+				progress = 0,
+				timed = replenish_grenade,
+				replenish = replenish_grenade,
+				replenish_buff = replenish_buff_logic or nil,
+				damage_per_stack = nil,
+				damage_boost = nil
+			}
+			resource_info = table.clone(adamant_grenade)
+		end
+	end
+
+	-- Hive Scum
+	if self._archetype_name == "broker" then
+		local blinder = player_talents.broker_blitz_flash_grenade_improved or player_talents.broker_blitz_flash_grenade
+		local bazooka = player_talents.broker_blitz_missile_launcher
+		local chem_grenade = player_talents.broker_blitz_tox_grenade
+
+		local grenade = (blinder		and (
+											(player_talents.broker_blitz_flash_grenade_improved and talents.broker_blitz_flash_grenade_improved) or 
+											(player_talents.broker_blitz_flash_grenade and talents.broker_blitz_flash_grenade)
+										)) or
+						(bazooka		and talents.broker_blitz_missile_launcher) or
+						(chem_grenade	and talents.broker_blitz_tox_grenade)
+
+		if grenade then
+			local grenade_ability = grenade.player_ability.ability
+			local replenish_grenade = blinder
+			local replenish_buff_logic = replenish_grenade and "broker_passive_blitz_charge_on_kill"
+			-- blinder max stacks is always internally +1
+			-- max charges is the correct value
+			-- removing the +blitz section doesnt change anything
+			-- this is a stupid solution
+			local broker_grenade = {
+				display_name =	(chem_grenade and 	mod.text_options["text_option_chem_grenade"]) or
+								(bazooka and 	mod.text_options["text_option_missile_launcher"]) or
+												mod.text_options["text_option_blinder"],
+				max_stacks = grenade_ability.max_charges + (player_talents.broker_passive_increased_blitz_ammo or 0),
+				max_duration = nil,
+				decay = true,
+				grenade_ability = true,
+				stack_buff = nil,
+				stacks = 0,
+				progress = 0,
+				timed = false,
+				replenish = replenish_grenade,
+				replenish_buff = replenish_buff_logic or nil,
+				damage_per_stack = nil,
+				damage_boost = nil
+			}
+			resource_info = table.clone(broker_grenade)
+		end
+	end
+
 	if resource_info == nil then
 		resource_info = {
 			display_name = mod.text_options["none"],
@@ -638,6 +728,11 @@ HudElementblitzbar.update = function (self, dt, t, ui_renderer, render_settings,
 			local ability_extension = player_extensions.ability
 			if ability_extension and ability_extension:ability_is_equipped("grenade_ability") then
 				resource_info.stacks = ability_extension:remaining_ability_charges("grenade_ability")
+				
+				-- UGLY AS SHIT manual override for Hives Cum Blinder grenades
+				if resource_info.display_name == mod.text_options["text_option_blinder"] then
+					resource_info.stacks = resource_info.stacks - 1
+				end
 			end
 
 			if not resource_info.replenish then
