@@ -581,16 +581,21 @@ HudElementblitzbar.init = function (self, parent, draw_layer, start_scale)
 		local bazooka = player_talents.broker_blitz_missile_launcher
 		local chem_grenade = player_talents.broker_blitz_tox_grenade
 
-		local grenade = (blinder		and (talents.broker_blitz_flash_grenade_improved or talents.broker_blitz_flash_grenade)) or
+		local grenade = (blinder		and (
+											(player_talents.broker_blitz_flash_grenade_improved and talents.broker_blitz_flash_grenade_improved) or 
+											(player_talents.broker_blitz_flash_grenade and talents.broker_blitz_flash_grenade)
+										)) or
 						(bazooka		and talents.broker_blitz_missile_launcher) or
 						(chem_grenade	and talents.broker_blitz_tox_grenade)
 
 		if grenade then
 			local grenade_ability = grenade.player_ability.ability
-			-- Blinder Grenades replenish natively (through kills)
-			local replenish_grenade = (player_talents.broker_blitz_flash_grenade_improved == 1) or (player_talents.broker_blitz_flash_grenade == 1)
+			local replenish_grenade = blinder
 			local replenish_buff_logic = replenish_grenade and "broker_passive_blitz_charge_on_kill"
-
+			-- blinder max stacks is always internally +1
+			-- max charges is the correct value
+			-- removing the +blitz section doesnt change anything
+			-- this is a stupid solution
 			local broker_grenade = {
 				display_name =	(chem_grenade and 	mod.text_options["text_option_chem_grenade"]) or
 								(bazooka and 	mod.text_options["text_option_missile_launcher"]) or
